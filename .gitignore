@@ -2,3 +2,4 @@
 .vscode/
 **/.rollup.cache
 .editorconfig
+**/index.html
