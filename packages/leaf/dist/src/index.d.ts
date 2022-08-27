@@ -1,6 +1,12 @@
+import { ReactiveObject } from './reactive';
 export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
-export declare type ElementContent = Node | string | HTMLCollection | NodeList;
+export declare type ElementContent = Node | string;
 export declare type ElementProps = Record<string, string>;
+export declare type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
+export declare type HTMLElementProps = Record<string, string>;
+export declare const isNodeListLike: (content: any) => boolean;
+export declare const isNodeLike: (content: any) => boolean;
+export declare const appendContentToNode: (node: HTMLElement, content: ElementContent | ElementContent[]) => void;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -23,6 +29,8 @@ export declare const runCallbackOnElements: (elements: LeafComponentRenderResult
 export declare class LeafComponent extends HTMLElement {
     #private;
     constructor();
+    get state(): ReactiveObject;
+    set state(value: ReactiveObject);
     /**
      * Start component lifecycle.
      *
@@ -47,6 +55,10 @@ export declare class LeafComponent extends HTMLElement {
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
  */
-export declare const registerComponent: (tagName: string, component: CustomElementConstructor) => void;
-export { reactive, watchEffect } from './reactive';
+export declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => void;
+export declare const preservedProps: {
+    [key: string]: string;
+};
+declare const baseComponents: Record<string, typeof HTMLElement>;
+export { baseComponents as HTMLElements };
 //# sourceMappingURL=index.d.ts.map

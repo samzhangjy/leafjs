@@ -12,5 +12,5 @@ export default {
     sourcemap: true,
     name: 'leaf',
   },
-  plugins: [typescript(), terser()],
+  plugins: [typescript({ outputToFilesystem: false }), terser()],
 };
