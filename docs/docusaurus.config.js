@@ -34,12 +34,12 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/samzhangjy/leafjs/tree/main/docs/docs/',
+          editUrl: 'https://github.com/samzhangjy/leafjs/tree/main/docs/',
           sidebarCollapsed: false,
         },
         blog: {
           showReadingTime: true,
-          editUrl: 'https://github.com/samzhangjy/leafjs/tree/main/docs/blog/',
+          editUrl: 'https://github.com/samzhangjy/leafjs/tree/main/docs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
