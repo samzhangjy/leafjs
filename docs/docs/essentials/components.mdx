@@ -1,0 +1,145 @@
+# Components
+
+Components are a core concept in Leafjs. This article will walk through those core concepts about Leafjs components.
+
+Each Leaf component is a valid [web component](https://developer.mozilla.org/en-US/docs/Web/Web_Components), which is basicly a natively supported custom element.
+
+## Defining a component
+
+Every Leafjs component should inherit from the `LeafComponent` class. A basic component will be as follows:
+
+```js
+import {
+  LeafComponent,
+  registerComponent,
+  HTMLElements,
+} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
+
+class MyComponent extends LeafComponent {
+  constructor() {
+    super();
+  }
+
+  render() {
+    return new HTMLElements.h1('Component content');
+  }
+}
+
+registerComponent('my-component', MyComponent);
+```
+
+:::note
+It is required that you call `super()` inside the constructor of your component.
+:::
+
+### Render functions
+
+Render functions define how a component should be rendered on the DOM. Leafjs comes with several native components exposed through the `HTMLElements` export, such as `h1`, `h2`, `p`, etc.
+
+The below example demostrates how to use `HTMLElements` in your component.
+
+```js
+class MyComponent extends LeafComponent {
+  constructor() {
+    super();
+  }
+
+  // highlight-start
+  render() {
+    const heading = new HTMLElements.h1('Heading 1', { style: 'color: red' });
+    const container = new HTMLElements.div([heading, new HTMLElements.p('Some content...')]);
+    return container;
+  }
+  // highlight-end
+}
+```
+
+The first argument of `HTMLElements` accepts either an element or a list of element, representing the content of the element. The second argument is an optional attribute set, which will be set on the actual element later on in the HTMLElements constructor.
+
+:::tip
+If the element has no content, you can omit the first parameter and directly pass in the attributes:
+
+```js
+const input = new HTMLElements.input({ value: 'Lorem ipsum' });
+```
+:::
+
+### Registering a component
+
+Each Leafjs component need to be registered before actual usage. To do that, Leaf provides a high level wrapper to register the custom components to the registery. See the example below.
+
+```js
+import {
+  LeafComponent,
+  registerComponent,
+  HTMLElements,
+} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
+
+class SomeComponent extends LeafComponent {
+  // component content...
+}
+
+// register `SomeComponent` with name `component-name`
+// highlight-next-line
+registerComponent('component-name', SomeComponent);
+```
+
+This allows the usage of `component-name` element in HTML templates AND using `document.createElement`. Under the hood, Leafjs calls the custom component registery as follows:
+
+```js
+customElements.define(name, component);
+```
+
+:::note
+The first parameter of `registerComponent`, or the component name, needs to contain **at least one** hyphen. More information on custom element name rules [here](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
+:::
+
+## Using your component
+
+After defining and registering your own custom Leaf component, you probably want to reuse it in other components. Custom components are pretty much the same as the basic HTML elements, which allows you to create a component instance using `new MyComponent(...props)`. If you want to define a custom atom component with props to pass in, such as a custom `Button`, define your props in the constructor of your component:
+
+```js
+class Button extends LeafComponent {
+  constructor(content, props) {
+    super();
+
+    // do something with the props passed in, such as storing them:
+    this.content = content;
+    this.props = props;
+  }
+
+  render() {
+    // render your element using the props
+    return new HTMLElements.button(this.content, this.props);
+  }
+}
+```
+
+**DO NOT** define your properties in the render function. This will not work: render functions are all called internally by Leafjs renderer and is not controlled by the user.
+
+## Advanced usage
+
+### Creating advanced HTML elements
+
+Sometimes you may want to create a HTML element that is not in Leafjs's pre-defined element list, such as `<details />`. You can use the provided function `createElement` which enhances the default `document.createElement` with automatic attribute assignment and children nodes defination.
+
+```js
+import {
+  LeafComponent,
+  registerComponent,
+  HTMLElements,
+  createElement
+} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
+
+class Component extends LeafComponent {
+  // ...
+
+  render() {
+    // ...
+    // highlight-next-line
+    const detailsElement = createElement('details', detailsProps, detailsContent);
+  }
+}
+```
+
+This allows you to create any elements just like using `document.createElement`.
