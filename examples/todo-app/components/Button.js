@@ -1,7 +1,7 @@
 import {
   LeafComponent,
   HTMLElements,
-  registerComponent
+  registerComponent,
 } from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
 
 class Button extends LeafComponent {
