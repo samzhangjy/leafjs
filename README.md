@@ -33,7 +33,7 @@ Here's an example of Leafjs:
         LeafComponent,
         registerComponent,
         HTMLElements,
-      } from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
+      } from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
 
       class MyApp extends LeafComponent {
         constructor() {
@@ -51,7 +51,7 @@ Here's an example of Leafjs:
 </html>
 ```
 
-Or you can also try it directly ad CodeSandbox:
+Or you can also try it directly at CodeSandbox:
 
 [![Edit leafjs-starter](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/leafjs-starter-nwg946?fontsize=14&hidenavigation=1&theme=dark)
 

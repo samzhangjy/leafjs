@@ -2,7 +2,7 @@ import {
   LeafComponent,
   HTMLElements,
   registerComponent
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
+} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
 import Input from './Input.js';
 import Button from './Button.js';
 

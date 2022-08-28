@@ -2,7 +2,7 @@ import {
   LeafComponent,
   registerComponent,
   HTMLElements,
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
+} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
 import AddTodo from './components/AddTodo.js';
 import TodoItem from './components/TodoItem.js';
 
