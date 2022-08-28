@@ -26,26 +26,26 @@ Here's an example of Leafjs:
     <title>My App</title>
   </head>
   <body>
-		<my-app></my-app>
+    <my-app></my-app>
 
     <script type="module">
       import {
         LeafComponent,
         registerComponent,
-        HTMLElements
-      } from "https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js";
+        HTMLElements,
+      } from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@master/packages/leaf/dist/leaf.min.js';
 
-			class MyApp extends LeafComponent {
-				constructor() {
-					super();
-				}
+      class MyApp extends LeafComponent {
+        constructor() {
+          super();
+        }
 
-				render() {
-					return new HTMLElements.h1('Hello Leafjs!');
-				}
-			}
+        render() {
+          return new HTMLElements.h1('Hello Leafjs!');
+        }
+      }
 
-			registerComponent('my-app', MyApp);
+      registerComponent('my-app', MyApp);
     </script>
   </body>
 </html>
