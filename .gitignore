@@ -12,3 +12,6 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Log files
+lerna-debug.log
