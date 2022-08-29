@@ -71,4 +71,4 @@ export declare class Reactive {
     onStateChange(effect: EffectType): void;
 }
 export {};
-//# sourceMappingURL=reactive.d.ts.map
+//# sourceMappingURL=index.d.ts.map

@@ -1,20 +1,14 @@
-import { ReactiveObject } from './reactive';
+import { ReactiveObject } from '@leaf/reactivity';
+import { ElementContent, ElementProps } from './common';
 export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
-export declare type ElementContent = Node | string;
-export declare type ElementProps = Record<string, string>;
-export declare type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
-export declare type HTMLElementProps = Record<string, string>;
-export declare const isNodeListLike: (content: any) => boolean;
-export declare const isNodeLike: (content: any) => boolean;
-export declare const appendContentToNode: (node: HTMLElement, content: ElementContent | ElementContent[]) => void;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
- * @param props Optional element attributes.
  * @param content Optional element initial content.
+ * @param props Optional element attributes.
  * @returns Created HTML element.
  */
-export declare const createElement: (tag: string, props?: ElementProps | ElementContent, content?: ElementContent) => HTMLElement;
+export declare const createElement: (tag: string, content?: ElementContent | ElementProps, props?: ElementProps) => HTMLElement;
 /**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
@@ -29,7 +23,9 @@ export declare const runCallbackOnElements: (elements: LeafComponentRenderResult
 export declare class LeafComponent extends HTMLElement {
     #private;
     constructor();
+    /** Component inner state. */
     get state(): ReactiveObject;
+    /** {@inheritDoc LeafComponent.state} */
     set state(value: ReactiveObject);
     /**
      * Start component lifecycle.
@@ -50,15 +46,7 @@ export declare class LeafComponent extends HTMLElement {
      */
     css(): string;
 }
-/**
- * Register a leaf component to `CustomElementsRegistery`.
- * @param tagName Tag name to use in templates.
- * @param component a defined `LeafComponent` class.
- */
-export declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => void;
-export declare const preservedProps: {
-    [key: string]: string;
-};
-declare const baseComponents: Record<string, typeof HTMLElement>;
-export { baseComponents as HTMLElements };
+export { Reactive } from '@leaf/reactivity';
+export { HTMLElements } from './baseElements';
+export { registerComponent } from './common';
 //# sourceMappingURL=index.d.ts.map

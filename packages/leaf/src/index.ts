@@ -1,50 +1,7 @@
-import { Reactive, ReactiveObject } from './reactive';
+import { Reactive, ReactiveObject } from '@leaf/reactivity';
+import { isNodeListLike, isNodeLike, appendContentToNode, ElementContent, ElementProps } from './common';
 
 export type LeafComponentRenderResult = HTMLElement | HTMLElement[];
-export type ElementContent = Node | string;
-export type ElementProps = Record<string, string>;
-export type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
-export type HTMLElementProps = Record<string, string>;
-export type LeafBaseComponent = { name: string; extends: typeof HTMLElement };
-
-/**
- * Check if element is NodeList-like.
- * @param content Element to check.
- * @returns Is `content` having structures like `NodeList`.
- */
-export const isNodeListLike = (content: any) => {
-  return (
-    HTMLCollection.prototype.isPrototypeOf(content) ||
-    NodeList.prototype.isPrototypeOf(content) ||
-    Array.isArray(content)
-  );
-};
-
-/**
- * Check if element is Node-like.
- * @param content Element to check.
- * @returns Is `content` having structures like `Node`.
- */
-export const isNodeLike = (content: any) => {
-  return typeof content.nodeType !== 'undefined' || typeof content === 'string' || typeof content === 'number';
-};
-
-/**
- * Insert element or elements to node, depending on the actual type of `content`.
- * @param node Parent node to insert content to.
- * @param content Custom content elements to insert.
- */
-export const appendContentToNode = (node: HTMLElement, content: ElementContent | ElementContent[]) => {
-  if (isNodeListLike(content)) {
-    // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
-    content = [...(content as Node[])].filter((node) => node);
-    for (const ele of content) {
-      node.append(ele);
-    }
-  } else {
-    node.append(content as Node);
-  }
-};
 
 const _createElement = (tag: string, props?: Record<string, string>, content?: ElementContent): HTMLElement => {
   const element = document.createElement(tag);
@@ -130,7 +87,7 @@ export class LeafComponent extends HTMLElement {
    * This function is invoked when the first initialization of the component.
    */
   connectedCallback() {
-    const shadow = this.attachShadow({ mode: 'open' });
+    const shadow = this.attachShadow({ mode: 'closed' });
     let renderResult: LeafComponentRenderResult | null = null;
     const styleElement = createElement('style');
     const styler = this.css ?? this.#defaultStyler;
@@ -178,76 +135,6 @@ export class LeafComponent extends HTMLElement {
   }
 }
 
-/**
- * Register a leaf component to `CustomElementsRegistery`.
- * @param tagName Tag name to use in templates.
- * @param component a defined `LeafComponent` class.
- */
-export const registerComponent = (
-  tagName: string,
-  component: CustomElementConstructor,
-  props?: ElementDefinitionOptions
-) => {
-  customElements.define(tagName, component, props);
-};
-
-/** Preserved element attributes mapping */
-export const preservedProps: { [key: string]: string } = {
-  className: 'class',
-};
-
-// TODO: extend base component list
-/** Base HTML elements mapping */
-const LeafBaseComponents: LeafBaseComponent[] = [
-  { name: 'button', extends: HTMLButtonElement },
-  { name: 'div', extends: HTMLDivElement },
-  { name: 'input', extends: HTMLInputElement },
-  { name: 'h1', extends: HTMLHeadingElement },
-  { name: 'h2', extends: HTMLHeadingElement },
-  { name: 'h3', extends: HTMLHeadingElement },
-  { name: 'h4', extends: HTMLHeadingElement },
-  { name: 'h5', extends: HTMLHeadingElement },
-  { name: 'h6', extends: HTMLHeadingElement },
-  { name: 'p', extends: HTMLParagraphElement },
-  { name: 'li', extends: HTMLLIElement },
-];
-
-const baseComponents: Record<string, typeof HTMLElement> = {};
-
-/**
- * Construct a custom `HTMLElement` with given parent to extend from.
- * @param parent `HTMLElement` class to inherit from.
- * @returns Consturcted element subclass.
- */
-const makeBaseComponent = (parent: typeof HTMLElement) => {
-  return class extends parent {
-    constructor(content?: NodeLike | HTMLElementProps, props?: HTMLElementProps) {
-      super();
-      if (!content) return;
-
-      if (!isNodeLike(content) && !isNodeListLike(content)) {
-        for (const propName in content as HTMLElementProps) {
-          this.setAttribute(
-            propName in preservedProps ? preservedProps[propName] : propName,
-            (content as HTMLElementProps)[propName]
-          );
-        }
-        return;
-      }
-      appendContentToNode(this, [...(content as HTMLCollection)]);
-      if (!props) return;
-
-      for (const propName in props) {
-        this.setAttribute(propName in preservedProps ? preservedProps[propName] : propName, props[propName]);
-      }
-    }
-  };
-};
-
-LeafBaseComponents.forEach((component) => {
-  baseComponents[component.name] = makeBaseComponent(component.extends);
-  registerComponent(`leaf-${component.name}`, baseComponents[component.name], { extends: component.name });
-});
-
-// TODO: find out a way to export components directly using named imports
-export { baseComponents as HTMLElements };
+export { Reactive } from '@leaf/reactivity';
+export { HTMLElements } from './baseElements';
+export { registerComponent } from './common';

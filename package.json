@@ -4,11 +4,14 @@
   "description": "Reasonable web components framework.",
   "main": "index.ts",
   "scripts": {
-    "build:all": "run-p clean && run-s build:core",
-    "build:core": "lerna run --parallel build",
+    "build:all": "run-p clean && run-s build:rollup",
+    "build:rollup": "lerna run --parallel build",
     "bootstrap": "lerna bootstrap",
     "clean": "lerna run --parallel clean",
-    "release": "lerna publish"
+    "release": "lerna publish",
+    "dev:rollup": "lerna run --parallel dev",
+    "dev:server": "live-server --ignore=\"**/src,**/*.ts\"",
+    "dev": "run-p -l dev:rollup dev:server"
   },
   "author": "Sam Zhang",
   "license": "MIT",

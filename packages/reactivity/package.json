@@ -1,8 +1,8 @@
 {
-  "name": "@leaf/core",
+  "name": "@leaf/reactivity",
   "version": "0.0.1",
   "description": "Reasonable web components framework.",
-  "main": "./dist/leaf.min.js",
+  "main": "./dist/reactivity.min.js",
   "types": "./dist/src",
   "scripts": {
     "build": "run-s clean && run-p build:rollup",
@@ -15,10 +15,9 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@leaf/reactivity": "*",
-    "@rollup/plugin-node-resolve": "^13.3.0",
+    "lerna": "^5.3.0",
     "@rollup/plugin-typescript": "^8.4.0",
-    "@types/node": "^18.7.13",
+    "rollup-plugin-terser": "^7.0.2",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "eslint": "^8.19.0",
@@ -28,10 +27,9 @@
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.0.0",
-    "lerna": "^5.3.0",
     "prettier": "2.7.1",
-    "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.4.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "@types/node": "^18.7.13"
   }
 }
