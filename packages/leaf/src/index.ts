@@ -60,20 +60,22 @@ const _createElement = (tag: string, props?: Record<string, string>, content?: E
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
- * @param props Optional element attributes.
  * @param content Optional element initial content.
+ * @param props Optional element attributes.
  * @returns Created HTML element.
  */
 export const createElement = (
   tag: string,
-  props?: ElementProps | ElementContent,
-  content?: ElementContent
+  content?: ElementContent | ElementProps,
+  props?: ElementProps
 ): HTMLElement => {
-  if (typeof props === 'undefined') return _createElement(tag);
-  if (isNodeLike(props) || isNodeListLike(props)) {
-    return _createElement(tag, {}, props as ElementContent);
+  if (typeof content === 'undefined') return _createElement(tag);
+  if (isNodeLike(content) || isNodeListLike(content)) {
+    return _createElement(tag, {}, content as ElementContent);
+  } else if (!props) {
+    return _createElement(tag, content as ElementProps);
   }
-  return _createElement(tag, props as ElementProps, content);
+  return _createElement(tag, props, content as ElementContent);
 };
 
 /**
