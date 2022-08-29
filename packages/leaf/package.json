@@ -1,6 +1,6 @@
 {
   "name": "@leaf-web/core",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "Reasonable web components framework.",
   "main": "./dist/leaf.min.js",
   "types": "./dist/src",
@@ -32,5 +32,6 @@
     "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.4.0",
     "typescript": "^4.7.4"
-  }
+  },
+  "gitHead": "d5b08876a08b660bc082dcc941cb5780e8e36923"
 }
