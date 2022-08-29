@@ -1,8 +1,4 @@
-import {
-  LeafComponent,
-  registerComponent,
-  HTMLElements,
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
+import { LeafComponent, registerComponent, HTMLElements } from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
 import AddTodo from './components/AddTodo.js';
 import TodoItem from './components/TodoItem.js';
 
@@ -17,7 +13,7 @@ class TodoApp extends LeafComponent {
   }
 
   render() {
-    const addTodo = new AddTodo({
+    const addTodo = AddTodo({
       placeholder: 'Add a todo...',
       value: this.state.currentlyEditing,
       onChange: (e) => (this.state.currentlyEditing = e.target.value),
@@ -33,7 +29,7 @@ class TodoApp extends LeafComponent {
     });
     const todos = [];
     for (const todo of this.state.todoItems) {
-      const todoItem = new TodoItem({
+      const todoItem = TodoItem({
         name: todo.name,
         completed: todo.completed,
         onCompleted: () => {
@@ -48,10 +44,10 @@ class TodoApp extends LeafComponent {
       });
       todos.push(todoItem);
     }
-    const todoContainer = new HTMLElements.div(todos);
+    const todoContainer = HTMLElements.div(todos);
 
-    return [new HTMLElements.h1('Todo List'), addTodo, todoContainer];
+    return [HTMLElements.h1('Todo List'), addTodo, todoContainer];
   }
 }
 
-registerComponent('todo-app', TodoApp);
+export default registerComponent('todo-app', TodoApp);

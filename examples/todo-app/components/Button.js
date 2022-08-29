@@ -1,8 +1,4 @@
-import {
-  LeafComponent,
-  HTMLElements,
-  registerComponent,
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
+import { LeafComponent, HTMLElements, registerComponent } from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
 
 class Button extends LeafComponent {
   constructor(content, props) {
@@ -13,7 +9,7 @@ class Button extends LeafComponent {
   }
 
   render() {
-    const button = new HTMLElements.button(this.content, this.props);
+    const button = HTMLElements.button(this.content, this.props);
     button.addEventListener('click', (e) => {
       if (this.props?.onClick) this.props.onClick(e);
     });
@@ -37,6 +33,4 @@ class Button extends LeafComponent {
   }
 }
 
-registerComponent('todo-button', Button);
-
-export default Button;
+export default registerComponent('todo-button', Button);

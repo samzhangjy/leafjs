@@ -3,6 +3,7 @@
 **/.rollup.cache
 .editorconfig
 /packages/**/index.html
+/packages/**/example
 
 # Yarn
 **/.pnp.*

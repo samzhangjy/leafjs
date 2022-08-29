@@ -1,4 +1,4 @@
-import { LeafComponent, registerComponent } from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
+import { LeafComponent, registerComponent } from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
 import Input from './Input.js';
 import Button from './Button.js';
 
@@ -14,7 +14,7 @@ class AddTodo extends LeafComponent {
   }
 
   render() {
-    const todoInput = new Input({
+    const todoInput = Input({
       placeholder: this.props.placeholder ?? 'Add todo...',
       value: this.props.value ?? '',
       onChange: (e) => {
@@ -22,7 +22,7 @@ class AddTodo extends LeafComponent {
       },
     });
 
-    const addTodo = new Button('Add todo');
+    const addTodo = Button('Add todo');
     addTodo.addEventListener('click', (e) => {
       if (this.props.onAdd) this.props.onAdd(e);
     });
@@ -30,6 +30,4 @@ class AddTodo extends LeafComponent {
   }
 }
 
-registerComponent('add-todo', AddTodo);
-
-export default AddTodo;
+export default registerComponent('add-todo', AddTodo);

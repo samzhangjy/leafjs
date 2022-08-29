@@ -47,6 +47,6 @@ export declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 export { Reactive } from '@leaf-web/reactivity';
-export { HTMLElements } from './baseElements';
+export { HTMLClassElements, HTMLElements } from './baseElements';
 export { registerComponent } from './common';
 //# sourceMappingURL=index.d.ts.map

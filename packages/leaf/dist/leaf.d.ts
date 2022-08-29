@@ -7,10 +7,12 @@ declare type ElementProps = Record<string, string>;
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
+ * @returns A function used to create the custom component.
  */
-declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => void;
+declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => (...args: unknown[]) => HTMLElement;
 
-declare const baseComponents: Record<string, typeof HTMLElement>;
+declare const baseClassComponents: Record<string, typeof HTMLElement>;
+declare const baseComponents: Record<string, (...args: unknown[]) => HTMLElement>;
 
 declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 /**
@@ -59,4 +61,4 @@ declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 
-export { baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, createElement, registerComponent, runCallbackOnElements };
+export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, createElement, registerComponent, runCallbackOnElements };

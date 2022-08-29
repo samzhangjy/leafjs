@@ -1,9 +1,18 @@
-import { isNodeLike, isNodeListLike, NodeLike, preservedProps, registerComponent, appendContentToNode } from './common';
+import { createElement } from 'src';
+import {
+  isNodeLike,
+  isNodeListLike,
+  NodeLike,
+  preservedProps,
+  registerComponent,
+  appendContentToNode,
+  ElementContent,
+  ElementProps,
+} from './common';
 
 export type HTMLElementProps = Record<string, string>;
 export type LeafBaseComponent = { name: string; extends: typeof HTMLElement };
 
-// TODO: extend base component list
 /** Base HTML elements mapping */
 const LeafBaseComponents: LeafBaseComponent[] = [
   { name: 'button', extends: HTMLButtonElement },
@@ -29,14 +38,15 @@ const LeafBaseComponents: LeafBaseComponent[] = [
   { name: 'video', extends: HTMLVideoElement },
 ];
 
-const baseComponents: Record<string, typeof HTMLElement> = {};
+const baseClassComponents: Record<string, typeof HTMLElement> = {};
+const baseComponents: Record<string, (...args: unknown[]) => HTMLElement> = {};
 
 /**
  * Construct a custom `HTMLElement` with given parent to extend from.
  * @param parent `HTMLElement` class to inherit from.
  * @returns Consturcted element subclass.
  */
-const makeBaseComponent = (parent: typeof HTMLElement) => {
+const makeBaseClassComponent = (parent: typeof HTMLElement) => {
   return class extends parent {
     constructor(content?: NodeLike | HTMLElementProps, props?: HTMLElementProps) {
       super();
@@ -62,9 +72,13 @@ const makeBaseComponent = (parent: typeof HTMLElement) => {
 };
 
 LeafBaseComponents.forEach((component) => {
-  baseComponents[component.name] = makeBaseComponent(component.extends);
-  registerComponent(`leaf-${component.name}`, baseComponents[component.name], { extends: component.name });
+  baseComponents[component.name] = (content?: ElementContent | ElementProps, props?: ElementProps) => {
+    return createElement(component.name, content, props);
+  };
+
+  baseClassComponents[component.name] = makeBaseClassComponent(component.extends);
+  registerComponent(`leaf-__${component.name}`, baseClassComponents[component.name], { extends: component.name });
 });
 
 // TODO: find out a way to export components directly using named imports
-export { baseComponents as HTMLElements };
+export { baseComponents as HTMLElements, baseClassComponents as HTMLClassElements };

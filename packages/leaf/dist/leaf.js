@@ -50,9 +50,13 @@ const isNodeLike = (content) => {
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
+ * @returns A function used to create the custom component.
  */
 const registerComponent = (tagName, component, props) => {
     customElements.define(tagName, component, props);
+    return (...args) => {
+        return new component(...args);
+    };
 };
 /** Preserved element attributes mapping */
 const preservedProps = {
@@ -80,7 +84,6 @@ const appendContentToNode = (node, content) => {
     }
 };
 
-// TODO: extend base component list
 /** Base HTML elements mapping */
 const LeafBaseComponents = [
     { name: 'button', extends: HTMLButtonElement },
@@ -105,13 +108,14 @@ const LeafBaseComponents = [
     { name: 'img', extends: HTMLImageElement },
     { name: 'video', extends: HTMLVideoElement },
 ];
+const baseClassComponents = {};
 const baseComponents = {};
 /**
  * Construct a custom `HTMLElement` with given parent to extend from.
  * @param parent `HTMLElement` class to inherit from.
  * @returns Consturcted element subclass.
  */
-const makeBaseComponent = (parent) => {
+const makeBaseClassComponent = (parent) => {
     return class extends parent {
         constructor(content, props) {
             super();
@@ -133,8 +137,11 @@ const makeBaseComponent = (parent) => {
     };
 };
 LeafBaseComponents.forEach((component) => {
-    baseComponents[component.name] = makeBaseComponent(component.extends);
-    registerComponent(`leaf-${component.name}`, baseComponents[component.name], { extends: component.name });
+    baseComponents[component.name] = (content, props) => {
+        return createElement(component.name, content, props);
+    };
+    baseClassComponents[component.name] = makeBaseClassComponent(component.extends);
+    registerComponent(`leaf-__${component.name}`, baseClassComponents[component.name], { extends: component.name });
 });
 
 var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_defaultStyler;
@@ -257,5 +264,5 @@ _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new Weak
     return '';
 };
 
-export { baseComponents as HTMLElements, LeafComponent, t as Reactive, createElement, registerComponent, runCallbackOnElements };
+export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, t as Reactive, createElement, registerComponent, runCallbackOnElements };
 //# sourceMappingURL=leaf.js.map

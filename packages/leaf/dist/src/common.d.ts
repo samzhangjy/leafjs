@@ -17,8 +17,9 @@ export declare const isNodeLike: (content: any) => boolean;
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
+ * @returns A function used to create the custom component.
  */
-export declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => void;
+export declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => (...args: unknown[]) => HTMLElement;
 /** Preserved element attributes mapping */
 export declare const preservedProps: {
     [key: string]: string;

@@ -140,5 +140,5 @@ export class LeafComponent extends HTMLElement {
 }
 
 export { Reactive } from '@leaf-web/reactivity';
-export { HTMLElements } from './baseElements';
+export { HTMLClassElements, HTMLElements } from './baseElements';
 export { registerComponent } from './common';

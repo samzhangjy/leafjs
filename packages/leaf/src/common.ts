@@ -28,6 +28,7 @@ export const isNodeLike = (content: any) => {
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
+ * @returns A function used to create the custom component.
  */
 export const registerComponent = (
   tagName: string,
@@ -35,6 +36,10 @@ export const registerComponent = (
   props?: ElementDefinitionOptions
 ) => {
   customElements.define(tagName, component, props);
+
+  return (...args: unknown[]) => {
+    return new component(...args);
+  };
 };
 
 /** Preserved element attributes mapping */
