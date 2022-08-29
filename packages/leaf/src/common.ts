@@ -52,6 +52,10 @@ export const appendContentToNode = (node: HTMLElement, content: ElementContent |
     // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
     content = [...(content as Node[])].filter((node) => node);
     for (const ele of content) {
+      if (Array.isArray(ele)) {
+        appendContentToNode(node, ele);
+        continue;
+      }
       node.append(ele);
     }
   } else {

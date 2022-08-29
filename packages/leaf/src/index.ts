@@ -46,6 +46,10 @@ export const runCallbackOnElements = (
 ) => {
   if (isNodeListLike(elements)) {
     for (const ele of elements as HTMLElement[]) {
+      if (Array.isArray(ele)) {
+        runCallbackOnElements(ele, callback);
+        continue;
+      }
       callback(ele);
     }
   } else {

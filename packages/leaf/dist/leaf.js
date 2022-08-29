@@ -68,6 +68,10 @@ const appendContentToNode = (node, content) => {
         // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
         content = [...content].filter((node) => node);
         for (const ele of content) {
+            if (Array.isArray(ele)) {
+                appendContentToNode(node, ele);
+                continue;
+            }
             node.append(ele);
         }
     }
@@ -170,6 +174,10 @@ const createElement = (tag, content, props) => {
 const runCallbackOnElements = (elements, callback) => {
     if (isNodeListLike(elements)) {
         for (const ele of elements) {
+            if (Array.isArray(ele)) {
+                runCallbackOnElements(ele, callback);
+                continue;
+            }
             callback(ele);
         }
     }
