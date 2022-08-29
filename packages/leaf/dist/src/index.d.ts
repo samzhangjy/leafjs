@@ -1,6 +1,7 @@
 import { ReactiveObject } from '@leaf-web/reactivity';
 import { ElementContent, ElementProps } from './common';
 export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
+export declare type LeafEventHandler = (e: Event) => unknown;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.

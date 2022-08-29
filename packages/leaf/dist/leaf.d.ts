@@ -15,6 +15,7 @@ declare const baseClassComponents: Record<string, typeof HTMLElement>;
 declare const baseComponents: Record<string, (...args: unknown[]) => HTMLElement>;
 
 declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
+declare type LeafEventHandler = (e: Event) => unknown;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -61,4 +62,4 @@ declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 
-export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, createElement, registerComponent, runCallbackOnElements };
+export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, LeafEventHandler, createElement, registerComponent, runCallbackOnElements };

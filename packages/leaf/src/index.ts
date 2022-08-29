@@ -2,11 +2,20 @@ import { Reactive, ReactiveObject } from '@leaf-web/reactivity';
 import { isNodeListLike, isNodeLike, appendContentToNode, ElementContent, ElementProps } from './common';
 
 export type LeafComponentRenderResult = HTMLElement | HTMLElement[];
+export type LeafEventHandler = (e: Event) => unknown;
 
-const _createElement = (tag: string, props?: Record<string, string>, content?: ElementContent): HTMLElement => {
+const _createElement = (
+  tag: string,
+  props?: Record<string, string | LeafEventHandler>,
+  content?: ElementContent
+): HTMLElement => {
   const element = document.createElement(tag);
   for (const prop in props) {
-    element.setAttribute(prop, props[prop]);
+    if (prop.startsWith('on')) {
+      element.addEventListener(prop.substring(2).toLowerCase(), props[prop] as LeafEventHandler);
+      continue;
+    }
+    element.setAttribute(prop, props[prop] as string);
   }
   if (content) {
     appendContentToNode(element, content);
@@ -27,9 +36,7 @@ export const createElement = (
   props?: ElementProps
 ): HTMLElement => {
   if (typeof content === 'undefined') return _createElement(tag);
-  if (isNodeLike(content) || isNodeListLike(content)) {
-    return _createElement(tag, {}, content as ElementContent);
-  } else if (!props) {
+  if (!isNodeLike(content) && !isNodeListLike(content)) {
     return _createElement(tag, content as ElementProps);
   }
   return _createElement(tag, props, content as ElementContent);

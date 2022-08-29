@@ -148,6 +148,10 @@ var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInsta
 const _createElement = (tag, props, content) => {
     const element = document.createElement(tag);
     for (const prop in props) {
+        if (prop.startsWith('on')) {
+            element.addEventListener(prop.substring(2).toLowerCase(), props[prop]);
+            continue;
+        }
         element.setAttribute(prop, props[prop]);
     }
     if (content) {
@@ -165,10 +169,7 @@ const _createElement = (tag, props, content) => {
 const createElement = (tag, content, props) => {
     if (typeof content === 'undefined')
         return _createElement(tag);
-    if (isNodeLike(content) || isNodeListLike(content)) {
-        return _createElement(tag, {}, content);
-    }
-    else if (!props) {
+    if (!isNodeLike(content) && !isNodeListLike(content)) {
         return _createElement(tag, content);
     }
     return _createElement(tag, props, content);
