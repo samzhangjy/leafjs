@@ -1,5 +1,5 @@
 {
-  "name": "@leaf/monorepo",
+  "name": "@leaf-web/monorepo",
   "version": "0.0.0",
   "description": "Reasonable web components framework.",
   "main": "index.ts",

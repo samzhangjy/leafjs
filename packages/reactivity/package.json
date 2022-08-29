@@ -1,5 +1,5 @@
 {
-  "name": "@leaf/reactivity",
+  "name": "@leaf-web/reactivity",
   "version": "0.0.1",
   "description": "Reasonable web components framework.",
   "main": "./dist/reactivity.min.js",
