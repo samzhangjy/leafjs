@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.7](https://github.com/samzhangjy/leafjs/compare/v0.0.6...v0.0.7) (2022-08-29)
+
+### Features
+
+* auto event listener register ([eccd50d](https://github.com/samzhangjy/leafjs/commit/eccd50d3304b46a82e34821e6c3ea87536d08f60))
+
 ## [0.0.6](https://github.com/samzhangjy/leafjs/compare/v0.0.5...v0.0.6) (2022-08-29)
 
 ### Bug Fixes
