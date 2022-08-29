@@ -1,7 +1,7 @@
 /** An effect to be ran when its dependencies change. */
-export declare type EffectType = () => void;
+declare type EffectType = () => void;
 /** Objects that can be reactive. */
-export declare type ReactiveObject = any;
+declare type ReactiveObject = any;
 /** Map to store reactive object - dependencies - effects data. */
 declare type TargetMap = WeakMap<ReactiveObject, Map<string, Set<EffectType>>>;
 /** Callbasks when a trackable object changes. */
@@ -11,7 +11,7 @@ interface TrackableCallback {
     onDeleteProperty: (target: ReactiveObject, key: string) => void;
 }
 /** Reactive object. */
-export declare class Reactive {
+declare class Reactive {
     /** Currently active running effects. */
     activeEffects: EffectType[];
     /** {@inheritDoc TargetMap} */
@@ -70,5 +70,5 @@ export declare class Reactive {
      */
     onStateChange(effect: EffectType): void;
 }
-export {};
-//# sourceMappingURL=reactive.d.ts.map
+
+export { EffectType, Reactive, ReactiveObject };

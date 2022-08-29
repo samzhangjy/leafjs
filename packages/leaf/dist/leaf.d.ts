@@ -1,6 +1,18 @@
 import { ReactiveObject } from '@leaf-web/reactivity';
-import { ElementContent, ElementProps } from './common';
-export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
+export { Reactive } from '@leaf-web/reactivity';
+
+declare type ElementContent = Node | string;
+declare type ElementProps = Record<string, string>;
+/**
+ * Register a leaf component to `CustomElementsRegistery`.
+ * @param tagName Tag name to use in templates.
+ * @param component a defined `LeafComponent` class.
+ */
+declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => void;
+
+declare const baseComponents: Record<string, typeof HTMLElement>;
+
+declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -8,19 +20,19 @@ export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
  * @param props Optional element attributes.
  * @returns Created HTML element.
  */
-export declare const createElement: (tag: string, content?: ElementContent | ElementProps, props?: ElementProps) => HTMLElement;
+declare const createElement: (tag: string, content?: ElementContent | ElementProps, props?: ElementProps) => HTMLElement;
 /**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.
  */
-export declare const runCallbackOnElements: (elements: LeafComponentRenderResult, callback: (element: HTMLElement) => void) => void;
+declare const runCallbackOnElements: (elements: LeafComponentRenderResult, callback: (element: HTMLElement) => void) => void;
 /**
  * Core Leaf component class.
  *
  * This class is a thin wrapper of `HTMLElement` class and integrates a shadow DOM within.
  */
-export declare class LeafComponent extends HTMLElement {
+declare class LeafComponent extends HTMLElement {
     #private;
     constructor();
     /** Component inner state. */
@@ -46,7 +58,5 @@ export declare class LeafComponent extends HTMLElement {
      */
     css(): string;
 }
-export { Reactive } from '@leaf-web/reactivity';
-export { HTMLElements } from './baseElements';
-export { registerComponent } from './common';
-//# sourceMappingURL=index.d.ts.map
+
+export { baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, createElement, registerComponent, runCallbackOnElements };

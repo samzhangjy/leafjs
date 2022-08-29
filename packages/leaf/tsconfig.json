@@ -13,8 +13,5 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    { "path": "../reactivity/tsconfig.json" }
-  ]
+  "exclude": ["node_modules", "dist"]
 }

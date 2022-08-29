@@ -4,12 +4,12 @@
   "description": "Reasonable web components framework.",
   "main": "index.ts",
   "scripts": {
-    "build:all": "run-p clean && run-s build:rollup",
-    "build:rollup": "lerna run --parallel build",
+    "build": "run-p clean && run-s build:rollup",
+    "build:rollup": "yarn workspaces foreach --no-private run build",
     "bootstrap": "lerna bootstrap",
-    "clean": "lerna run --parallel clean",
+    "clean": "yarn workspaces foreach --no-private run clean",
     "release": "lerna publish",
-    "dev:rollup": "lerna run --parallel dev",
+    "dev:rollup": "yarn workspaces foreach --no-private run dev",
     "dev:server": "live-server --ignore=\"**/src,**/*.ts\"",
     "dev": "run-p -l dev:rollup dev:server"
   },
@@ -20,8 +20,6 @@
   ],
   "private": true,
   "devDependencies": {
-    "lerna": "^5.3.0",
-    "npm-run-all": "^4.1.5",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "eslint": "^8.19.0",
@@ -31,11 +29,14 @@
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.0.0",
+    "lerna": "^5.3.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "2.7.1",
     "tslib": "^2.4.0",
     "typescript": "^4.7.4"
   },
   "dependencies": {
     "rimraf": "^3.0.2"
-  }
+  },
+  "packageManager": "yarn@3.2.3"
 }

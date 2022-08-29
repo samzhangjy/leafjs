@@ -1,4 +1,4 @@
-import { Reactive, ReactiveObject } from '@leaf/reactivity';
+import { Reactive, ReactiveObject } from '@leaf-web/reactivity';
 import { isNodeListLike, isNodeLike, appendContentToNode, ElementContent, ElementProps } from './common';
 
 export type LeafComponentRenderResult = HTMLElement | HTMLElement[];
@@ -135,6 +135,6 @@ export class LeafComponent extends HTMLElement {
   }
 }
 
-export { Reactive } from '@leaf/reactivity';
+export { Reactive } from '@leaf-web/reactivity';
 export { HTMLElements } from './baseElements';
 export { registerComponent } from './common';
