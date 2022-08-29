@@ -2,7 +2,7 @@
 
 Components are a core concept in Leafjs. This article will walk through those core concepts about Leafjs components.
 
-Each Leaf component is a valid [web component](https://developer.mozilla.org/en-US/docs/Web/Web_Components), which is basicly a natively supported custom element.
+Each Leaf component is a valid [web-component](https://developer.mozilla.org/en-US/docs/Web/Web_Components), which is basicly a natively supported custom element.
 
 ## Defining a component
 
@@ -13,7 +13,7 @@ import {
   LeafComponent,
   registerComponent,
   HTMLElements,
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
+} from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
 
 class MyComponent extends LeafComponent {
   constructor() {
@@ -21,7 +21,7 @@ class MyComponent extends LeafComponent {
   }
 
   render() {
-    return new HTMLElements.h1('Component content');
+    return HTMLElements.h1('Component content');
   }
 }
 
@@ -46,8 +46,8 @@ class MyComponent extends LeafComponent {
 
   // highlight-start
   render() {
-    const heading = new HTMLElements.h1('Heading 1', { style: 'color: red' });
-    const container = new HTMLElements.div([heading, new HTMLElements.p('Some content...')]);
+    const heading = HTMLElements.h1('Heading 1', { style: 'color: red' });
+    const container = HTMLElements.div([heading, HTMLElements.p('Some content...')]);
     return container;
   }
   // highlight-end
@@ -60,7 +60,7 @@ The first argument of `HTMLElements` accepts either an element or a list of elem
 If the element has no content, you can omit the first parameter and directly pass in the attributes:
 
 ```js
-const input = new HTMLElements.input({ value: 'Lorem ipsum' });
+const input = HTMLElements.input({ value: 'Lorem ipsum' });
 ```
 :::
 
@@ -73,7 +73,7 @@ import {
   LeafComponent,
   registerComponent,
   HTMLElements,
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
+} from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
 
 class SomeComponent extends LeafComponent {
   // component content...
@@ -96,7 +96,7 @@ The first parameter of `registerComponent`, or the component name, needs to cont
 
 ## Using your component
 
-After defining and registering your own custom Leaf component, you probably want to reuse it in other components. Custom components are pretty much the same as the basic HTML elements, which allows you to create a component instance using `new MyComponent(...props)`. If you want to define a custom atom component with props to pass in, such as a custom `Button`, define your props in the constructor of your component:
+After defining and registering your own custom Leaf component, you probably want to reuse it in other components. Custom components are pretty much the same as the basic HTML elements, which allows you to create a component instance using `MyComponent(...props)`. If you want to define a custom atom component with props to pass in, such as a custom `Button`, define your props in the constructor of your component:
 
 ```js
 class Button extends LeafComponent {
@@ -110,10 +110,18 @@ class Button extends LeafComponent {
 
   render() {
     // render your element using the props
-    return new HTMLElements.button(this.content, this.props);
+    return HTMLElements.button(this.content, this.props);
   }
 }
 ```
+
+Yet this is still a **class**, not a function to invoke. In order to create your component using a function-style, instead of exporting your component export the following:
+
+```js
+export default registerComponent('my-button', Button);
+```
+
+The `registerComponent` will define your component in the registery and return a generated function which will later instantiate your component using the arguments passed to the function.
 
 **DO NOT** define your properties in the render function. This will not work: render functions are all called internally by Leafjs renderer and is not controlled by the user.
 
@@ -129,7 +137,7 @@ import {
   registerComponent,
   HTMLElements,
   createElement
-} from 'https://cdn.jsdelivr.net/gh/samzhangjy/leafjs@main/packages/leaf/dist/leaf.min.js';
+} from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
 
 class Component extends LeafComponent {
   // ...
@@ -143,3 +151,52 @@ class Component extends LeafComponent {
 ```
 
 This allows you to create any elements just like using `document.createElement`.
+
+### Using base components with `new` keyword
+
+:::danger
+By using class-based base components means you will [lose support of Safari](https://lists.w3.org/Archives/Public/public-webapps/2013OctDec/1051.html).
+
+Although the class-style and function-style might look the same, but under the hood Leafjs implement them in different methods.
+
+For function-style creation, Leafjs simply calls `createElement` which then calls `document.createElement` to create an element, which is supported by 100% modern browsers.
+
+However, for class-style, Leafjs extends the default `HTMLXXXElement` class, for example:
+
+```js
+class LeafInput extends HTMLInputElement {
+  // ...
+}
+
+customElements.define('leaf-input', LeafInput, { extends: 'input' })
+```
+
+And extending builtin elements is [**not and will not** be supported by Safari](https://stackoverflow.com/a/72090672/13266491).
+
+**We strongly recommend using function-style declaration unless for really complex use cases.**
+:::
+
+If you want a class-style component / element creation, Leafjs fully supports it! By using `HTMLClassElements` provided by Leafjs, you can use `new HTMLClassElements.element(...props)` to create an instance of the element.
+
+For example:
+
+```js
+import {
+  LeafComponent,
+  registerComponent,
+  HTMLClassElements,
+  createElement
+} from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
+
+class Component extends LeafComponent {
+  // ...
+
+  render() {
+    // ...
+    // highlight-next-line
+    const element = new HTMLClassElements.p('Hello!');
+  }
+}
+```
+
+And in this case, you might want to use your own custom components in class-style too. Simply export the original component instead of function generated by `registerComponent()`. However, you still need to call `registerComponent` to register component to the registery.
