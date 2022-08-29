@@ -1,6 +1,6 @@
 {
   "name": "@leaf-web/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Reasonable web components framework.",
   "main": "./dist/leaf.min.js",
   "types": "./dist/src",
@@ -13,7 +13,6 @@
   },
   "author": "Sam Zhang",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@leaf/reactivity": "*",
     "@rollup/plugin-node-resolve": "^13.3.0",
