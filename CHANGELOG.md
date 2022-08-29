@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.6](https://github.com/samzhangjy/leafjs/compare/v0.0.5...v0.0.6) (2022-08-29)
+
+### Bug Fixes
+
+* **docs:** regenerated lockfile ([78fd640](https://github.com/samzhangjy/leafjs/commit/78fd640529cc23f57cbdf7cc3fb7ac28b74c1472))
+
+### Features
+
+* nesting of element arrays in `createElement` ([e3e5399](https://github.com/samzhangjy/leafjs/commit/e3e5399bb0dcd7a19dc18cf088080225f52cd705))
+* use function-style element creation ([da714c3](https://github.com/samzhangjy/leafjs/commit/da714c3aa33e04ee5c122b6a6ce7249077653b9d))
+
 ## [0.0.5](https://github.com/samzhangjy/leafjs/compare/v0.0.4...v0.0.5) (2022-08-29)
 
 **Note:** Version bump only for package @leaf-web/monorepo
