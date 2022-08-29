@@ -5,13 +5,13 @@
 /packages/**/index.html
 
 # Yarn
-.pnp.*
-.yarn
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+**/.pnp.*
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
 
 # Log files
 lerna-debug.log
