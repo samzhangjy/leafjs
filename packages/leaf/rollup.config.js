@@ -25,6 +25,12 @@ export default [
         file: './dist/leaf.js',
         esModule: true,
       },
+      {
+        format: 'esm',
+        sourcemap: true,
+        file: './dist/leaf.mjs',
+        esModule: true,
+      },
     ],
     plugins: [
       typescript({ outputToFilesystem: false }),

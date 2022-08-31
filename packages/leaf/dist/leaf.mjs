@@ -1,7 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -284,12 +280,5 @@ _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new Weak
     return '';
 };
 
-exports.HTMLClassElements = baseClassComponents;
-exports.HTMLElements = baseComponents;
-exports.LeafComponent = LeafComponent;
-exports.Reactive = Reactive;
-exports.createElement = createElement;
-exports.createElementReactStyle = createElementReactStyle;
-exports.registerComponent = registerComponent;
-exports.runCallbackOnElements = runCallbackOnElements;
-//# sourceMappingURL=leaf.js.map
+export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, Reactive, createElement, createElementReactStyle, registerComponent, runCallbackOnElements };
+//# sourceMappingURL=leaf.mjs.map

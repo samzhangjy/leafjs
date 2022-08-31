@@ -55,7 +55,7 @@ export const preservedProps: { [key: string]: string } = {
 export const appendContentToNode = (node: HTMLElement, content: ElementContent | ElementContent[]) => {
   if (isNodeListLike(content)) {
     // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
-    content = [...(content as any[])].filter((node) => node === false || node === undefined || node === null);
+    content = [...(content as any[])].filter((node) => !(node === false || node === undefined || node === null));
     for (const ele of content) {
       if (Array.isArray(ele)) {
         appendContentToNode(node, ele);
