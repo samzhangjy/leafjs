@@ -107,7 +107,7 @@ program.name('leaf').description('Leafjs helper CLI.');
 program
   .command('build')
   .description('Build and bundle a Leafjs application.')
-  .option('-c, --config <string>', 'Config file location.', './leaf.config.js')
+  .option('-c, --config <string>', 'Config file location.', './leaf.config.json')
   .action(async (options) => {
     await buildFromConfig(options.config);
   });

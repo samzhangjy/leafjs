@@ -76,7 +76,7 @@ const preservedProps = {
 const appendContentToNode = (node, content) => {
     if (isNodeListLike(content)) {
         // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
-        content = [...content].filter((node) => node);
+        content = [...content].filter((node) => node === false || node === undefined || node === null);
         for (const ele of content) {
             if (Array.isArray(ele)) {
                 appendContentToNode(node, ele);
@@ -187,7 +187,7 @@ const createElement = (tag, content, props) => {
  * @param content Optional element initial content.
  * @returns Created HTML element.
  */
-const createElementReactStyle = (tag, props, content) => {
+const createElementReactStyle = (tag, props, ...content) => {
     if (!content)
         return createElement(tag, props !== null && props !== void 0 ? props : {});
     return createElement(tag, content, props !== null && props !== void 0 ? props : {});

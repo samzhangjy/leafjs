@@ -9,7 +9,7 @@ export declare type LeafEventHandler = (e: Event) => unknown;
  * @param props Optional element attributes.
  * @returns Created HTML element.
  */
-export declare const createElement: (tag: string, content?: ElementContent | ElementProps, props?: ElementProps) => HTMLElement;
+export declare const createElement: (tag: string, content?: ElementContent | ElementContent[] | ElementProps, props?: ElementProps) => HTMLElement;
 /**
  * Create a new `HTMLElement` with given information, `React.createElement` style.
  * @param tag Element tag.
@@ -17,7 +17,7 @@ export declare const createElement: (tag: string, content?: ElementContent | Ele
  * @param content Optional element initial content.
  * @returns Created HTML element.
  */
-export declare const createElementReactStyle: (tag: string, props?: ElementProps, content?: ElementContent) => HTMLElement;
+export declare const createElementReactStyle: (tag: string, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
 /**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.

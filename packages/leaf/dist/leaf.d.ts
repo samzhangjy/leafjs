@@ -23,7 +23,7 @@ declare type LeafEventHandler = (e: Event) => unknown;
  * @param props Optional element attributes.
  * @returns Created HTML element.
  */
-declare const createElement: (tag: string, content?: ElementContent | ElementProps, props?: ElementProps) => HTMLElement;
+declare const createElement: (tag: string, content?: ElementContent | ElementContent[] | ElementProps, props?: ElementProps) => HTMLElement;
 /**
  * Create a new `HTMLElement` with given information, `React.createElement` style.
  * @param tag Element tag.
@@ -31,7 +31,7 @@ declare const createElement: (tag: string, content?: ElementContent | ElementPro
  * @param content Optional element initial content.
  * @returns Created HTML element.
  */
-declare const createElementReactStyle: (tag: string, props?: ElementProps, content?: ElementContent) => HTMLElement;
+declare const createElementReactStyle: (tag: string, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
 /**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.

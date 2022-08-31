@@ -7,7 +7,7 @@ export type LeafEventHandler = (e: Event) => unknown;
 const _createElement = (
   tag: string,
   props?: Record<string, string | LeafEventHandler>,
-  content?: ElementContent
+  content?: ElementContent | ElementContent[]
 ): HTMLElement => {
   const element = document.createElement(tag);
   for (const prop in props) {
@@ -32,7 +32,7 @@ const _createElement = (
  */
 export const createElement = (
   tag: string,
-  content?: ElementContent | ElementProps,
+  content?: ElementContent | ElementContent[] | ElementProps,
   props?: ElementProps
 ): HTMLElement => {
   if (typeof content === 'undefined') return _createElement(tag);
@@ -49,7 +49,11 @@ export const createElement = (
  * @param content Optional element initial content.
  * @returns Created HTML element.
  */
-export const createElementReactStyle = (tag: string, props?: ElementProps, content?: ElementContent): HTMLElement => {
+export const createElementReactStyle = (
+  tag: string,
+  props?: ElementProps,
+  ...content: ElementContent[]
+): HTMLElement => {
   if (!content) return createElement(tag, props ?? {});
   return createElement(tag, content, props ?? {});
 };
