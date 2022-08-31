@@ -3,7 +3,6 @@ import { terser } from 'rollup-plugin-terser';
 import dts from 'rollup-plugin-dts';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 
 /**
  * @type {import('rollup').RollupOptions}
@@ -19,6 +18,7 @@ export default [
         file: './dist/parser.min.js',
         esModule: true,
         plugins: [terser()],
+        banner: '#!/usr/bin/env node',
       },
       {
         format: 'cjs',
@@ -26,9 +26,10 @@ export default [
         name: 'leaf',
         file: './dist/parser.js',
         esModule: true,
+        banner: '#!/usr/bin/env node',
       },
     ],
-    plugins: [typescript({ outputToFilesystem: false }), commonjs(), json(), dynamicImportVars()],
+    plugins: [typescript({ outputToFilesystem: false }), commonjs(), json()],
     external: [
       '@babel/core',
       'glob',
