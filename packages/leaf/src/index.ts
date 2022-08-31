@@ -43,6 +43,18 @@ export const createElement = (
 };
 
 /**
+ * Create a new `HTMLElement` with given information, `React.createElement` style.
+ * @param tag Element tag.
+ * @param props Optional element attributes.
+ * @param content Optional element initial content.
+ * @returns Created HTML element.
+ */
+export const createElementReactStyle = (tag: string, props?: ElementProps, content?: ElementContent): HTMLElement => {
+  if (!content) return createElement(tag, props ?? {});
+  return createElement(tag, content, props ?? {});
+};
+
+/**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.

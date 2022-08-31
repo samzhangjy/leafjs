@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "run-p clean && run-s build:rollup",
-    "build:rollup": "yarn workspaces foreach --no-private run build",
+    "build:rollup": "yarn workspaces foreach --no-private --topological-dev run build",
     "bootstrap": "lerna bootstrap",
     "clean": "yarn workspaces foreach --no-private run clean",
     "release": "lerna publish",
@@ -32,11 +32,9 @@
     "eslint-plugin-promise": "^6.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "2.7.1",
+    "rimraf": "^3.0.2",
     "tslib": "^2.4.0",
     "typescript": "^4.7.4"
-  },
-  "dependencies": {
-    "rimraf": "^3.0.2"
   },
   "packageManager": "yarn@3.2.3"
 }

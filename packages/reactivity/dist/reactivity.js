@@ -1,3 +1,7 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 /** Reactive object. */
 class Reactive {
     constructor() {
@@ -152,5 +156,5 @@ class Reactive {
     }
 }
 
-export { Reactive };
+exports.Reactive = Reactive;
 //# sourceMappingURL=reactivity.js.map

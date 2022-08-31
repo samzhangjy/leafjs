@@ -11,6 +11,14 @@ export declare type LeafEventHandler = (e: Event) => unknown;
  */
 export declare const createElement: (tag: string, content?: ElementContent | ElementProps, props?: ElementProps) => HTMLElement;
 /**
+ * Create a new `HTMLElement` with given information, `React.createElement` style.
+ * @param tag Element tag.
+ * @param props Optional element attributes.
+ * @param content Optional element initial content.
+ * @returns Created HTML element.
+ */
+export declare const createElementReactStyle: (tag: string, props?: ElementProps, content?: ElementContent) => HTMLElement;
+/**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.

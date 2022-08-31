@@ -1,3 +1,7 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -26,7 +30,9 @@ function __classPrivateFieldSet(receiver, state, value, kind, f) {
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 }
 
-class t{constructor(){this.activeEffects=[],this.targetMap=new WeakMap,this.onChange=null;}getTrackableObject(t,e){for(const r in t)"object"==typeof t[r]&&(t[r]=this.getTrackableObject(t[r],e));const r=this,a=new Proxy(t,{get(t,r,a){const c=Reflect.get(t,r,a);return e.onGet(t,r,a),c},set(t,a,c,n){"object"==typeof c&&(c=r.getTrackableObject(c,e));const s=Reflect.set(t,a,c,n);return e.onSet(t,a,c,n),r.onChange&&r.onChange(),s},deleteProperty(t,r){const a=Reflect.deleteProperty(t,r);return e.onDeleteProperty(t,r),a}});return Array.isArray(t)&&Object.setPrototypeOf(a,Array.prototype),a}track(t,e){if(!this.activeEffects.length)return;let r=this.targetMap.get(t);r||(r=new Map,this.targetMap.set(t,r));let a=r.get(e);a||(a=new Set,r.set(e,a)),this.activeEffects.forEach((t=>null==a?void 0:a.add(t)));}trigger(t,e){const r=this.targetMap.get(t);if(!r)return;const a=r.get(e);a&&a.forEach((t=>{t();}));}watchEffect(t){this.activeEffects.push(t),t(),this.activeEffects.pop();}build(t){const e=this;return this.getTrackableObject(t,{onGet(t,r){e.track(t,r);},onSet(t,r){e.trigger(t,r);},onDeleteProperty(){}})}ref(t){const e=this,r={get value(){return e.track(r,"value"),t},set value(a){a!==t&&(t=a,e.trigger(r,"value"));}};return r}computed(t){const e=this.ref(null);return this.watchEffect((()=>e.value=t())),e}onStateChange(t){this.onChange=t,t();}}
+var reactivity_min = {};
+
+Object.defineProperty(reactivity_min,"__esModule",{value:!0});var Reactive = reactivity_min.Reactive=class{constructor(){this.activeEffects=[],this.targetMap=new WeakMap,this.onChange=null;}getTrackableObject(t,e){for(const r in t)"object"==typeof t[r]&&(t[r]=this.getTrackableObject(t[r],e));const r=this,c=new Proxy(t,{get(t,r,c){const a=Reflect.get(t,r,c);return e.onGet(t,r,c),a},set(t,c,a,s){"object"==typeof a&&(a=r.getTrackableObject(a,e));const n=Reflect.set(t,c,a,s);return e.onSet(t,c,a,s),r.onChange&&r.onChange(),n},deleteProperty(t,r){const c=Reflect.deleteProperty(t,r);return e.onDeleteProperty(t,r),c}});return Array.isArray(t)&&Object.setPrototypeOf(c,Array.prototype),c}track(t,e){if(!this.activeEffects.length)return;let r=this.targetMap.get(t);r||(r=new Map,this.targetMap.set(t,r));let c=r.get(e);c||(c=new Set,r.set(e,c)),this.activeEffects.forEach((t=>null==c?void 0:c.add(t)));}trigger(t,e){const r=this.targetMap.get(t);if(!r)return;const c=r.get(e);c&&c.forEach((t=>{t();}));}watchEffect(t){this.activeEffects.push(t),t(),this.activeEffects.pop();}build(t){const e=this;return this.getTrackableObject(t,{onGet(t,r){e.track(t,r);},onSet(t,r){e.trigger(t,r);},onDeleteProperty(){}})}ref(t){const e=this,r={get value(){return e.track(r,"value"),t},set value(c){c!==t&&(t=c,e.trigger(r,"value"));}};return r}computed(t){const e=this.ref(null);return this.watchEffect((()=>e.value=t())),e}onStateChange(t){this.onChange=t,t();}};
 
 /**
  * Check if element is NodeList-like.
@@ -175,6 +181,18 @@ const createElement = (tag, content, props) => {
     return _createElement(tag, props, content);
 };
 /**
+ * Create a new `HTMLElement` with given information, `React.createElement` style.
+ * @param tag Element tag.
+ * @param props Optional element attributes.
+ * @param content Optional element initial content.
+ * @returns Created HTML element.
+ */
+const createElementReactStyle = (tag, props, content) => {
+    if (!content)
+        return createElement(tag, props !== null && props !== void 0 ? props : {});
+    return createElement(tag, content, props !== null && props !== void 0 ? props : {});
+};
+/**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.
@@ -212,7 +230,7 @@ class LeafComponent extends HTMLElement {
     /** {@inheritDoc LeafComponent.state} */
     set state(value) {
         if (!__classPrivateFieldGet(this, _LeafComponent_state, "f")) {
-            __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new t(), "f");
+            __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
             __classPrivateFieldSet(this, _LeafComponent_state, __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").build(value), "f");
             return;
         }
@@ -265,5 +283,12 @@ _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new Weak
     return '';
 };
 
-export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, t as Reactive, createElement, registerComponent, runCallbackOnElements };
+exports.HTMLClassElements = baseClassComponents;
+exports.HTMLElements = baseComponents;
+exports.LeafComponent = LeafComponent;
+exports.Reactive = Reactive;
+exports.createElement = createElement;
+exports.createElementReactStyle = createElementReactStyle;
+exports.registerComponent = registerComponent;
+exports.runCallbackOnElements = runCallbackOnElements;
 //# sourceMappingURL=leaf.js.map

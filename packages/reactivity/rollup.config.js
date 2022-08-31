@@ -11,7 +11,7 @@ export default [
     input: './src/index.ts',
     output: [
       {
-        format: 'esm',
+        format: 'cjs',
         sourcemap: true,
         name: 'leaf',
         file: './dist/reactivity.min.js',
@@ -19,7 +19,7 @@ export default [
         plugins: [terser()],
       },
       {
-        format: 'esm',
+        format: 'cjs',
         sourcemap: true,
         name: 'leaf',
         file: './dist/reactivity.js',
