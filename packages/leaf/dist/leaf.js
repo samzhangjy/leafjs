@@ -74,7 +74,6 @@ const preservedProps = {
  * @param content Custom content elements to insert.
  */
 const appendContentToNode = (node, content) => {
-    console.log(node, content, isNodeListLike(content));
     if (isNodeListLike(content)) {
         // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
         content = [...content].filter((node) => !(node === false || node === undefined || node === null));

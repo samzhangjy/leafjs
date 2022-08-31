@@ -75,14 +75,14 @@ const compileFilesWithGlob = (pattern, outputDir) => {
         });
     });
 };
-const bundleFiles = async (entry) => {
+const bundleFiles = async (entry, outputDir) => {
     const inputOptions = {
         input: entry,
         plugins: [nodeResolve__default["default"](), commonjs__default["default"](), rollupPluginTerser.terser()],
     };
     const outputOptions = {
         format: 'iife',
-        file: './build/bundle.min.js',
+        file: path__default["default"].join(outputDir, 'bundle.min.js'),
     };
     let bundle = null;
     try {
@@ -99,7 +99,7 @@ const bundleFiles = async (entry) => {
 const buildFromConfig = async (configPath) => {
     const configContent = JSON.parse(fs__default["default"].readFileSync(configPath).toString());
     compileFilesWithGlob(configContent.toBundle, configContent.outputDir);
-    await bundleFiles(transformFilename(path__default["default"].join(configContent.outputDir, configContent.entry)));
+    await bundleFiles(transformFilename(path__default["default"].join(configContent.outputDir, configContent.entry)), configContent.outputDir);
 };
 program.name('leaf').description('Leafjs helper CLI.');
 program

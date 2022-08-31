@@ -72,14 +72,14 @@ export const compileFilesWithGlob = (pattern: string, outputDir: string) => {
   });
 };
 
-export const bundleFiles = async (entry: string) => {
+export const bundleFiles = async (entry: string, outputDir: string) => {
   const inputOptions: RollupOptions = {
     input: entry,
     plugins: [nodeResolve(), commonjs(), terser()],
   };
   const outputOptions: OutputOptions = {
     format: 'iife',
-    file: './build/bundle.min.js',
+    file: path.join(outputDir, 'bundle.min.js'),
   };
   let bundle = null;
 
@@ -99,7 +99,10 @@ export const buildFromConfig = async (configPath: string) => {
   const configContent = JSON.parse(fs.readFileSync(configPath).toString());
 
   compileFilesWithGlob(configContent.toBundle, configContent.outputDir);
-  await bundleFiles(transformFilename(path.join(configContent.outputDir, configContent.entry)));
+  await bundleFiles(
+    transformFilename(path.join(configContent.outputDir, configContent.entry)),
+    configContent.outputDir
+  );
 };
 
 program.name('leaf').description('Leafjs helper CLI.');
