@@ -4,7 +4,9 @@
   "description": "Reasonable web components framework.",
   "main": "./dist/parser.min.js",
   "types": "./dist/parser.d.ts",
-  "bin": "./dist/parser.min.js",
+  "bin": {
+    "leaf": "./dist/parser.min.js"
+  },
   "scripts": {
     "build": "run-s clean && run-p build:rollup",
     "build:rollup": "rollup -c",
