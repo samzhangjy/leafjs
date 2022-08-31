@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.3](https://github.com/samzhangjy/leafjs/compare/v0.1.2...v0.1.3) (2022-08-31)
+
+### Bug Fixes
+
+* **core:** allowed spread operator in createElementReactStyle ([613590c](https://github.com/samzhangjy/leafjs/commit/613590c0f676844e0d2c945d896913eab964fc71))
+
 ## [0.1.2](https://github.com/samzhangjy/leafjs/compare/v0.1.1...v0.1.2) (2022-08-31)
 
 ### Bug Fixes
