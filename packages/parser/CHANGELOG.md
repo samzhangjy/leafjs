@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.4](https://github.com/samzhangjy/leafjs/compare/v0.1.3...v0.1.4) (2022-08-31)
+
+### Features
+
+* **parser:** custom bundle location ([9070e04](https://github.com/samzhangjy/leafjs/commit/9070e046ba65386b5d416fd07ad7c19b1b2e7257))
+
 ## [0.1.3](https://github.com/samzhangjy/leafjs/compare/v0.1.2...v0.1.3) (2022-08-31)
 
 ### Bug Fixes
