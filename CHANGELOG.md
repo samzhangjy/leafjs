@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/samzhangjy/leafjs/compare/v0.1.1...v0.1.2) (2022-08-31)
+
+### Bug Fixes
+
+* **parser:** executable shebang ([657a3f6](https://github.com/samzhangjy/leafjs/commit/657a3f62e9e6dd700066e29757767be829d2de5f))
+
 ## [0.1.1](https://github.com/samzhangjy/leafjs/compare/v0.1.0...v0.1.1) (2022-08-31)
 
 ### Bug Fixes
