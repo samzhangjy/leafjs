@@ -3,6 +3,7 @@ import { terser } from 'rollup-plugin-terser';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import commonjs from '@rollup/plugin-commonjs';
+import { babel } from '@rollup/plugin-babel';
 
 /**
  * @type {import('rollup').RollupOptions}
@@ -23,19 +24,18 @@ export default [
         sourcemap: true,
         name: 'leaf',
         file: './dist/leaf.js',
-        esModule: true,
       },
       {
         format: 'esm',
         sourcemap: true,
         file: './dist/leaf.mjs',
-        esModule: true,
       },
     ],
     plugins: [
       typescript({ outputToFilesystem: false }),
       nodeResolve({ browser: true, preferBuiltins: false }),
       commonjs(),
+      babel({ babelHelpers: 'bundled', extensions: ['.js', '.ts'], presets: [['@babel/preset-env', { loose: true }]] }),
     ],
   },
   {

@@ -39,7 +39,11 @@ export default [
       '@rollup/plugin-node-resolve',
       '@rollup/plugin-commonjs',
       'rollup-plugin-terser',
+      '@rollup/plugin-inject',
+      '@rollup/plugin-babel',
       'commander',
+      'chalk',
+      'nollup',
     ],
   },
   {
@@ -49,5 +53,13 @@ export default [
       format: 'es',
     },
     plugins: [dts()],
+  },
+  {
+    input: './src/injected.ts',
+    output: {
+      file: './dist/injected.min.js',
+      format: 'iife',
+    },
+    plugins: [typescript({ outputToFilesystem: false }), terser()],
   },
 ];
