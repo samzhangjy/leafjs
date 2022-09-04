@@ -2,15 +2,26 @@ import { Command } from 'commander';
 import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
+import prompts from 'prompts';
 
 const program = new Command();
 
 program.name('create-leaf-app').description('Bootstrap a new Leafjs web application.');
 
 program
-  .argument('<name>', 'Project name')
+  .argument('[name]', 'Project name', null)
   .option('-t, --template <string>', 'Project template to create from.', 'default')
-  .action((name, options) => {
+  .action(async (name, options) => {
+    if (!name) {
+      name = (
+        await prompts({
+          type: 'text',
+          name: 'name',
+          message: 'Project name',
+        })
+      ).name;
+    }
+
     const spinner = ora(`Generating template '${options.template}'...`);
     const templateSourcePath = path.join(__dirname, '../templates', options.template.toLowerCase());
     const userDestPath = path.join(process.cwd(), name);

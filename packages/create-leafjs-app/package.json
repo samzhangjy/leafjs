@@ -17,7 +17,8 @@
   "dependencies": {
     "commander": "^9.4.0",
     "fs-extra": "^10.1.0",
-    "ora": "^5.4.1"
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^22.0.2",
@@ -26,6 +27,7 @@
     "@rollup/plugin-typescript": "^8.4.0",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^18.7.13",
+    "@types/prompts": "^2.0.14",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "eslint": "^8.19.0",
