@@ -185,105 +185,114 @@ function __classPrivateFieldSet(receiver, state, value, kind, f) {
 
 var reactivity_min = {};
 
+exports.Reactive = void 0;
+
+function t(t, e, r, n) {
+  if ("a" === r && !n) throw new TypeError("Private accessor was defined without a getter");
+  if ("function" == typeof e ? t !== e || !n : !e.has(t)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return "m" === r ? n : "a" === r ? n.call(t) : n ? n.value : e.get(t);
+}
+
+function e(t, e, r, n, a) {
+  if ("m" === n) throw new TypeError("Private method is not writable");
+  if ("a" === n && !a) throw new TypeError("Private accessor was defined without a setter");
+  if ("function" == typeof e ? t !== e || !a : !e.has(t)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return "a" === n ? a.call(t, r) : a ? a.value = r : e.set(t, r), r;
+}
+
+var r;
 Object.defineProperty(reactivity_min, "__esModule", {
   value: !0
 });
 
-var Reactive = reactivity_min.Reactive = /*#__PURE__*/function () {
-  function _class() {
-    this.activeEffects = [], this.targetMap = new WeakMap(), this.onChange = null;
+var n = function () {
+  function n() {
+    this.activeEffects = [], this.targetMap = new WeakMap(), this.onChange = null, r.set(this, !1);
   }
 
-  var _proto = _class.prototype;
-
-  _proto.getTrackableObject = function getTrackableObject(t, e) {
-    for (var _r in t) {
-      "object" == typeof t[_r] && (t[_r] = this.getTrackableObject(t[_r], e));
+  var a = n.prototype;
+  return a.getTrackableObject = function (t, e) {
+    for (var r in t) {
+      "object" == typeof t[r] && (t[r] = this.getTrackableObject(t[r], e));
     }
 
-    var r = this,
-        c = new Proxy(t, {
-      get: function get(t, r, c) {
-        var a = Reflect.get(t, r, c);
-        return e.onGet(t, r, c), a;
+    var n = this,
+        a = new Proxy(t, {
+      get: function get(t, r, n) {
+        var a = Reflect.get(t, r, n);
+        return e.onGet(t, r, n), a;
       },
-      set: function set(t, c, a, s) {
-        "object" == typeof a && (a = r.getTrackableObject(a, e));
-        var n = Reflect.set(t, c, a, s);
-        return e.onSet(t, c, a, s), r.onChange && r.onChange(), n;
+      set: function set(t, r, a, o) {
+        "object" == typeof a && (a = n.getTrackableObject(a, e));
+        var i = Reflect.set(t, r, a, o);
+        return e.onSet(t, r, a, o), i;
       },
       deleteProperty: function deleteProperty(t, r) {
-        var c = Reflect.deleteProperty(t, r);
-        return e.onDeleteProperty(t, r), c;
+        var n = Reflect.deleteProperty(t, r);
+        return e.onDeleteProperty(t, r), n;
       }
     });
-    return Array.isArray(t) && Object.setPrototypeOf(c, Array.prototype), c;
-  };
-
-  _proto.track = function track(t, e) {
-    if (!this.activeEffects.length) return;
+    return Array.isArray(t) && Object.setPrototypeOf(a, Array.prototype), a;
+  }, a.track = function (t, e) {
+    if (this.activeEffects.length) {
+      var r = this.targetMap.get(t);
+      r || (r = new Map(), this.targetMap.set(t, r));
+      var n = r.get(e);
+      n || (n = new Set(), r.set(e, n)), this.activeEffects.forEach(function (t) {
+        return null == n ? void 0 : n.add(t);
+      });
+    }
+  }, a.trigger = function (t, e) {
     var r = this.targetMap.get(t);
-    r || (r = new Map(), this.targetMap.set(t, r));
-    var c = r.get(e);
-    c || (c = new Set(), r.set(e, c)), this.activeEffects.forEach(function (t) {
-      return null == c ? void 0 : c.add(t);
-    });
-  };
 
-  _proto.trigger = function trigger(t, e) {
-    var r = this.targetMap.get(t);
-    if (!r) return;
-    var c = r.get(e);
-    c && c.forEach(function (t) {
-      t();
-    });
-  };
-
-  _proto.watchEffect = function watchEffect(t) {
+    if (r) {
+      var n = r.get(e);
+      n && n.forEach(function (t) {
+        t();
+      });
+    }
+  }, a.watchEffect = function (t) {
     this.activeEffects.push(t), t(), this.activeEffects.pop();
-  };
+  }, a.build = function (n) {
+    var a = this,
+        o = this,
+        i = function e() {
+      t(a, r, "f") ? setTimeout(e, 2) : a.onChange && a.onChange();
+    };
 
-  _proto.build = function build(t) {
-    var e = this;
-    return this.getTrackableObject(t, {
-      onGet: function onGet(t, r) {
-        e.track(t, r);
+    return this.getTrackableObject(n, {
+      onGet: function onGet(t, e) {
+        o.track(t, e);
       },
-      onSet: function onSet(t, r) {
-        e.trigger(t, r);
+      onSet: function onSet(n, a) {
+        t(o, r, "f") || (e(o, r, !0, "f"), i()), o.trigger(n, a), e(o, r, !1, "f");
       },
       onDeleteProperty: function onDeleteProperty() {}
     });
-  };
-
-  _proto.ref = function ref(t) {
+  }, a.ref = function (t) {
     var e = this,
         r = {
       get value() {
         return e.track(r, "value"), t;
       },
 
-      set value(c) {
-        c !== t && (t = c, e.trigger(r, "value"));
+      set value(n) {
+        n !== t && (t = n, e.trigger(r, "value"));
       }
 
     };
     return r;
-  };
-
-  _proto.computed = function computed(t) {
+  }, a.computed = function (t) {
     var e = this.ref(null);
     return this.watchEffect(function () {
       return e.value = t();
     }), e;
-  };
-
-  _proto.onStateChange = function onStateChange(t) {
+  }, a.onStateChange = function (t) {
     this.onChange = t, t();
-  };
-
-  return _class;
+  }, n;
 }();
+
+r = new WeakMap(), exports.Reactive = reactivity_min.Reactive = n;
 
 /**
  * Check if element is NodeList-like.
@@ -470,18 +479,39 @@ LeafBaseComponents.forEach(function (component) {
 }); // TODO: find out a way to export components directly using named imports
 
 var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_defaultStyler;
+var eventListeners = new WeakMap();
+var isEventListener = function isEventListener(propName, _propContent) {
+  return propName.startsWith('on');
+};
+var isElement = function isElement(node) {
+  return node.nodeType === Node.ELEMENT_NODE;
+};
 
 var _createElement = function _createElement(tag, props, content) {
   var element = document.createElement(tag);
+  var listeners = new Set();
 
   for (var prop in props) {
-    if (prop.startsWith('on')) {
-      element.addEventListener(prop.substring(2).toLowerCase(), props[prop]);
+    var propContent = props[prop];
+
+    if (isEventListener(prop)) {
+      var listenerName = prop.substring(2).toLowerCase();
+      listeners.add({
+        name: listenerName,
+        handler: propContent
+      });
+      element.addEventListener(listenerName, propContent);
       continue;
     }
 
-    element.setAttribute(prop, props[prop]);
+    if (prop in preservedProps) {
+      element.setAttribute(preservedProps[prop], propContent);
+    } else {
+      element.setAttribute(prop, propContent);
+    }
   }
+
+  eventListeners.set(element, listeners);
 
   if (content) {
     appendContentToNode(element, content);
@@ -524,6 +554,22 @@ var createElementReactStyle = function createElementReactStyle(tag, props) {
   return createElement(tag, content, props !== null && props !== void 0 ? props : {});
 };
 /**
+ * Get event listeners of an element created by `createElement`.
+ * @param element Element to check event listner list
+ * @returns A set of event listener objects.
+ */
+
+var getEventListenerOf = function getEventListenerOf(element) {
+  if (!eventListeners.has(element)) return undefined;
+  return eventListeners.get(element);
+};
+var setEventListenerOf = function setEventListenerOf(element, listeners) {
+  eventListeners.set(element, listeners || new Set());
+};
+var deleteEventListenerOf = function deleteEventListenerOf(element) {
+  return eventListeners.delete(element);
+};
+/**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.
@@ -543,6 +589,122 @@ var runCallbackOnElements = function runCallbackOnElements(elements, callback) {
     }
   } else {
     callback(elements);
+  }
+};
+/**
+ * Mount a list of elements to DOM.
+ * @param children A list of children to mount.
+ * @param container The container DOM element to contain the children.
+ */
+
+var mountElements = function mountElements(children, container) {
+  children.forEach(function (child) {
+    container.appendChild(child);
+  });
+};
+/**
+ * Patch an element from one state to another.
+ * @param oldChildren Children of `oldParent`.
+ * @param newChildren Children of `newParent`.
+ * @param oldParent The previously existing DOM element to patch.
+ * @param newParent The newly generated element, unattached to DOM.
+ */
+
+var patchElements = function patchElements(oldChildren, newChildren, oldParent, newParent) {
+  if (!oldParent) return;
+  var oldLen = oldChildren.length,
+      newLen = newChildren.length;
+  var commonLength = Math.min(oldLen, newLen);
+  var hasPreserved = false;
+
+  if (isElement(oldParent) && isElement(newParent)) {
+    // replace event listeners
+    var oldEventListener = getEventListenerOf(oldParent);
+    var newEventListener = getEventListenerOf(newParent);
+    oldEventListener === null || oldEventListener === void 0 ? void 0 : oldEventListener.forEach(function (value) {
+      oldParent.removeEventListener(value.name, value.handler);
+    });
+    newEventListener === null || newEventListener === void 0 ? void 0 : newEventListener.forEach(function (value) {
+      oldParent.addEventListener(value.name, value.handler);
+    }); // IMPORTANT: update the event listener registery for future use
+
+    setEventListenerOf(oldParent, newEventListener);
+    deleteEventListenerOf(newParent); // replace attributes
+
+    var oldAttributes = oldParent.attributes;
+    var newAttributes = newParent.attributes;
+
+    for (var _iterator2 = _createForOfIteratorHelperLoose(newAttributes), _step2; !(_step2 = _iterator2()).done;) {
+      var attr = _step2.value;
+      if (oldParent.getAttribute(attr.name) === attr.value) continue;
+      oldParent.setAttribute(attr.name, attr.value);
+    }
+
+    for (var _iterator3 = _createForOfIteratorHelperLoose(oldAttributes), _step3; !(_step3 = _iterator3()).done;) {
+      var _attr = _step3.value;
+      // only remove the attribute if it's not in the new element
+      if (newParent.hasAttribute(_attr.name)) continue;
+      oldParent.removeAttribute(_attr.name);
+    }
+  }
+
+  for (var i = 0; i < commonLength; i++) {
+    var oldChild = oldChildren[i];
+    var newChild = newChildren[i]; // IMPORTANT: filter out preserved elements, in this case `<style />` tag
+
+    if (isElement(oldChild) && oldChild.hasAttribute('leaf-preserve')) {
+      oldChild = oldChildren[i + 1];
+      hasPreserved = true;
+    }
+
+    if (isElement(oldChild) && isElement(newChild) && oldChild.tagName !== newChild.tagName) {
+      oldChild.outerHTML = oldChild.outerHTML.replace(new RegExp("<" + oldChild.tagName.toLowerCase() + "(.*?)", 'g'), "<" + newChild.tagName.toLowerCase() + "$1").replace(new RegExp("</" + oldChild.tagName.toLowerCase() + "(.*?)", 'g'), "</" + newChild.tagName.toLowerCase() + "$1"); // IMPORTANT: setting outerHTML will not update the element reference itself,
+      // so refreshing the element by accessing it through its parent is needed
+
+      var elementIndex = 0;
+
+      while (oldChild !== null) {
+        elementIndex++;
+        oldChild = oldChild.previousSibling;
+      }
+
+      oldChild = oldParent.childNodes[elementIndex];
+      if (!isElement(oldChild)) continue;
+    }
+
+    if (oldChild.nodeType === Node.TEXT_NODE && newChild.nodeType === Node.TEXT_NODE) {
+      if (oldChild.textContent === newChild.textContent) continue;
+      oldParent.replaceChild(newChild, oldChild);
+      continue;
+    }
+
+    patchElements(Array.from(oldChild.childNodes), Array.from(newChild.childNodes), oldChild, newChild);
+  }
+
+  if (hasPreserved) oldLen--; // insert new elements
+
+  if (newLen > oldLen) {
+    newChildren.slice(oldLen).forEach(function (child) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        oldParent.appendChild(child);
+        return;
+      }
+
+      mountElements([child], oldParent);
+    });
+    return;
+  } // remove old elements
+
+
+  if (newLen < oldLen) {
+    oldChildren.slice(newLen).forEach(function (child, index) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        oldParent.removeChild(oldParent.childNodes[index]);
+        return;
+      }
+
+      oldParent.removeChild(child);
+    });
   }
 };
 /**
@@ -586,22 +748,25 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
       mode: 'closed'
     });
     var renderResult = null;
+    var previousRenderResult = null;
     var styleElement = createElement('style');
     var styler = (_a = this.css) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _LeafComponent_instances, "m", _LeafComponent_defaultStyler);
     styleElement.textContent = styler();
+    styleElement.setAttribute('leaf-preserve', 'true');
     shadow.appendChild(styleElement);
 
     var renderComponent = function renderComponent() {
-      if (renderResult) {
-        runCallbackOnElements(renderResult, function (ele) {
-          return shadow.removeChild(ele);
-        });
+      renderResult = _this2.render();
+      if (!Array.isArray(renderResult)) renderResult = [renderResult];
+
+      if (!previousRenderResult) {
+        mountElements(renderResult, shadow);
+        previousRenderResult = renderResult;
+        return;
       }
 
-      renderResult = _this2.render();
-      runCallbackOnElements(renderResult, function (ele) {
-        return shadow.appendChild(ele);
-      });
+      patchElements(Array.from(shadow.childNodes), Array.from(renderResult), shadow, renderResult[0]);
+      previousRenderResult = renderResult;
     };
 
     if (!__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) {
@@ -641,7 +806,7 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
     ,
     set: function set(value) {
       if (!__classPrivateFieldGet(this, _LeafComponent_state, "f")) {
-        __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
+        __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new exports.Reactive(), "f");
 
         __classPrivateFieldSet(this, _LeafComponent_state, __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").build(value), "f");
 
@@ -661,9 +826,16 @@ _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new Weak
 exports.HTMLClassElements = baseClassComponents;
 exports.HTMLElements = baseComponents;
 exports.LeafComponent = LeafComponent;
-exports.Reactive = Reactive;
 exports.createElement = createElement;
 exports.createElementReactStyle = createElementReactStyle;
+exports.deleteEventListenerOf = deleteEventListenerOf;
+exports.eventListeners = eventListeners;
+exports.getEventListenerOf = getEventListenerOf;
+exports.isElement = isElement;
+exports.isEventListener = isEventListener;
+exports.mountElements = mountElements;
+exports.patchElements = patchElements;
 exports.registerComponent = registerComponent;
 exports.runCallbackOnElements = runCallbackOnElements;
+exports.setEventListenerOf = setEventListenerOf;
 //# sourceMappingURL=leaf.js.map

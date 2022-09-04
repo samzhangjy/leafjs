@@ -16,6 +16,14 @@ declare const baseComponents: Record<string, (...args: unknown[]) => HTMLElement
 
 declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 declare type LeafEventHandler = (e: Event) => unknown;
+declare type EventListener = {
+    name: string;
+    handler: LeafEventHandler;
+};
+declare type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
+declare const eventListeners: EventListenerMap;
+declare const isEventListener: (propName: string, _propContent: any) => _propContent is LeafEventHandler;
+declare const isElement: (node: Node) => node is HTMLElement;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -33,11 +41,33 @@ declare const createElement: (tag: string, content?: ElementContent | ElementCon
  */
 declare const createElementReactStyle: (tag: string, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
 /**
+ * Get event listeners of an element created by `createElement`.
+ * @param element Element to check event listner list
+ * @returns A set of event listener objects.
+ */
+declare const getEventListenerOf: (element: HTMLElement) => Set<EventListener> | undefined;
+declare const setEventListenerOf: (element: HTMLElement, listeners?: Set<EventListener>) => void;
+declare const deleteEventListenerOf: (element: HTMLElement) => boolean;
+/**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.
  */
 declare const runCallbackOnElements: (elements: LeafComponentRenderResult, callback: (element: HTMLElement) => void) => void;
+/**
+ * Mount a list of elements to DOM.
+ * @param children A list of children to mount.
+ * @param container The container DOM element to contain the children.
+ */
+declare const mountElements: (children: Node[], container: Node) => void;
+/**
+ * Patch an element from one state to another.
+ * @param oldChildren Children of `oldParent`.
+ * @param newChildren Children of `newParent`.
+ * @param oldParent The previously existing DOM element to patch.
+ * @param newParent The newly generated element, unattached to DOM.
+ */
+declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChildren: Node[], oldParent: Node, newParent: Node) => void;
 /**
  * Core Leaf component class.
  *
@@ -70,4 +100,4 @@ declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 
-export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, registerComponent, runCallbackOnElements };
+export { EventListenerMap, baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, deleteEventListenerOf, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, registerComponent, runCallbackOnElements, setEventListenerOf };

@@ -2,6 +2,14 @@ import { ReactiveObject } from '@leaf-web/reactivity';
 import { ElementContent, ElementProps } from './common';
 export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 export declare type LeafEventHandler = (e: Event) => unknown;
+declare type EventListener = {
+    name: string;
+    handler: LeafEventHandler;
+};
+export declare type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
+export declare const eventListeners: EventListenerMap;
+export declare const isEventListener: (propName: string, _propContent: any) => _propContent is LeafEventHandler;
+export declare const isElement: (node: Node) => node is HTMLElement;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -19,11 +27,33 @@ export declare const createElement: (tag: string, content?: ElementContent | Ele
  */
 export declare const createElementReactStyle: (tag: string, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
 /**
+ * Get event listeners of an element created by `createElement`.
+ * @param element Element to check event listner list
+ * @returns A set of event listener objects.
+ */
+export declare const getEventListenerOf: (element: HTMLElement) => Set<EventListener> | undefined;
+export declare const setEventListenerOf: (element: HTMLElement, listeners?: Set<EventListener>) => void;
+export declare const deleteEventListenerOf: (element: HTMLElement) => boolean;
+/**
  * Invoke a function with either invoking one-by-one through a list or invoking directly.
  * @param elements Element or element list.
  * @param callback Function to invoke.
  */
 export declare const runCallbackOnElements: (elements: LeafComponentRenderResult, callback: (element: HTMLElement) => void) => void;
+/**
+ * Mount a list of elements to DOM.
+ * @param children A list of children to mount.
+ * @param container The container DOM element to contain the children.
+ */
+export declare const mountElements: (children: Node[], container: Node) => void;
+/**
+ * Patch an element from one state to another.
+ * @param oldChildren Children of `oldParent`.
+ * @param newChildren Children of `newParent`.
+ * @param oldParent The previously existing DOM element to patch.
+ * @param newParent The newly generated element, unattached to DOM.
+ */
+export declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChildren: Node[], oldParent: Node, newParent: Node) => void;
 /**
  * Core Leaf component class.
  *
