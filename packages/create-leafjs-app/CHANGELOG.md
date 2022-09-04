@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/samzhangjy/leafjs/compare/v0.1.8...v0.1.9) (2022-09-04)
+
+### Features
+
+* **create-leafjs-app:** prompt when no project name given ([6c3ac78](https://github.com/samzhangjy/leafjs/commit/6c3ac7844c7f4b92740c2143b0e65f1984d3e063))
+
 ## [0.1.8](https://github.com/samzhangjy/leafjs/compare/v0.1.7...v0.1.8) (2022-09-04)
 
 **Note:** Version bump only for package create-leafjs-app
