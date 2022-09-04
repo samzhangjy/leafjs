@@ -1443,9 +1443,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@leaf-web/create-leaf-app@workspace:packages/create-leaf-app":
+"@leaf-web/create-leafjs-app@workspace:packages/create-leafjs-app":
   version: 0.0.0-use.local
-  resolution: "@leaf-web/create-leaf-app@workspace:packages/create-leaf-app"
+  resolution: "@leaf-web/create-leafjs-app@workspace:packages/create-leafjs-app"
   dependencies:
     "@rollup/plugin-commonjs": ^22.0.2
     "@rollup/plugin-json": 4.1.0
@@ -1474,7 +1474,7 @@ __metadata:
     tslib: ^2.4.0
     typescript: ^4.7.4
   bin:
-    create-leaf-app: ./dist/create-leaf-app.min.js
+    create-leafjs-app: ./dist/create-leaf-app.min.js
   languageName: unknown
   linkType: soft
 
