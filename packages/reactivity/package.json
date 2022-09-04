@@ -1,6 +1,6 @@
 {
   "name": "@leaf-web/reactivity",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Reasonable web components framework.",
   "main": "./dist/reactivity.min.js",
   "types": "./dist/reactivity.d.ts",

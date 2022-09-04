@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/samzhangjy/leafjs/compare/v0.1.5...v0.1.6) (2022-09-04)
+
+### Features
+
+* **cla:** added generator logic ([6174cce](https://github.com/samzhangjy/leafjs/commit/6174ccebf616502d22c5ce30bb9b1e92cc8f4bdc))
+* **core:** support creating custom components using createElement ([9e04d6a](https://github.com/samzhangjy/leafjs/commit/9e04d6a2e1db6df2b19dd2a8a55d6b28a5a75a0a))
+
 ## [0.1.5](https://github.com/samzhangjy/leafjs/compare/v0.1.4...v0.1.5) (2022-09-04)
 
 ### Features
