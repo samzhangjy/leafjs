@@ -1,0 +1,48 @@
+{
+  "name": "@leaf-web/create-leaf-app",
+  "version": "0.1.5",
+  "description": "Reasonable web components framework.",
+  "main": "./dist/create-leaf-app.min.js",
+  "types": "./dist/create-leaf-app.d.ts",
+  "bin": "./dist/create-leaf-app.min.js",
+  "scripts": {
+    "build": "run-s clean && run-p build:rollup",
+    "build:rollup": "rollup -c",
+    "dev": "rollup -c -w",
+    "build:tsc": "tsc -b",
+    "clean": "rimraf ./dist"
+  },
+  "author": "Sam Zhang",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^9.4.0",
+    "fs-extra": "^10.1.0",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-json": "4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-typescript": "^8.4.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^18.7.13",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.4",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "lerna": "^5.3.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "2.7.1",
+    "rimraf": "^3.0.2",
+    "rollup-plugin-dts": "^4.2.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
+  },
+  "gitHead": "d5b08876a08b660bc082dcc941cb5780e8e36923"
+}
