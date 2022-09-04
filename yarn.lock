@@ -1443,6 +1443,41 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@leaf-web/create-leaf-app@workspace:packages/create-leaf-app":
+  version: 0.0.0-use.local
+  resolution: "@leaf-web/create-leaf-app@workspace:packages/create-leaf-app"
+  dependencies:
+    "@rollup/plugin-commonjs": ^22.0.2
+    "@rollup/plugin-json": 4.1.0
+    "@rollup/plugin-node-resolve": ^13.3.0
+    "@rollup/plugin-typescript": ^8.4.0
+    "@types/fs-extra": ^9.0.13
+    "@types/node": ^18.7.13
+    "@typescript-eslint/eslint-plugin": ^5.30.6
+    "@typescript-eslint/parser": ^5.30.6
+    commander: ^9.4.0
+    eslint: ^8.19.0
+    eslint-config-prettier: ^8.5.0
+    eslint-config-standard: ^17.0.0
+    eslint-plugin-import: ^2.26.0
+    eslint-plugin-n: ^15.2.4
+    eslint-plugin-prettier: ^4.2.1
+    eslint-plugin-promise: ^6.0.0
+    fs-extra: ^10.1.0
+    lerna: ^5.3.0
+    npm-run-all: ^4.1.5
+    ora: ^5.4.1
+    prettier: 2.7.1
+    rimraf: ^3.0.2
+    rollup-plugin-dts: ^4.2.2
+    rollup-plugin-terser: ^7.0.2
+    tslib: ^2.4.0
+    typescript: ^4.7.4
+  bin:
+    create-leaf-app: ./dist/create-leaf-app.min.js
+  languageName: unknown
+  linkType: soft
+
 "@leaf-web/monorepo@workspace:.":
   version: 0.0.0-use.local
   resolution: "@leaf-web/monorepo@workspace:."
@@ -2951,7 +2986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-json@npm:^4.1.0":
+"@rollup/plugin-json@npm:4.1.0, @rollup/plugin-json@npm:^4.1.0":
   version: 4.1.0
   resolution: "@rollup/plugin-json@npm:4.1.0"
   dependencies:
@@ -3151,6 +3186,15 @@ __metadata:
     "@types/qs": "*"
     "@types/serve-static": "*"
   checksum: 12a2a0e6c4b993fc0854bec665906788aea0d8ee4392389d7a98a5de1eefdd33c9e1e40a91f3afd274011119c506f7b4126acb97fae62ae20b654974d44cba12
+  languageName: node
+  linkType: hard
+
+"@types/fs-extra@npm:^9.0.13":
+  version: 9.0.13
+  resolution: "@types/fs-extra@npm:9.0.13"
+  dependencies:
+    "@types/node": "*"
+  checksum: add79e212acd5ac76b97b9045834e03a7996aef60a814185e0459088fd290519a3c1620865d588fa36c4498bf614210d2a703af5cf80aa1dbc125db78f6edac3
   languageName: node
   linkType: hard
 
