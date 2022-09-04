@@ -1,5 +1,5 @@
 {
-  "name": "@leaf-web/create-leafjs-app",
+  "name": "create-leafjs-app",
   "version": "0.1.7",
   "description": "Reasonable web components framework.",
   "main": "./dist/create-leaf-app.min.js",
