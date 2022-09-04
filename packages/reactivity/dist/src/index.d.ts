@@ -12,6 +12,7 @@ interface TrackableCallback {
 }
 /** Reactive object. */
 export declare class Reactive {
+    #private;
     /** Currently active running effects. */
     activeEffects: EffectType[];
     /** {@inheritDoc TargetMap} */

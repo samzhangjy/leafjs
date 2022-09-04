@@ -20,6 +20,7 @@ export class Reactive {
   targetMap: TargetMap = new WeakMap<TargetMap>();
 
   onChange: EffectType | null = null;
+  #isSetting: boolean = false;
 
   /**
    * Get a trackable proxy object and fire certain callbacks on certain events.
@@ -46,7 +47,6 @@ export class Reactive {
         }
         const result = Reflect.set(target, key, value, receiver);
         callbacks.onSet(target, key, value, receiver);
-        if (outerThis.onChange) outerThis.onChange();
         return result;
       },
       deleteProperty(target: ReactiveObject, key: string) {
@@ -115,12 +115,29 @@ export class Reactive {
    */
   build(target: ReactiveObject) {
     const outerThis = this;
+
+    // workaround for to many rerenders
+    // check if it is currently setting a reactive property, watch until it finished setting
+    // and then invoke the `onStateChange` handler
+    const fireWhenUpdated = () => {
+      if (!this.#isSetting) {
+        if (this.onChange) this.onChange();
+      } else {
+        setTimeout(fireWhenUpdated, 2);
+      }
+    };
+
     return this.getTrackableObject(target, {
       onGet(target, key) {
         outerThis.track(target, key);
       },
       onSet(target, key) {
+        if (!outerThis.#isSetting) {
+          outerThis.#isSetting = true;
+          fireWhenUpdated();
+        }
         outerThis.trigger(target, key);
+        outerThis.#isSetting = false;
       },
       onDeleteProperty() {},
     });
