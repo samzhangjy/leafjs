@@ -14,6 +14,8 @@ export type LeafEventHandler = (e: Event) => unknown;
 type EventListener = { name: string; handler: LeafEventHandler };
 export type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
 
+export type LeafComponentProps = { [key: string]: any };
+
 export const eventListeners: EventListenerMap = new WeakMap();
 
 export const isEventListener = (propName: string, _propContent: any): _propContent is LeafEventHandler => {
@@ -25,10 +27,14 @@ export const isElement = (node: Node): node is HTMLElement => {
 };
 
 const _createElement = (
-  tag: string,
+  tag: string | typeof LeafComponent,
   props?: Record<string, string | LeafEventHandler>,
   content?: ElementContent | ElementContent[]
 ): HTMLElement => {
+  if (typeof tag !== 'string') {
+    return new tag({ ...props, children: content });
+  }
+
   const element = document.createElement(tag);
   const listeners = new Set<EventListener>();
   for (const prop in props) {
@@ -61,7 +67,7 @@ const _createElement = (
  * @returns Created HTML element.
  */
 export const createElement = (
-  tag: string,
+  tag: string | typeof LeafComponent,
   content?: ElementContent | ElementContent[] | ElementProps,
   props?: ElementProps
 ): HTMLElement => {
@@ -80,7 +86,7 @@ export const createElement = (
  * @returns Created HTML element.
  */
 export const createElementReactStyle = (
-  tag: string,
+  tag: string | typeof LeafComponent,
   props?: ElementProps,
   ...content: ElementContent[]
 ): HTMLElement => {
@@ -264,7 +270,7 @@ export class LeafComponent extends HTMLElement {
   #state: ReactiveObject | null = null;
   #reactiveInstance: Reactive | null = null;
 
-  constructor() {
+  constructor(_props: LeafComponentProps, ..._args: unknown[]) {
     super();
   }
 

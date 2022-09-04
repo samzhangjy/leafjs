@@ -4,7 +4,6 @@ import {
   isNodeListLike,
   NodeLike,
   preservedProps,
-  registerComponent,
   appendContentToNode,
   ElementContent,
   ElementProps,
@@ -77,7 +76,7 @@ LeafBaseComponents.forEach((component) => {
   };
 
   baseClassComponents[component.name] = makeBaseClassComponent(component.extends);
-  registerComponent(`leaf-__${component.name}`, baseClassComponents[component.name], { extends: component.name });
+  customElements.define(`leaf-__${component.name}`, baseClassComponents[component.name], { extends: component.name });
 });
 
 // TODO: find out a way to export components directly using named imports

@@ -7,6 +7,9 @@ declare type EventListener = {
     handler: LeafEventHandler;
 };
 export declare type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
+export declare type LeafComponentProps = {
+    [key: string]: any;
+};
 export declare const eventListeners: EventListenerMap;
 export declare const isEventListener: (propName: string, _propContent: any) => _propContent is LeafEventHandler;
 export declare const isElement: (node: Node) => node is HTMLElement;
@@ -17,7 +20,7 @@ export declare const isElement: (node: Node) => node is HTMLElement;
  * @param props Optional element attributes.
  * @returns Created HTML element.
  */
-export declare const createElement: (tag: string, content?: ElementContent | ElementContent[] | ElementProps, props?: ElementProps) => HTMLElement;
+export declare const createElement: (tag: string | typeof LeafComponent, content?: ElementContent | ElementContent[] | ElementProps, props?: ElementProps) => HTMLElement;
 /**
  * Create a new `HTMLElement` with given information, `React.createElement` style.
  * @param tag Element tag.
@@ -25,7 +28,7 @@ export declare const createElement: (tag: string, content?: ElementContent | Ele
  * @param content Optional element initial content.
  * @returns Created HTML element.
  */
-export declare const createElementReactStyle: (tag: string, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
+export declare const createElementReactStyle: (tag: string | typeof LeafComponent, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
 /**
  * Get event listeners of an element created by `createElement`.
  * @param element Element to check event listner list
@@ -61,7 +64,7 @@ export declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChi
  */
 export declare class LeafComponent extends HTMLElement {
     #private;
-    constructor();
+    constructor(_props: LeafComponentProps, ..._args: unknown[]);
     /** Component inner state. */
     get state(): ReactiveObject;
     /** {@inheritDoc LeafComponent.state} */

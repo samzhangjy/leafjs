@@ -1,3 +1,5 @@
+import { LeafComponent, LeafComponentProps } from './index';
+
 export type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
 export type ElementContent = Node | string;
 export type ElementProps = Record<string, string>;
@@ -32,13 +34,13 @@ export const isNodeLike = (content: any) => {
  */
 export const registerComponent = (
   tagName: string,
-  component: CustomElementConstructor,
+  component: typeof LeafComponent,
   props?: ElementDefinitionOptions
 ) => {
   customElements.define(tagName, component, props);
 
-  return (...args: unknown[]) => {
-    return new component(...args);
+  return (props: LeafComponentProps, ...args: unknown[]) => {
+    return new component(props, ...args);
   };
 };
 

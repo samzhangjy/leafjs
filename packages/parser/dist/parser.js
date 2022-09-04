@@ -19,6 +19,7 @@ var progress = require('rollup-plugin-progress');
 var express = require('express');
 var expressWs = require('express-ws');
 var chokidar = require('chokidar');
+var open = require('open');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -34,6 +35,7 @@ var progress__default = /*#__PURE__*/_interopDefaultLegacy(progress);
 var express__default = /*#__PURE__*/_interopDefaultLegacy(express);
 var expressWs__default = /*#__PURE__*/_interopDefaultLegacy(expressWs);
 var chokidar__default = /*#__PURE__*/_interopDefaultLegacy(chokidar);
+var open__default = /*#__PURE__*/_interopDefaultLegacy(open);
 
 const staticServer = (publicPath) => {
     publicPath = path__default["default"].resolve(publicPath);
@@ -94,7 +96,6 @@ const staticServer = (publicPath) => {
     };
 };
 
-const open = require('open');
 const babelConfig = {
     presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
     plugins: [['@babel/plugin-transform-react-jsx', { pragma: '___leaf_create_element_react' }]],
@@ -218,7 +219,7 @@ const startDevServer = (userConfig, port) => {
     const server = staticServer('.');
     server.start(port, async () => {
         info(`started development server on http://localhost:${port}.`);
-        await open(`http://127.0.0.1:${port}/`);
+        await open__default["default"](`http://127.0.0.1:${port}/`);
     });
     server.on('error', (err) => {
         error(`Failed to start development server.\n${chalk__default["default"].gray(err)}`);

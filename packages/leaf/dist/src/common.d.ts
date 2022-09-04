@@ -1,3 +1,4 @@
+import { LeafComponent, LeafComponentProps } from './index';
 export declare type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
 export declare type ElementContent = Node | string;
 export declare type ElementProps = Record<string, string>;
@@ -19,7 +20,7 @@ export declare const isNodeLike: (content: any) => boolean;
  * @param component a defined `LeafComponent` class.
  * @returns A function used to create the custom component.
  */
-export declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => (...args: unknown[]) => HTMLElement;
+export declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions) => (props: LeafComponentProps, ...args: unknown[]) => LeafComponent;
 /** Preserved element attributes mapping */
 export declare const preservedProps: {
     [key: string]: string;

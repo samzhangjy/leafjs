@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import expressWs from 'express-ws';
 export declare const staticServer: (publicPath: string) => {
     start: {

@@ -13,7 +13,7 @@ import chalk from 'chalk';
 import progress from 'rollup-plugin-progress';
 import { staticServer } from './server';
 import chokidar from 'chokidar';
-const open = require('open');
+import open from 'open';
 
 const babelConfig: RollupBabelInputPluginOptions = {
   presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],

@@ -21,6 +21,23 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
+function _extends() {
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+  return _extends.apply(this, arguments);
+}
+
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
   subClass.prototype.constructor = subClass;
@@ -320,12 +337,12 @@ var isNodeLike = function isNodeLike(content) {
 
 var registerComponent = function registerComponent(tagName, component, props) {
   customElements.define(tagName, component, props);
-  return function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+  return function (props) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
     }
 
-    return _construct(component, args);
+    return _construct(component, [props].concat(args));
   };
 };
 /** Preserved element attributes mapping */
@@ -473,7 +490,7 @@ LeafBaseComponents.forEach(function (component) {
   };
 
   baseClassComponents[component.name] = makeBaseClassComponent(component.extends);
-  registerComponent("leaf-__" + component.name, baseClassComponents[component.name], {
+  customElements.define("leaf-__" + component.name, baseClassComponents[component.name], {
     extends: component.name
   });
 }); // TODO: find out a way to export components directly using named imports
@@ -488,6 +505,12 @@ var isElement = function isElement(node) {
 };
 
 var _createElement = function _createElement(tag, props, content) {
+  if (typeof tag !== 'string') {
+    return new tag(_extends({}, props, {
+      children: content
+    }));
+  }
+
   var element = document.createElement(tag);
   var listeners = new Set();
 
@@ -716,7 +739,7 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   _inheritsLoose(LeafComponent, _HTMLElement);
 
-  function LeafComponent() {
+  function LeafComponent(_props) {
     var _this;
 
     _this = _HTMLElement.call(this) || this;

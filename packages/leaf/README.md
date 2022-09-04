@@ -1,3 +1,3 @@
-# @leaf/core
+# @leaf-web/core
 
 Leafjs core, mostly component system.

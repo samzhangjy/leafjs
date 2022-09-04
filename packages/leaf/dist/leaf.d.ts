@@ -9,7 +9,7 @@ declare type ElementProps = Record<string, string>;
  * @param component a defined `LeafComponent` class.
  * @returns A function used to create the custom component.
  */
-declare const registerComponent: (tagName: string, component: CustomElementConstructor, props?: ElementDefinitionOptions) => (...args: unknown[]) => HTMLElement;
+declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions) => (props: LeafComponentProps, ...args: unknown[]) => LeafComponent;
 
 declare const baseClassComponents: Record<string, typeof HTMLElement>;
 declare const baseComponents: Record<string, (...args: unknown[]) => HTMLElement>;
@@ -21,6 +21,9 @@ declare type EventListener = {
     handler: LeafEventHandler;
 };
 declare type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
+declare type LeafComponentProps = {
+    [key: string]: any;
+};
 declare const eventListeners: EventListenerMap;
 declare const isEventListener: (propName: string, _propContent: any) => _propContent is LeafEventHandler;
 declare const isElement: (node: Node) => node is HTMLElement;
@@ -31,7 +34,7 @@ declare const isElement: (node: Node) => node is HTMLElement;
  * @param props Optional element attributes.
  * @returns Created HTML element.
  */
-declare const createElement: (tag: string, content?: ElementContent | ElementContent[] | ElementProps, props?: ElementProps) => HTMLElement;
+declare const createElement: (tag: string | typeof LeafComponent, content?: ElementContent | ElementContent[] | ElementProps, props?: ElementProps) => HTMLElement;
 /**
  * Create a new `HTMLElement` with given information, `React.createElement` style.
  * @param tag Element tag.
@@ -39,7 +42,7 @@ declare const createElement: (tag: string, content?: ElementContent | ElementCon
  * @param content Optional element initial content.
  * @returns Created HTML element.
  */
-declare const createElementReactStyle: (tag: string, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
+declare const createElementReactStyle: (tag: string | typeof LeafComponent, props?: ElementProps, ...content: ElementContent[]) => HTMLElement;
 /**
  * Get event listeners of an element created by `createElement`.
  * @param element Element to check event listner list
@@ -75,7 +78,7 @@ declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChildren: 
  */
 declare class LeafComponent extends HTMLElement {
     #private;
-    constructor();
+    constructor(_props: LeafComponentProps, ..._args: unknown[]);
     /** Component inner state. */
     get state(): ReactiveObject;
     /** {@inheritDoc LeafComponent.state} */
@@ -100,4 +103,4 @@ declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 
-export { EventListenerMap, baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, deleteEventListenerOf, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, registerComponent, runCallbackOnElements, setEventListenerOf };
+export { EventListenerMap, baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentProps, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, deleteEventListenerOf, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, registerComponent, runCallbackOnElements, setEventListenerOf };
