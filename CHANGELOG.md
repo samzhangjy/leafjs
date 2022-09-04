@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/samzhangjy/leafjs/compare/v0.1.4...v0.1.5) (2022-09-04)
+
+### Features
+
+* better diffing algorithm ([d392c00](https://github.com/samzhangjy/leafjs/commit/d392c00c77f0cdff01d8e1270f494a24a0722701))
+* **parser:** added dev server ([d895e97](https://github.com/samzhangjy/leafjs/commit/d895e97d67f1bf9932f08e957301c5c967839a61))
+* **reactivity:** delayed firing of onStateChange hook for better performance ([4899790](https://github.com/samzhangjy/leafjs/commit/489979091967cb7edd423d9d6beb575ec5c3abd1))
+
 ## [0.1.4](https://github.com/samzhangjy/leafjs/compare/v0.1.3...v0.1.4) (2022-08-31)
 
 ### Bug Fixes
