@@ -17,23 +17,6 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-  return _extends.apply(this, arguments);
-}
-
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
   subClass.prototype.constructor = subClass;
@@ -307,11 +290,13 @@ var n = function () {
 
 r = new WeakMap(), Reactive = reactivity_min.Reactive = n;
 
+var componentMap = new WeakMap();
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.
  * @returns Is `content` having structures like `NodeList`.
  */
+
 var isNodeListLike = function isNodeListLike(content) {
   return HTMLCollection.prototype.isPrototypeOf(content) || NodeList.prototype.isPrototypeOf(content) || Array.isArray(content);
 };
@@ -333,6 +318,7 @@ var isNodeLike = function isNodeLike(content) {
 
 var registerComponent = function registerComponent(tagName, component, props) {
   customElements.define(tagName, component, props);
+  componentMap.set(component, tagName);
   return function (props) {
     for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
@@ -491,27 +477,45 @@ LeafBaseComponents.forEach(function (component) {
   });
 }); // TODO: find out a way to export components directly using named imports
 
-var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_defaultStyler;
+var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_defaultStyler;
 var eventListeners = new WeakMap();
+/** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
+
+var directPropUpdate = [{
+  name: 'value',
+  attr: 'value'
+}];
+/**
+ * Check if an attribute is an event handler.
+ * @param propName Attribute name to check.
+ * @param _propContent Attribute value to assert.
+ * @returns Is this attribute an event handler.
+ */
+
 var isEventListener = function isEventListener(propName, _propContent) {
   return propName.startsWith('on');
 };
+/**
+ * Check is a node an element node.
+ * @param node `Node` object to check.
+ * @returns Is `node` an element node.
+ */
+
 var isElement = function isElement(node) {
   return node.nodeType === Node.ELEMENT_NODE;
 };
 
 var _createElement = function _createElement(tag, props, content) {
   if (typeof tag !== 'string') {
-    return new tag(_extends({}, props, {
-      children: content
-    }));
+    var tagName = componentMap.get(tag);
+    if (!tagName) throw new Error('Unable to fetch component from registery.');else tag = tagName;
   }
 
   var element = document.createElement(tag);
   var listeners = new Set();
 
   for (var prop in props) {
-    var propContent = props[prop];
+    var propContent = typeof props[prop] === 'object' ? JSON.stringify(props[prop]) : props[prop];
 
     if (isEventListener(prop)) {
       var listenerName = prop.substring(2).toLowerCase();
@@ -633,8 +637,6 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
   if (!oldParent) return;
   var oldLen = oldChildren.length,
       newLen = newChildren.length;
-  var commonLength = Math.min(oldLen, newLen);
-  var hasPreserved = false;
 
   if (isElement(oldParent) && isElement(newParent)) {
     // replace event listeners
@@ -657,6 +659,13 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
       var attr = _step2.value;
       if (oldParent.getAttribute(attr.name) === attr.value) continue;
       oldParent.setAttribute(attr.name, attr.value);
+
+      for (var _iterator4 = _createForOfIteratorHelperLoose(directPropUpdate), _step4; !(_step4 = _iterator4()).done;) {
+        var specialProp = _step4.value;
+        if (specialProp.name !== attr.name) continue; // @ts-ignore
+
+        oldParent[specialProp.name] = attr.value;
+      }
     }
 
     for (var _iterator3 = _createForOfIteratorHelperLoose(oldAttributes), _step3; !(_step3 = _iterator3()).done;) {
@@ -667,27 +676,28 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
     }
   }
 
-  for (var i = 0; i < commonLength; i++) {
+  var i, j;
+
+  for (i = 0, j = 0; Math.max(i, j) < Math.min(oldLen, newLen); i++, j++) {
     var oldChild = oldChildren[i];
-    var newChild = newChildren[i]; // IMPORTANT: filter out preserved elements, in this case `<style />` tag
+    var newChild = newChildren[j]; // IMPORTANT: filter out preserved elements, in this case `<style />` tag
 
     if (isElement(oldChild) && oldChild.hasAttribute('leaf-preserve')) {
-      oldChild = oldChildren[i + 1];
-      hasPreserved = true;
+      oldChild = oldChildren[++i];
+      oldLen--;
     }
 
     if (isElement(oldChild) && isElement(newChild) && oldChild.tagName !== newChild.tagName) {
+      var referenceElement = oldChild.previousSibling;
       oldChild.outerHTML = oldChild.outerHTML.replace(new RegExp("<" + oldChild.tagName.toLowerCase() + "(.*?)", 'g'), "<" + newChild.tagName.toLowerCase() + "$1").replace(new RegExp("</" + oldChild.tagName.toLowerCase() + "(.*?)", 'g'), "</" + newChild.tagName.toLowerCase() + "$1"); // IMPORTANT: setting outerHTML will not update the element reference itself,
-      // so refreshing the element by accessing it through its parent is needed
+      // so refreshing the element by a reference element is needed
 
-      var elementIndex = 0;
-
-      while (oldChild !== null) {
-        elementIndex++;
-        oldChild = oldChild.previousSibling;
+      if (referenceElement) {
+        oldChild = referenceElement.nextSibling;
+      } else {
+        oldChild = oldParent.firstChild;
       }
 
-      oldChild = oldParent.childNodes[elementIndex];
       if (!isElement(oldChild)) continue;
     }
 
@@ -698,9 +708,8 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
     }
 
     patchElements(Array.from(oldChild.childNodes), Array.from(newChild.childNodes), oldChild, newChild);
-  }
+  } // insert new elements
 
-  if (hasPreserved) oldLen--; // insert new elements
 
   if (newLen > oldLen) {
     newChildren.slice(oldLen).forEach(function (child) {
@@ -716,12 +725,7 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 
 
   if (newLen < oldLen) {
-    oldChildren.slice(newLen).forEach(function (child, index) {
-      if (child.nodeType === Node.TEXT_NODE) {
-        oldParent.removeChild(oldParent.childNodes[index]);
-        return;
-      }
-
+    oldChildren.slice(newLen).forEach(function (child) {
       oldParent.removeChild(child);
     });
   }
@@ -735,6 +739,7 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   _inheritsLoose(LeafComponent, _HTMLElement);
 
+  // static observedAttributes = ['value'];
   function LeafComponent(_props) {
     var _this;
 
@@ -746,6 +751,10 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
     _LeafComponent_reactiveInstance.set(_assertThisInitialized(_this), null);
 
+    _LeafComponent_previousRenderResult.set(_assertThisInitialized(_this), null);
+
+    _LeafComponent_shadow.set(_assertThisInitialized(_this), null);
+
     return _this;
   }
   /** Component inner state. */
@@ -754,46 +763,81 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   var _proto = LeafComponent.prototype;
 
   /**
+   * Dispatch a custom event to listeners.
+   * @param event Event object or name to fire.
+   * @param data Extra data to pass to `CustomEvent.detail`.
+   * @returns Is the fired event's `preventDefault` hook called.
+   */
+  _proto.fireEvent = function fireEvent(event, data) {
+    if (event instanceof Event) {
+      // stop bubbling to prevent multiple invokation of the event
+      event.stopPropagation();
+      return this.fireEvent(event.type, data);
+    }
+
+    var toDispatch = new CustomEvent(event, {
+      detail: data
+    });
+    return this.dispatchEvent(toDispatch);
+  }
+  /**
+   * Rerender the component based on current state.
+   */
+  ;
+
+  _proto.rerender = function rerender() {
+    if (!__classPrivateFieldGet(this, _LeafComponent_shadow, "f")) return;
+    var renderResult = this.render();
+    if (!Array.isArray(renderResult)) renderResult = [renderResult];
+
+    if (!__classPrivateFieldGet(this, _LeafComponent_previousRenderResult, "f")) {
+      mountElements(renderResult, __classPrivateFieldGet(this, _LeafComponent_shadow, "f"));
+
+      __classPrivateFieldSet(this, _LeafComponent_previousRenderResult, renderResult, "f");
+
+      return;
+    }
+
+    patchElements(Array.from(__classPrivateFieldGet(this, _LeafComponent_shadow, "f").childNodes), Array.from(renderResult), __classPrivateFieldGet(this, _LeafComponent_shadow, "f"), renderResult[0]);
+
+    __classPrivateFieldSet(this, _LeafComponent_previousRenderResult, renderResult, "f");
+  }
+  /**
    * Start component lifecycle.
    *
    * This function is invoked when the first initialization of the component.
    */
+  ;
+
   _proto.connectedCallback = function connectedCallback() {
     var _this2 = this;
 
     var _a, _b;
 
-    var shadow = this.attachShadow({
+    __classPrivateFieldSet(this, _LeafComponent_shadow, this.attachShadow({
       mode: 'closed'
-    });
-    var renderResult = null;
-    var previousRenderResult = null;
+    }), "f");
+
     var styleElement = createElement('style');
     var styler = (_a = this.css) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _LeafComponent_instances, "m", _LeafComponent_defaultStyler);
     styleElement.textContent = styler();
     styleElement.setAttribute('leaf-preserve', 'true');
-    shadow.appendChild(styleElement);
 
-    var renderComponent = function renderComponent() {
-      renderResult = _this2.render();
-      if (!Array.isArray(renderResult)) renderResult = [renderResult];
-
-      if (!previousRenderResult) {
-        mountElements(renderResult, shadow);
-        previousRenderResult = renderResult;
-        return;
-      }
-
-      patchElements(Array.from(shadow.childNodes), Array.from(renderResult), shadow, renderResult[0]);
-      previousRenderResult = renderResult;
-    };
+    __classPrivateFieldGet(this, _LeafComponent_shadow, "f").appendChild(styleElement);
 
     if (!__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) {
-      renderComponent();
+      this.rerender();
       return;
     }
 
-    (_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.onStateChange(renderComponent);
+    (_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.onStateChange(function () {
+      return _this2.rerender();
+    });
+  };
+
+  _proto.attributeChangedCallback = function attributeChangedCallback() {
+    // rerender when attributes changed
+    this.rerender();
   }
   /**
    * Core rendering logic of a component.
@@ -802,7 +846,7 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   ;
 
   _proto.render = function render() {
-    return this;
+    throw new Error('Render function of `LeafComponent` must be overrided.');
   }
   /**
    * Inject CSS stylesheet to component. If not given, leaf will inject an empty string by default.
@@ -834,13 +878,34 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
       __classPrivateFieldSet(this, _LeafComponent_state, value, "f");
     }
+    /** Component props. */
+
+  }, {
+    key: "props",
+    get: function get() {
+      var props = {};
+
+      for (var _iterator5 = _createForOfIteratorHelperLoose(this.attributes), _step5; !(_step5 = _iterator5()).done;) {
+        var attr = _step5.value;
+        props[attr.name] = attr.value;
+      }
+
+      return props;
+    }
+    /** Event listeners attached to component. */
+
+  }, {
+    key: "listeners",
+    get: function get() {
+      return Array.from(getEventListenerOf(this) || []);
+    }
   }]);
 
   return LeafComponent;
 }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
-_LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
+_LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
   return '';
 };
 
-export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, Reactive, createElement, createElementReactStyle, deleteEventListenerOf, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, registerComponent, runCallbackOnElements, setEventListenerOf };
+export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, Reactive, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, registerComponent, runCallbackOnElements, setEventListenerOf };
 //# sourceMappingURL=leaf.mjs.map

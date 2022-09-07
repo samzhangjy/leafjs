@@ -3,13 +3,16 @@ import { LeafComponent, LeafComponentProps } from './index';
 export type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
 export type ElementContent = Node | string;
 export type ElementProps = Record<string, string>;
+export type CustomComponentMap = WeakMap<typeof LeafComponent, string>;
+
+export const componentMap: CustomComponentMap = new WeakMap();
 
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.
  * @returns Is `content` having structures like `NodeList`.
  */
-export const isNodeListLike = (content: any) => {
+export const isNodeListLike = (content: any): content is Node[] => {
   return (
     HTMLCollection.prototype.isPrototypeOf(content) ||
     NodeList.prototype.isPrototypeOf(content) ||
@@ -38,6 +41,7 @@ export const registerComponent = (
   props?: ElementDefinitionOptions
 ) => {
   customElements.define(tagName, component, props);
+  componentMap.set(component, tagName);
 
   return (props: LeafComponentProps, ...args: unknown[]) => {
     return new component(props, ...args);
@@ -50,15 +54,24 @@ export const preservedProps: { [key: string]: string } = {
 };
 
 /**
+ * Check is a node falsy.
+ * @param node Element node to check.
+ * @returns Is `node` falsy or not.
+ */
+export const isFalsyNode = (node: unknown) => {
+  return node === false || node === undefined || node === null;
+};
+
+/**
  * Insert element or elements to node, depending on the actual type of `content`.
  * @param node Parent node to insert content to.
  * @param content Custom content elements to insert.
  */
 export const appendContentToNode = (node: HTMLElement, content: ElementContent | ElementContent[]) => {
   if (isNodeListLike(content)) {
-    // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
-    content = [...(content as any[])].filter((node) => !(node === false || node === undefined || node === null));
     for (const ele of content) {
+      // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
+      if (isFalsyNode(node)) continue;
       if (Array.isArray(ele)) {
         appendContentToNode(node, ele);
         continue;

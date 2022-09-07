@@ -11,7 +11,23 @@ export declare type LeafComponentProps = {
     [key: string]: any;
 };
 export declare const eventListeners: EventListenerMap;
+/** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
+export declare const directPropUpdate: {
+    name: string;
+    attr: string;
+}[];
+/**
+ * Check if an attribute is an event handler.
+ * @param propName Attribute name to check.
+ * @param _propContent Attribute value to assert.
+ * @returns Is this attribute an event handler.
+ */
 export declare const isEventListener: (propName: string, _propContent: any) => _propContent is LeafEventHandler;
+/**
+ * Check is a node an element node.
+ * @param node `Node` object to check.
+ * @returns Is `node` an element node.
+ */
 export declare const isElement: (node: Node) => node is HTMLElement;
 /**
  * Create a new `HTMLElement` with given information.
@@ -69,12 +85,28 @@ export declare class LeafComponent extends HTMLElement {
     get state(): ReactiveObject;
     /** {@inheritDoc LeafComponent.state} */
     set state(value: ReactiveObject);
+    /** Component props. */
+    get props(): LeafComponentProps;
+    /** Event listeners attached to component. */
+    get listeners(): EventListener[];
+    /**
+     * Dispatch a custom event to listeners.
+     * @param event Event object or name to fire.
+     * @param data Extra data to pass to `CustomEvent.detail`.
+     * @returns Is the fired event's `preventDefault` hook called.
+     */
+    fireEvent(event: string | Event, data?: Record<string, any>): boolean;
+    /**
+     * Rerender the component based on current state.
+     */
+    rerender(): void;
     /**
      * Start component lifecycle.
      *
      * This function is invoked when the first initialization of the component.
      */
     connectedCallback(): void;
+    attributeChangedCallback(): void;
     /**
      * Core rendering logic of a component.
      * @returns HTML element to be rendered and attached.

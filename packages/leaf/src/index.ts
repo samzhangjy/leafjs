@@ -1,10 +1,11 @@
 import { Reactive, ReactiveObject } from '@leaf-web/reactivity';
 import {
-  isNodeListLike,
-  isNodeLike,
   appendContentToNode,
+  componentMap,
   ElementContent,
   ElementProps,
+  isNodeLike,
+  isNodeListLike,
   preservedProps,
 } from './common';
 
@@ -17,11 +18,24 @@ export type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
 export type LeafComponentProps = { [key: string]: any };
 
 export const eventListeners: EventListenerMap = new WeakMap();
+/** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
+export const directPropUpdate = [{ name: 'value', attr: 'value' }];
 
+/**
+ * Check if an attribute is an event handler.
+ * @param propName Attribute name to check.
+ * @param _propContent Attribute value to assert.
+ * @returns Is this attribute an event handler.
+ */
 export const isEventListener = (propName: string, _propContent: any): _propContent is LeafEventHandler => {
   return propName.startsWith('on');
 };
 
+/**
+ * Check is a node an element node.
+ * @param node `Node` object to check.
+ * @returns Is `node` an element node.
+ */
 export const isElement = (node: Node): node is HTMLElement => {
   return node.nodeType === Node.ELEMENT_NODE;
 };
@@ -32,13 +46,16 @@ const _createElement = (
   content?: ElementContent | ElementContent[]
 ): HTMLElement => {
   if (typeof tag !== 'string') {
-    return new tag({ ...props, children: content });
+    const tagName = componentMap.get(tag);
+    if (!tagName) throw new Error('Unable to fetch component from registery.');
+    else tag = tagName;
   }
 
   const element = document.createElement(tag);
   const listeners = new Set<EventListener>();
   for (const prop in props) {
-    const propContent = props[prop];
+    const propContent = typeof props[prop] === 'object' ? JSON.stringify(props[prop]) : props[prop];
+
     if (isEventListener(prop, propContent)) {
       const listenerName = prop.substring(2).toLowerCase();
       listeners.add({ name: listenerName, handler: propContent });
@@ -162,8 +179,6 @@ export const patchElements = (
 
   let oldLen = oldChildren.length,
     newLen = newChildren.length;
-  const commonLength = Math.min(oldLen, newLen);
-  let hasPreserved = false;
 
   if (isElement(oldParent) && isElement(newParent)) {
     // replace event listeners
@@ -189,6 +204,11 @@ export const patchElements = (
     for (const attr of newAttributes) {
       if (oldParent.getAttribute(attr.name) === attr.value) continue;
       oldParent.setAttribute(attr.name, attr.value);
+      for (const specialProp of directPropUpdate) {
+        if (specialProp.name !== attr.name) continue;
+        // @ts-ignore
+        oldParent[specialProp.name] = attr.value;
+      }
     }
 
     for (const attr of oldAttributes) {
@@ -198,31 +218,33 @@ export const patchElements = (
     }
   }
 
-  for (let i = 0; i < commonLength; i++) {
+  let i, j;
+
+  for (i = 0, j = 0; Math.max(i, j) < Math.min(oldLen, newLen); i++, j++) {
     let oldChild = oldChildren[i];
-    const newChild = newChildren[i];
+    const newChild = newChildren[j];
 
     // IMPORTANT: filter out preserved elements, in this case `<style />` tag
     if (isElement(oldChild) && oldChild.hasAttribute('leaf-preserve')) {
-      oldChild = oldChildren[i + 1];
-      hasPreserved = true;
+      oldChild = oldChildren[++i];
+      oldLen--;
     }
 
     if (isElement(oldChild) && isElement(newChild) && oldChild.tagName !== newChild.tagName) {
+      let referenceElement = oldChild.previousSibling;
+
       oldChild.outerHTML = oldChild.outerHTML
         .replace(new RegExp(`<${oldChild.tagName.toLowerCase()}(.*?)`, 'g'), `<${newChild.tagName.toLowerCase()}$1`)
         .replace(new RegExp(`</${oldChild.tagName.toLowerCase()}(.*?)`, 'g'), `</${newChild.tagName.toLowerCase()}$1`);
 
       // IMPORTANT: setting outerHTML will not update the element reference itself,
-      // so refreshing the element by accessing it through its parent is needed
-      let elementIndex = 0;
-
-      while (oldChild !== null) {
-        elementIndex++;
-        oldChild = oldChild.previousSibling as HTMLElement;
+      // so refreshing the element by a reference element is needed
+      if (referenceElement) {
+        oldChild = referenceElement.nextSibling as Node;
+      } else {
+        oldChild = oldParent.firstChild as Node;
       }
 
-      oldChild = oldParent.childNodes[elementIndex];
       if (!isElement(oldChild)) continue;
     }
 
@@ -234,8 +256,6 @@ export const patchElements = (
 
     patchElements(Array.from(oldChild.childNodes), Array.from(newChild.childNodes), oldChild, newChild);
   }
-
-  if (hasPreserved) oldLen--;
 
   // insert new elements
   if (newLen > oldLen) {
@@ -251,11 +271,7 @@ export const patchElements = (
 
   // remove old elements
   if (newLen < oldLen) {
-    oldChildren.slice(newLen).forEach((child, index) => {
-      if (child.nodeType === Node.TEXT_NODE) {
-        oldParent.removeChild(oldParent.childNodes[index]);
-        return;
-      }
+    oldChildren.slice(newLen).forEach((child) => {
       oldParent.removeChild(child);
     });
   }
@@ -269,6 +285,10 @@ export const patchElements = (
 export class LeafComponent extends HTMLElement {
   #state: ReactiveObject | null = null;
   #reactiveInstance: Reactive | null = null;
+  #previousRenderResult: HTMLElement[] | null = null;
+  #shadow: ShadowRoot | null = null;
+
+  // static observedAttributes = ['value'];
 
   constructor(_props: LeafComponentProps, ..._args: unknown[]) {
     super();
@@ -289,42 +309,80 @@ export class LeafComponent extends HTMLElement {
     this.#state = value;
   }
 
+  /** Component props. */
+  get props(): LeafComponentProps {
+    const props: LeafComponentProps = {};
+    for (const attr of this.attributes) {
+      props[attr.name] = attr.value;
+    }
+    return props;
+  }
+
+  /** Event listeners attached to component. */
+  get listeners(): EventListener[] {
+    return Array.from(getEventListenerOf(this) || []);
+  }
+
+  /**
+   * Dispatch a custom event to listeners.
+   * @param event Event object or name to fire.
+   * @param data Extra data to pass to `CustomEvent.detail`.
+   * @returns Is the fired event's `preventDefault` hook called.
+   */
+  fireEvent(event: string | Event, data?: Record<string, any>): boolean {
+    if (event instanceof Event) {
+      // stop bubbling to prevent multiple invokation of the event
+      event.stopPropagation();
+      return this.fireEvent(event.type, data);
+    }
+    const toDispatch = new CustomEvent(event, { detail: data });
+    return this.dispatchEvent(toDispatch);
+  }
+
+  /**
+   * Rerender the component based on current state.
+   */
+  rerender() {
+    if (!this.#shadow) return;
+
+    let renderResult = this.render();
+    if (!Array.isArray(renderResult)) renderResult = [renderResult];
+
+    if (!this.#previousRenderResult) {
+      mountElements(renderResult, this.#shadow);
+      this.#previousRenderResult = renderResult;
+      return;
+    }
+
+    patchElements(Array.from(this.#shadow.childNodes), Array.from(renderResult), this.#shadow, renderResult[0]);
+    this.#previousRenderResult = renderResult;
+  }
+
   /**
    * Start component lifecycle.
    *
    * This function is invoked when the first initialization of the component.
    */
   connectedCallback() {
-    const shadow = this.attachShadow({ mode: 'closed' });
-    let renderResult: LeafComponentRenderResult | null = null;
-    let previousRenderResult: HTMLElement[] | null = null;
+    this.#shadow = this.attachShadow({ mode: 'closed' });
     const styleElement = createElement('style');
     const styler = this.css ?? this.#defaultStyler;
 
     styleElement.textContent = styler();
     styleElement.setAttribute('leaf-preserve', 'true');
-    shadow.appendChild(styleElement);
-
-    const renderComponent = () => {
-      renderResult = this.render();
-      if (!Array.isArray(renderResult)) renderResult = [renderResult];
-
-      if (!previousRenderResult) {
-        mountElements(renderResult, shadow);
-        previousRenderResult = renderResult;
-        return;
-      }
-
-      patchElements(Array.from(shadow.childNodes), Array.from(renderResult), shadow, renderResult[0]);
-      previousRenderResult = renderResult;
-    };
+    this.#shadow.appendChild(styleElement);
 
     if (!this.#reactiveInstance) {
-      renderComponent();
+      this.rerender();
       return;
     }
 
-    this.#reactiveInstance?.onStateChange(renderComponent);
+    this.#reactiveInstance?.onStateChange(() => this.rerender());
+  }
+
+  attributeChangedCallback() {
+    // rerender when attributes changed
+    this.rerender();
   }
 
   #defaultStyler() {
@@ -336,7 +394,7 @@ export class LeafComponent extends HTMLElement {
    * @returns HTML element to be rendered and attached.
    */
   render(): LeafComponentRenderResult {
-    return this;
+    throw new Error('Render function of `LeafComponent` must be overrided.');
   }
 
   /**

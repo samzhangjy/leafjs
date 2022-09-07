@@ -2,6 +2,8 @@ import { LeafComponent, LeafComponentProps } from './index';
 export declare type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
 export declare type ElementContent = Node | string;
 export declare type ElementProps = Record<string, string>;
+export declare type CustomComponentMap = WeakMap<typeof LeafComponent, string>;
+export declare const componentMap: CustomComponentMap;
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.
