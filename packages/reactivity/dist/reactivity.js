@@ -41,6 +41,8 @@ var Reactive = /*#__PURE__*/function () {
     this.onChange = null;
 
     _Reactive_isSetting.set(this, false);
+
+    this.actualState = undefined;
   }
   /**
    * Get a trackable proxy object and fire certain callbacks on certain events.
@@ -165,7 +167,7 @@ var Reactive = /*#__PURE__*/function () {
       }
     };
 
-    return this.getTrackableObject(target, {
+    this.actualState = this.getTrackableObject(target, {
       onGet: function onGet(target, key) {
         outerThis.track(target, key);
       },
@@ -182,6 +184,7 @@ var Reactive = /*#__PURE__*/function () {
       },
       onDeleteProperty: function onDeleteProperty() {}
     });
+    return this.actualState;
   }
   /**
    * Create a reactive reference to a plain value.

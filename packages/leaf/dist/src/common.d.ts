@@ -9,7 +9,7 @@ export declare const componentMap: CustomComponentMap;
  * @param content Element to check.
  * @returns Is `content` having structures like `NodeList`.
  */
-export declare const isNodeListLike: (content: any) => boolean;
+export declare const isNodeListLike: (content: any) => content is Node[];
 /**
  * Check if element is Node-like.
  * @param content Element to check.
@@ -27,6 +27,12 @@ export declare const registerComponent: (tagName: string, component: typeof Leaf
 export declare const preservedProps: {
     [key: string]: string;
 };
+/**
+ * Check is a node falsy.
+ * @param node Element node to check.
+ * @returns Is `node` falsy or not.
+ */
+export declare const isFalsyNode: (node: unknown) => boolean;
 /**
  * Insert element or elements to node, depending on the actual type of `content`.
  * @param node Parent node to insert content to.

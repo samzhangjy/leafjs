@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "build": "leaf build",
+    "dev": "leaf dev"
+  },
+  "dependencies": {
+    "@leaf-web/core": "^0.1.5"
+  },
+  "devDependencies": {
+    "@leaf-web/parser": "^0.1.5"
+  }
+}

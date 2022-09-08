@@ -183,17 +183,17 @@ var reactivity_min = {};
 
 var Reactive;
 
-function t(t, e, r, n) {
-  if ("a" === r && !n) throw new TypeError("Private accessor was defined without a getter");
-  if ("function" == typeof e ? t !== e || !n : !e.has(t)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-  return "m" === r ? n : "a" === r ? n.call(t) : n ? n.value : e.get(t);
+function t(t, e, r, a) {
+  if ("a" === r && !a) throw new TypeError("Private accessor was defined without a getter");
+  if ("function" == typeof e ? t !== e || !a : !e.has(t)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return "m" === r ? a : "a" === r ? a.call(t) : a ? a.value : e.get(t);
 }
 
-function e(t, e, r, n, a) {
-  if ("m" === n) throw new TypeError("Private method is not writable");
-  if ("a" === n && !a) throw new TypeError("Private accessor was defined without a setter");
-  if ("function" == typeof e ? t !== e || !a : !e.has(t)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-  return "a" === n ? a.call(t, r) : a ? a.value = r : e.set(t, r), r;
+function e(t, e, r, a, n) {
+  if ("m" === a) throw new TypeError("Private method is not writable");
+  if ("a" === a && !n) throw new TypeError("Private accessor was defined without a setter");
+  if ("function" == typeof e ? t !== e || !n : !e.has(t)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return "a" === a ? n.call(t, r) : n ? n.value = r : e.set(t, r), r;
 }
 
 var r;
@@ -201,94 +201,94 @@ Object.defineProperty(reactivity_min, "__esModule", {
   value: !0
 });
 
-var n = function () {
-  function n() {
-    this.activeEffects = [], this.targetMap = new WeakMap(), this.onChange = null, r.set(this, !1);
+var a = function () {
+  function a() {
+    this.activeEffects = [], this.targetMap = new WeakMap(), this.onChange = null, r.set(this, !1), this.actualState = void 0;
   }
 
-  var a = n.prototype;
-  return a.getTrackableObject = function (t, e) {
+  var n = a.prototype;
+  return n.getTrackableObject = function (t, e) {
     for (var r in t) {
       "object" == typeof t[r] && (t[r] = this.getTrackableObject(t[r], e));
     }
 
-    var n = this,
-        a = new Proxy(t, {
-      get: function get(t, r, n) {
-        var a = Reflect.get(t, r, n);
-        return e.onGet(t, r, n), a;
+    var a = this,
+        n = new Proxy(t, {
+      get: function get(t, r, a) {
+        var n = Reflect.get(t, r, a);
+        return e.onGet(t, r, a), n;
       },
-      set: function set(t, r, a, o) {
-        "object" == typeof a && (a = n.getTrackableObject(a, e));
-        var i = Reflect.set(t, r, a, o);
-        return e.onSet(t, r, a, o), i;
+      set: function set(t, r, n, o) {
+        "object" == typeof n && (n = a.getTrackableObject(n, e));
+        var i = Reflect.set(t, r, n, o);
+        return e.onSet(t, r, n, o), i;
       },
       deleteProperty: function deleteProperty(t, r) {
-        var n = Reflect.deleteProperty(t, r);
-        return e.onDeleteProperty(t, r), n;
+        var a = Reflect.deleteProperty(t, r);
+        return e.onDeleteProperty(t, r), a;
       }
     });
-    return Array.isArray(t) && Object.setPrototypeOf(a, Array.prototype), a;
-  }, a.track = function (t, e) {
+    return Array.isArray(t) && Object.setPrototypeOf(n, Array.prototype), n;
+  }, n.track = function (t, e) {
     if (this.activeEffects.length) {
       var r = this.targetMap.get(t);
       r || (r = new Map(), this.targetMap.set(t, r));
-      var n = r.get(e);
-      n || (n = new Set(), r.set(e, n)), this.activeEffects.forEach(function (t) {
-        return null == n ? void 0 : n.add(t);
+      var a = r.get(e);
+      a || (a = new Set(), r.set(e, a)), this.activeEffects.forEach(function (t) {
+        return null == a ? void 0 : a.add(t);
       });
     }
-  }, a.trigger = function (t, e) {
+  }, n.trigger = function (t, e) {
     var r = this.targetMap.get(t);
 
     if (r) {
-      var n = r.get(e);
-      n && n.forEach(function (t) {
+      var a = r.get(e);
+      a && a.forEach(function (t) {
         t();
       });
     }
-  }, a.watchEffect = function (t) {
+  }, n.watchEffect = function (t) {
     this.activeEffects.push(t), t(), this.activeEffects.pop();
-  }, a.build = function (n) {
-    var a = this,
+  }, n.build = function (a) {
+    var n = this,
         o = this,
         i = function e() {
-      t(a, r, "f") ? setTimeout(e, 2) : a.onChange && a.onChange();
+      t(n, r, "f") ? setTimeout(e, 2) : n.onChange && n.onChange();
     };
 
-    return this.getTrackableObject(n, {
+    return this.actualState = this.getTrackableObject(a, {
       onGet: function onGet(t, e) {
         o.track(t, e);
       },
-      onSet: function onSet(n, a) {
-        t(o, r, "f") || (e(o, r, !0, "f"), i()), o.trigger(n, a), e(o, r, !1, "f");
+      onSet: function onSet(a, n) {
+        t(o, r, "f") || (e(o, r, !0, "f"), i()), o.trigger(a, n), e(o, r, !1, "f");
       },
       onDeleteProperty: function onDeleteProperty() {}
-    });
-  }, a.ref = function (t) {
+    }), this.actualState;
+  }, n.ref = function (t) {
     var e = this,
         r = {
       get value() {
         return e.track(r, "value"), t;
       },
 
-      set value(n) {
-        n !== t && (t = n, e.trigger(r, "value"));
+      set value(a) {
+        a !== t && (t = a, e.trigger(r, "value"));
       }
 
     };
     return r;
-  }, a.computed = function (t) {
+  }, n.computed = function (t) {
     var e = this.ref(null);
     return this.watchEffect(function () {
       return e.value = t();
     }), e;
-  }, a.onStateChange = function (t) {
+  }, n.onStateChange = function (t) {
     this.onChange = t, t();
-  }, n;
+  }, a;
 }();
 
-r = new WeakMap(), Reactive = reactivity_min.Reactive = n;
+r = new WeakMap(), Reactive = reactivity_min.Reactive = a;
 
 var componentMap = new WeakMap();
 /**
@@ -333,6 +333,15 @@ var preservedProps = {
   className: 'class'
 };
 /**
+ * Check is a node falsy.
+ * @param node Element node to check.
+ * @returns Is `node` falsy or not.
+ */
+
+var isFalsyNode = function isFalsyNode(node) {
+  return node === false || node === undefined || node === null;
+};
+/**
  * Insert element or elements to node, depending on the actual type of `content`.
  * @param node Parent node to insert content to.
  * @param content Custom content elements to insert.
@@ -340,13 +349,10 @@ var preservedProps = {
 
 var appendContentToNode = function appendContentToNode(node, content) {
   if (isNodeListLike(content)) {
-    // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
-    content = [].concat(content).filter(function (node) {
-      return !(node === false || node === undefined || node === null);
-    });
-
     for (var _iterator = _createForOfIteratorHelperLoose(content), _step; !(_step = _iterator()).done;) {
       var ele = _step.value;
+      // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
+      if (isFalsyNode(ele)) continue;
 
       if (Array.isArray(ele)) {
         appendContentToNode(node, ele);
@@ -477,7 +483,7 @@ LeafBaseComponents.forEach(function (component) {
   });
 }); // TODO: find out a way to export components directly using named imports
 
-var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_defaultStyler;
+var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_key, _LeafComponent_isMounted, _LeafComponent_defaultStyler;
 var eventListeners = new WeakMap();
 /** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
 
@@ -485,6 +491,7 @@ var directPropUpdate = [{
   name: 'value',
   attr: 'value'
 }];
+var reactiveInstances = new Map();
 /**
  * Check if an attribute is an event handler.
  * @param propName Attribute name to check.
@@ -650,30 +657,7 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
     }); // IMPORTANT: update the event listener registery for future use
 
     setEventListenerOf(oldParent, newEventListener);
-    deleteEventListenerOf(newParent); // replace attributes
-
-    var oldAttributes = oldParent.attributes;
-    var newAttributes = newParent.attributes;
-
-    for (var _iterator2 = _createForOfIteratorHelperLoose(newAttributes), _step2; !(_step2 = _iterator2()).done;) {
-      var attr = _step2.value;
-      if (oldParent.getAttribute(attr.name) === attr.value) continue;
-      oldParent.setAttribute(attr.name, attr.value);
-
-      for (var _iterator4 = _createForOfIteratorHelperLoose(directPropUpdate), _step4; !(_step4 = _iterator4()).done;) {
-        var specialProp = _step4.value;
-        if (specialProp.name !== attr.name) continue; // @ts-ignore
-
-        oldParent[specialProp.name] = attr.value;
-      }
-    }
-
-    for (var _iterator3 = _createForOfIteratorHelperLoose(oldAttributes), _step3; !(_step3 = _iterator3()).done;) {
-      var _attr = _step3.value;
-      // only remove the attribute if it's not in the new element
-      if (newParent.hasAttribute(_attr.name)) continue;
-      oldParent.removeAttribute(_attr.name);
-    }
+    deleteEventListenerOf(newParent);
   }
 
   var i, j;
@@ -685,6 +669,33 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
     if (isElement(oldChild) && oldChild.hasAttribute('leaf-preserve')) {
       oldChild = oldChildren[++i];
       oldLen--;
+    } // process attributes here so `connectedCallback` will receive the correct attribute
+
+
+    if (isElement(oldChild) && isElement(newChild)) {
+      // replace attributes
+      var oldAttributes = Array.prototype.slice.call(oldChild.attributes);
+      var newAttributes = Array.prototype.slice.call(newChild.attributes);
+
+      for (var _iterator2 = _createForOfIteratorHelperLoose(newAttributes), _step2; !(_step2 = _iterator2()).done;) {
+        var attr = _step2.value;
+        if (oldChild.getAttribute(attr.name) === attr.value) continue;
+        oldChild.setAttribute(attr.name, attr.value);
+
+        for (var _iterator4 = _createForOfIteratorHelperLoose(directPropUpdate), _step4; !(_step4 = _iterator4()).done;) {
+          var specialProp = _step4.value;
+          if (specialProp.name !== attr.name) continue; // @ts-ignore
+
+          oldChild[specialProp.name] = attr.value;
+        }
+      }
+
+      for (var _iterator3 = _createForOfIteratorHelperLoose(oldAttributes), _step3; !(_step3 = _iterator3()).done;) {
+        var _attr = _step3.value;
+        // only remove the attribute if it's not in the new element
+        if (newChild.hasAttribute(_attr.name)) continue;
+        oldChild.removeAttribute(_attr.name);
+      }
     }
 
     if (isElement(oldChild) && isElement(newChild) && oldChild.tagName !== newChild.tagName) {
@@ -739,7 +750,6 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   _inheritsLoose(LeafComponent, _HTMLElement);
 
-  // static observedAttributes = ['value'];
   function LeafComponent(_props) {
     var _this;
 
@@ -755,10 +765,12 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
     _LeafComponent_shadow.set(_assertThisInitialized(_this), null);
 
+    _LeafComponent_key.set(_assertThisInitialized(_this), undefined);
+
+    _LeafComponent_isMounted.set(_assertThisInitialized(_this), false);
+
     return _this;
   }
-  /** Component inner state. */
-
 
   var _proto = LeafComponent.prototype;
 
@@ -812,7 +824,9 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   _proto.connectedCallback = function connectedCallback() {
     var _this2 = this;
 
-    var _a, _b;
+    var _a, _b, _c, _d;
+
+    __classPrivateFieldSet(this, _LeafComponent_isMounted, true, "f");
 
     __classPrivateFieldSet(this, _LeafComponent_shadow, this.attachShadow({
       mode: 'closed'
@@ -825,18 +839,37 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
     __classPrivateFieldGet(this, _LeafComponent_shadow, "f").appendChild(styleElement);
 
+    var currentInstance = reactiveInstances.get(__classPrivateFieldGet(this, _LeafComponent_key, "f") || ''); // adopt the previous reactive data, if any
+
+    if (currentInstance) __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, currentInstance, "f"); // or create a new one
+    else if (__classPrivateFieldGet(this, _LeafComponent_state, "f")) __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
+
+    if ((_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.actualState) {
+      __classPrivateFieldSet(this, _LeafComponent_state, __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").actualState, "f");
+    } else if (__classPrivateFieldGet(this, _LeafComponent_state, "f")) {
+      __classPrivateFieldSet(this, _LeafComponent_state, (_c = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _c === void 0 ? void 0 : _c.build(__classPrivateFieldGet(this, _LeafComponent_state, "f")), "f");
+    } // IMPORTANT: only set the current `Reactive` instance when the key is valid
+
+
+    if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f") && __classPrivateFieldGet(this, _LeafComponent_key, "f")) reactiveInstances.set(__classPrivateFieldGet(this, _LeafComponent_key, "f"), __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f"));
+
     if (!__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) {
       this.rerender();
       return;
     }
 
-    (_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.onStateChange(function () {
+    (_d = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _d === void 0 ? void 0 : _d.onStateChange(function () {
       return _this2.rerender();
     });
   };
 
-  _proto.attributeChangedCallback = function attributeChangedCallback() {
-    // rerender when attributes changed
+  _proto.attributeChangedCallback = function attributeChangedCallback(name, _oldVal, newVal) {
+    // handle keying
+    if (name === 'key') {
+      __classPrivateFieldSet(this, _LeafComponent_key, newVal, "f");
+    } // rerender when attributes changed
+
+
     this.rerender();
   }
   /**
@@ -862,20 +895,15 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
   _createClass(LeafComponent, [{
     key: "state",
-    get: function get() {
+    get:
+    /** Component inner state. */
+    function get() {
+      if (!__classPrivateFieldGet(this, _LeafComponent_isMounted, "f")) return;
       return __classPrivateFieldGet(this, _LeafComponent_state, "f");
     }
     /** {@inheritDoc LeafComponent.state} */
     ,
     set: function set(value) {
-      if (!__classPrivateFieldGet(this, _LeafComponent_state, "f")) {
-        __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
-
-        __classPrivateFieldSet(this, _LeafComponent_state, __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").build(value), "f");
-
-        return;
-      }
-
       __classPrivateFieldSet(this, _LeafComponent_state, value, "f");
     }
     /** Component props. */
@@ -899,13 +927,23 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
     get: function get() {
       return Array.from(getEventListenerOf(this) || []);
     }
+  }], [{
+    key: "watchedProps",
+    get: function get() {
+      return [];
+    }
+  }, {
+    key: "observedAttributes",
+    get: function get() {
+      return ['key'].concat(this.watchedProps);
+    }
   }]);
 
   return LeafComponent;
 }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
-_LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
+_LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_key = new WeakMap(), _LeafComponent_isMounted = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
   return '';
 };
 
-export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, Reactive, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, registerComponent, runCallbackOnElements, setEventListenerOf };
+export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, Reactive, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };
 //# sourceMappingURL=leaf.mjs.map

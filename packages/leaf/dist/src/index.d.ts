@@ -1,4 +1,4 @@
-import { ReactiveObject } from '@leaf-web/reactivity';
+import { Reactive, ReactiveObject } from '@leaf-web/reactivity';
 import { ElementContent, ElementProps } from './common';
 export declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 export declare type LeafEventHandler = (e: Event) => unknown;
@@ -16,6 +16,7 @@ export declare const directPropUpdate: {
     name: string;
     attr: string;
 }[];
+export declare const reactiveInstances: Map<string, Reactive>;
 /**
  * Check if an attribute is an event handler.
  * @param propName Attribute name to check.
@@ -81,6 +82,8 @@ export declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChi
 export declare class LeafComponent extends HTMLElement {
     #private;
     constructor(_props: LeafComponentProps, ..._args: unknown[]);
+    static get watchedProps(): never[];
+    static get observedAttributes(): string[];
     /** Component inner state. */
     get state(): ReactiveObject;
     /** {@inheritDoc LeafComponent.state} */
@@ -106,7 +109,7 @@ export declare class LeafComponent extends HTMLElement {
      * This function is invoked when the first initialization of the component.
      */
     connectedCallback(): void;
-    attributeChangedCallback(): void;
+    attributeChangedCallback(name: string, _oldVal: string, newVal: string): void;
     /**
      * Core rendering logic of a component.
      * @returns HTML element to be rendered and attached.

@@ -71,7 +71,7 @@ export const appendContentToNode = (node: HTMLElement, content: ElementContent |
   if (isNodeListLike(content)) {
     for (const ele of content) {
       // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
-      if (isFalsyNode(node)) continue;
+      if (isFalsyNode(ele)) continue;
       if (Array.isArray(ele)) {
         appendContentToNode(node, ele);
         continue;

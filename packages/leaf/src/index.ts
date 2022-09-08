@@ -21,6 +21,8 @@ export const eventListeners: EventListenerMap = new WeakMap();
 /** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
 export const directPropUpdate = [{ name: 'value', attr: 'value' }];
 
+export const reactiveInstances = new Map<string, Reactive>();
+
 /**
  * Check if an attribute is an event handler.
  * @param propName Attribute name to check.
@@ -196,26 +198,6 @@ export const patchElements = (
     // IMPORTANT: update the event listener registery for future use
     setEventListenerOf(oldParent, newEventListener);
     deleteEventListenerOf(newParent);
-
-    // replace attributes
-    const oldAttributes = oldParent.attributes;
-    const newAttributes = newParent.attributes;
-
-    for (const attr of newAttributes) {
-      if (oldParent.getAttribute(attr.name) === attr.value) continue;
-      oldParent.setAttribute(attr.name, attr.value);
-      for (const specialProp of directPropUpdate) {
-        if (specialProp.name !== attr.name) continue;
-        // @ts-ignore
-        oldParent[specialProp.name] = attr.value;
-      }
-    }
-
-    for (const attr of oldAttributes) {
-      // only remove the attribute if it's not in the new element
-      if (newParent.hasAttribute(attr.name)) continue;
-      oldParent.removeAttribute(attr.name);
-    }
   }
 
   let i, j;
@@ -228,6 +210,29 @@ export const patchElements = (
     if (isElement(oldChild) && oldChild.hasAttribute('leaf-preserve')) {
       oldChild = oldChildren[++i];
       oldLen--;
+    }
+
+    // process attributes here so `connectedCallback` will receive the correct attribute
+    if (isElement(oldChild) && isElement(newChild)) {
+      // replace attributes
+      const oldAttributes = Array.prototype.slice.call(oldChild.attributes);
+      const newAttributes = Array.prototype.slice.call(newChild.attributes);
+
+      for (const attr of newAttributes) {
+        if (oldChild.getAttribute(attr.name) === attr.value) continue;
+        oldChild.setAttribute(attr.name, attr.value);
+        for (const specialProp of directPropUpdate) {
+          if (specialProp.name !== attr.name) continue;
+          // @ts-ignore
+          oldChild[specialProp.name] = attr.value;
+        }
+      }
+
+      for (const attr of oldAttributes) {
+        // only remove the attribute if it's not in the new element
+        if (newChild.hasAttribute(attr.name)) continue;
+        oldChild.removeAttribute(attr.name);
+      }
     }
 
     if (isElement(oldChild) && isElement(newChild) && oldChild.tagName !== newChild.tagName) {
@@ -287,25 +292,29 @@ export class LeafComponent extends HTMLElement {
   #reactiveInstance: Reactive | null = null;
   #previousRenderResult: HTMLElement[] | null = null;
   #shadow: ShadowRoot | null = null;
-
-  // static observedAttributes = ['value'];
+  #key: string | null | undefined = undefined;
+  #isMounted: boolean = false;
 
   constructor(_props: LeafComponentProps, ..._args: unknown[]) {
     super();
   }
 
+  static get watchedProps() {
+    return [];
+  }
+
+  static get observedAttributes() {
+    return ['key', ...this.watchedProps];
+  }
+
   /** Component inner state. */
   get state(): ReactiveObject {
+    if (!this.#isMounted) return;
     return this.#state;
   }
 
   /** {@inheritDoc LeafComponent.state} */
   set state(value: ReactiveObject) {
-    if (!this.#state) {
-      this.#reactiveInstance = new Reactive();
-      this.#state = this.#reactiveInstance.build(value);
-      return;
-    }
     this.#state = value;
   }
 
@@ -364,6 +373,7 @@ export class LeafComponent extends HTMLElement {
    * This function is invoked when the first initialization of the component.
    */
   connectedCallback() {
+    this.#isMounted = true;
     this.#shadow = this.attachShadow({ mode: 'closed' });
     const styleElement = createElement('style');
     const styler = this.css ?? this.#defaultStyler;
@@ -371,6 +381,22 @@ export class LeafComponent extends HTMLElement {
     styleElement.textContent = styler();
     styleElement.setAttribute('leaf-preserve', 'true');
     this.#shadow.appendChild(styleElement);
+
+    const currentInstance = reactiveInstances.get(this.#key || '');
+
+    // adopt the previous reactive data, if any
+    if (currentInstance) this.#reactiveInstance = currentInstance;
+    // or create a new one
+    else if (this.#state) this.#reactiveInstance = new Reactive();
+
+    if (this.#reactiveInstance?.actualState) {
+      this.#state = this.#reactiveInstance.actualState;
+    } else if (this.#state) {
+      this.#state = this.#reactiveInstance?.build(this.#state);
+    }
+
+    // IMPORTANT: only set the current `Reactive` instance when the key is valid
+    if (this.#reactiveInstance && this.#key) reactiveInstances.set(this.#key, this.#reactiveInstance);
 
     if (!this.#reactiveInstance) {
       this.rerender();
@@ -380,7 +406,12 @@ export class LeafComponent extends HTMLElement {
     this.#reactiveInstance?.onStateChange(() => this.rerender());
   }
 
-  attributeChangedCallback() {
+  attributeChangedCallback(name: string, _oldVal: string, newVal: string) {
+    // handle keying
+    if (name === 'key') {
+      this.#key = newVal;
+    }
+
     // rerender when attributes changed
     this.rerender();
   }

@@ -21,6 +21,7 @@ export class Reactive {
 
   onChange: EffectType | null = null;
   #isSetting: boolean = false;
+  actualState: ReactiveObject = undefined;
 
   /**
    * Get a trackable proxy object and fire certain callbacks on certain events.
@@ -127,7 +128,7 @@ export class Reactive {
       }
     };
 
-    return this.getTrackableObject(target, {
+    this.actualState = this.getTrackableObject(target, {
       onGet(target, key) {
         outerThis.track(target, key);
       },
@@ -141,6 +142,8 @@ export class Reactive {
       },
       onDeleteProperty() {},
     });
+
+    return this.actualState;
   }
 
   /**

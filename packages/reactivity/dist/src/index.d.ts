@@ -18,6 +18,7 @@ export declare class Reactive {
     /** {@inheritDoc TargetMap} */
     targetMap: TargetMap;
     onChange: EffectType | null;
+    actualState: ReactiveObject;
     /**
      * Get a trackable proxy object and fire certain callbacks on certain events.
      * @param obj The object to track updates.

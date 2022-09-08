@@ -1,18 +1,15 @@
-import { LeafComponent, HTMLElements, registerComponent } from 'https://cdn.jsdelivr.net/npm/@leaf-web/core@latest/dist/leaf.min.js';
+import { LeafComponent, registerComponent } from '@leaf-web/core';
 
 class Input extends LeafComponent {
   constructor(props) {
     super();
 
     this.props = props;
+    console.log(this.props);
   }
 
   render() {
-    const input = HTMLElements.input(this.props);
-    input.addEventListener('change', (e) => {
-      if (this.props.onChange) this.props.onChange(e);
-    });
-    return input;
+    return <input onChange={this.props.onChange} value={this.props.value} type="text" autoComplete='off' />;
   }
 
   css() {
@@ -32,4 +29,6 @@ class Input extends LeafComponent {
   }
 }
 
-export default registerComponent('todo-input-base', Input);
+registerComponent('todo-input-base', Input);
+
+export default Input;
