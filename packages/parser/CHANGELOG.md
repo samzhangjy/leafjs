@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.12](https://github.com/samzhangjy/leafjs/compare/v0.1.11...v0.1.12) (2022-09-09)
+
+**Note:** Version bump only for package @leaf-web/parser
+
 ## [0.1.11](https://github.com/samzhangjy/leafjs/compare/v0.1.10...v0.1.11) (2022-09-09)
 
 **Note:** Version bump only for package @leaf-web/parser

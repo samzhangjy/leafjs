@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.12](https://github.com/samzhangjy/leafjs/compare/v0.1.11...v0.1.12) (2022-09-09)
+
+### Bug Fixes
+
+* reactivity null check ([6be7e93](https://github.com/samzhangjy/leafjs/commit/6be7e9390d1c3ce309e49f65dd53c3e91eeda2f5))
+
 ## [0.1.10](https://github.com/samzhangjy/leafjs/compare/v0.1.9...v0.1.10) (2022-09-09)
 
 ### Features

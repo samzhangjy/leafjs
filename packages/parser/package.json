@@ -1,6 +1,6 @@
 {
   "name": "@leaf-web/parser",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Reasonable web components framework.",
   "main": "./dist/parser.min.js",
   "types": "./dist/parser.d.ts",
