@@ -7,9 +7,11 @@ declare type EventListener = {
     handler: LeafEventHandler;
 };
 export declare type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
+export declare type LeafComponentPropValue = any;
 export declare type LeafComponentProps = {
-    [key: string]: any;
+    [key: string]: LeafComponentPropValue;
 };
+export declare type LeafComponentAttribute = string | number | boolean;
 export declare const eventListeners: EventListenerMap;
 /** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
 export declare const directPropUpdate: {
@@ -30,6 +32,12 @@ export declare const isEventListener: (propName: string, _propContent: any) => _
  * @returns Is `node` an element node.
  */
 export declare const isElement: (node: Node) => node is HTMLElement;
+/**
+ * Check is a value a valid Leaf attribute.
+ * @param attr Attribute value to check.
+ * @returns Is `attr` a valid Leafjs attribute.
+ */
+export declare const isValidAttribute: (attr: any) => attr is LeafComponentAttribute;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -81,15 +89,19 @@ export declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChi
  */
 export declare class LeafComponent extends HTMLElement {
     #private;
+    props: LeafComponentProps;
+    isLeafComponent: boolean;
+    /**
+     * @see https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
+     */
+    ['constructor']: typeof LeafComponent;
     constructor(_props: LeafComponentProps, ..._args: unknown[]);
-    static get watchedProps(): never[];
+    static get watchedProps(): string[];
     static get observedAttributes(): string[];
     /** Component inner state. */
     get state(): ReactiveObject;
-    /** {@inheritDoc LeafComponent.state} */
+    /** {@inheritDoc LeafComponent.fireEvent} */
     set state(value: ReactiveObject);
-    /** Component props. */
-    get props(): LeafComponentProps;
     /** Event listeners attached to component. */
     get listeners(): EventListener[];
     /**

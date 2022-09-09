@@ -21,9 +21,11 @@ declare type EventListener = {
     handler: LeafEventHandler;
 };
 declare type EventListenerMap = WeakMap<HTMLElement, Set<EventListener>>;
+declare type LeafComponentPropValue = any;
 declare type LeafComponentProps = {
-    [key: string]: any;
+    [key: string]: LeafComponentPropValue;
 };
+declare type LeafComponentAttribute = string | number | boolean;
 declare const eventListeners: EventListenerMap;
 /** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
 declare const directPropUpdate: {
@@ -44,6 +46,12 @@ declare const isEventListener: (propName: string, _propContent: any) => _propCon
  * @returns Is `node` an element node.
  */
 declare const isElement: (node: Node) => node is HTMLElement;
+/**
+ * Check is a value a valid Leaf attribute.
+ * @param attr Attribute value to check.
+ * @returns Is `attr` a valid Leafjs attribute.
+ */
+declare const isValidAttribute: (attr: any) => attr is LeafComponentAttribute;
 /**
  * Create a new `HTMLElement` with given information.
  * @param tag Element tag.
@@ -95,15 +103,19 @@ declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChildren: 
  */
 declare class LeafComponent extends HTMLElement {
     #private;
+    props: LeafComponentProps;
+    isLeafComponent: boolean;
+    /**
+     * @see https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
+     */
+    ['constructor']: typeof LeafComponent;
     constructor(_props: LeafComponentProps, ..._args: unknown[]);
-    static get watchedProps(): never[];
+    static get watchedProps(): string[];
     static get observedAttributes(): string[];
     /** Component inner state. */
     get state(): ReactiveObject;
-    /** {@inheritDoc LeafComponent.state} */
+    /** {@inheritDoc LeafComponent.fireEvent} */
     set state(value: ReactiveObject);
-    /** Component props. */
-    get props(): LeafComponentProps;
     /** Event listeners attached to component. */
     get listeners(): EventListener[];
     /**
@@ -138,4 +150,4 @@ declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 
-export { EventListenerMap, baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentProps, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };
+export { EventListenerMap, baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentAttribute, LeafComponentPropValue, LeafComponentProps, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };

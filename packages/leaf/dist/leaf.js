@@ -516,6 +516,20 @@ var isElement = function isElement(node) {
   return node.nodeType === Node.ELEMENT_NODE;
 };
 
+var isLeafComponent = function isLeafComponent(element) {
+  return element.isLeafComponent === true;
+};
+/**
+ * Check is a value a valid Leaf attribute.
+ * @param attr Attribute value to check.
+ * @returns Is `attr` a valid Leafjs attribute.
+ */
+
+
+var isValidAttribute = function isValidAttribute(attr) {
+  return typeof attr === 'string' || typeof attr === 'number' || typeof attr === 'boolean';
+};
+
 var _createElement = function _createElement(tag, props, content) {
   if (typeof tag !== 'string') {
     var tagName = componentMap.get(tag);
@@ -526,7 +540,7 @@ var _createElement = function _createElement(tag, props, content) {
   var listeners = new Set();
 
   for (var prop in props) {
-    var propContent = typeof props[prop] === 'object' ? JSON.stringify(props[prop]) : props[prop];
+    var propContent = props[prop];
 
     if (isEventListener(prop)) {
       var listenerName = prop.substring(2).toLowerCase();
@@ -536,6 +550,11 @@ var _createElement = function _createElement(tag, props, content) {
       });
       element.addEventListener(listenerName, propContent);
       continue;
+    }
+
+    if (isLeafComponent(element)) {
+      element.props[prop] = propContent;
+      if (!isValidAttribute(propContent)) continue;
     }
 
     if (prop in preservedProps) {
@@ -664,9 +683,7 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
     deleteEventListenerOf(newParent);
   }
 
-  var i, j;
-
-  for (i = 0, j = 0; Math.max(i, j) < Math.min(oldLen, newLen); i++, j++) {
+  for (var i = 0, j = 0; Math.max(i, j) < Math.min(oldLen, newLen); i++, j++) {
     var oldChild = oldChildren[i];
     var newChild = newChildren[j]; // IMPORTANT: filter out preserved elements, in this case `<style />` tag
 
@@ -683,7 +700,8 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 
       for (var _iterator2 = _createForOfIteratorHelperLoose(newAttributes), _step2; !(_step2 = _iterator2()).done;) {
         var attr = _step2.value;
-        if (oldChild.getAttribute(attr.name) === attr.value) continue;
+        // don't assign objects to attributes, assign to properties only
+        if (!isValidAttribute(attr.value) || oldChild.getAttribute(attr.name) === attr.value) continue;
         oldChild.setAttribute(attr.name, attr.value);
 
         for (var _iterator4 = _createForOfIteratorHelperLoose(directPropUpdate), _step4; !(_step4 = _iterator4()).done;) {
@@ -714,6 +732,24 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
       }
 
       if (!isElement(oldChild)) continue;
+    } // update properties for Leaf components
+
+
+    if (isLeafComponent(oldChild) && isLeafComponent(newChild)) {
+      // always keep attributes and props in-sync
+      for (var _iterator5 = _createForOfIteratorHelperLoose(newChild.attributes), _step5; !(_step5 = _iterator5()).done;) {
+        var _attr2 = _step5.value;
+        oldChild.props[_attr2.name] = _attr2.value;
+      }
+
+      for (var prop in newChild.props) {
+        oldChild.props[prop] = newChild.props[prop];
+      }
+
+      for (var _prop in oldChild.props) {
+        if (_prop in newChild.props || newChild.hasAttribute(_prop)) continue;
+        delete oldChild.props[_prop];
+      }
     }
 
     if (oldChild.nodeType === Node.TEXT_NODE && newChild.nodeType === Node.TEXT_NODE) {
@@ -773,6 +809,49 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
     _LeafComponent_isMounted.set(_assertThisInitialized(_this), false);
 
+    _this.isLeafComponent = true;
+    var props = {}; // initialize properties
+
+    for (var _iterator6 = _createForOfIteratorHelperLoose(_this.constructor.observedAttributes), _step6; !(_step6 = _iterator6()).done;) {
+      var attr = _step6.value;
+      props[attr] = null;
+    }
+
+    var outerThis = _assertThisInitialized(_this);
+
+    var checkIsPropNameValid = function checkIsPropNameValid(key) {
+      if (!_this.constructor.observedAttributes.includes(key)) {
+        // throw an error if `key` isn't defined by the component
+        throw new Error("Unknown property " + key + ". Expected one of " + _this.constructor.observedAttributes.map(function (attr) {
+          return "'" + attr + "'";
+        }).join(', ') + ".");
+      }
+    };
+
+    _this.props = new Proxy(props, {
+      get: function get(target, key, receiver) {
+        checkIsPropNameValid(key);
+        return Reflect.get(target, key, receiver);
+      },
+      set: function set(target, key, value, receiver) {
+        checkIsPropNameValid(key);
+
+        if (isValidAttribute(value)) {
+          outerThis.setAttribute(key, value.toString());
+        }
+
+        var result = Reflect.set(target, key, value, receiver);
+        if (__classPrivateFieldGet(outerThis, _LeafComponent_isMounted, "f")) outerThis.rerender();
+        return result;
+      },
+      has: function has(_target, key) {
+        return outerThis.constructor.observedAttributes.includes(key);
+      },
+      deleteProperty: function deleteProperty(target, key) {
+        checkIsPropNameValid(key);
+        return Reflect.deleteProperty(target, key);
+      }
+    });
     return _this;
   }
 
@@ -905,24 +984,10 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
       if (!__classPrivateFieldGet(this, _LeafComponent_isMounted, "f")) return;
       return __classPrivateFieldGet(this, _LeafComponent_state, "f");
     }
-    /** {@inheritDoc LeafComponent.state} */
+    /** {@inheritDoc LeafComponent.fireEvent} */
     ,
     set: function set(value) {
       __classPrivateFieldSet(this, _LeafComponent_state, value, "f");
-    }
-    /** Component props. */
-
-  }, {
-    key: "props",
-    get: function get() {
-      var props = {};
-
-      for (var _iterator5 = _createForOfIteratorHelperLoose(this.attributes), _step5; !(_step5 = _iterator5()).done;) {
-        var attr = _step5.value;
-        props[attr.name] = attr.value;
-      }
-
-      return props;
     }
     /** Event listeners attached to component. */
 
@@ -939,7 +1004,7 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   }, {
     key: "observedAttributes",
     get: function get() {
-      return ['key'].concat(this.watchedProps);
+      return [].concat(this.watchedProps, ['key']);
     }
   }]);
 
@@ -960,6 +1025,7 @@ exports.eventListeners = eventListeners;
 exports.getEventListenerOf = getEventListenerOf;
 exports.isElement = isElement;
 exports.isEventListener = isEventListener;
+exports.isValidAttribute = isValidAttribute;
 exports.mountElements = mountElements;
 exports.patchElements = patchElements;
 exports.reactiveInstances = reactiveInstances;
