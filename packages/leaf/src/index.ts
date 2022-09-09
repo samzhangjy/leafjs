@@ -70,6 +70,11 @@ const _createElement = (
 
   const element: LeafComponent | HTMLElement = document.createElement(tag);
   const listeners = new Set<EventListener>();
+
+  if (isLeafComponent(element)) {
+    element.props.children = content;
+  }
+
   for (const prop in props) {
     const propContent = props[prop];
 

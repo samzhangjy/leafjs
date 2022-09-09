@@ -1,14 +1,12 @@
 import { LeafComponent, HTMLElements, registerComponent } from '@leaf-web/core';
 
 class Button extends LeafComponent {
-  constructor(props) {
+  constructor() {
     super();
-
-    this.props = props;
   }
 
   render() {
-    return <button onClick={this.props.onClick}>{this.props.children}</button>;
+    return <button onClick={() => this.fireEvent('click')}>{this.props.children}</button>;
   }
 
   css() {
