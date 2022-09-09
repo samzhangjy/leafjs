@@ -9,7 +9,7 @@ class TodoApp extends LeafComponent {
     this.state = {
       todoItems: [],
       currentlyEditing: '',
-      test: ''
+      test: '',
     };
   }
 
@@ -21,8 +21,7 @@ class TodoApp extends LeafComponent {
           placeholder="Add a todo..."
           value={this.state.currentlyEditing}
           onChange={(e) => {
-            this.state.currentlyEditing = e.target.value;
-            console.log(this.state.currentlyEditing);
+            this.state.currentlyEditing = e.detail.value;
           }}
           onAdd={() => {
             if (!this.state.currentlyEditing) return;
@@ -34,19 +33,16 @@ class TodoApp extends LeafComponent {
             this.state.currentlyEditing = '';
           }}
         />
-        <input onChange={(e) => this.state.test = e.target.value} value={this.state.test} />
-        <p>{this.state.test}</p>
-        <button onClick={() => this.state.test = 'abab'}>test</button>
         {this.state.todoItems.map((todo, index) => (
           <TodoItem
             name={todo.name}
             completed={todo.completed}
             onCompleted={() => {
               todo.completed = !todo.completed;
-              console.log(todo);
             }}
-            onEdit={(e) => (todo.name = e.target.value)}
+            onEdit={(e) => (todo.name = e.detail.value)}
             onDelete={() => this.state.todoItems.splice(index, 1)}
+            key={`todo-item-${index}`}
           />
         ))}
       </div>

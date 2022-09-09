@@ -4,9 +4,9 @@
     "dev": "leaf dev"
   },
   "dependencies": {
-    "@leaf-web/core": "^0.1.5"
+    "@leaf-web/core": "^0.1.10"
   },
   "devDependencies": {
-    "@leaf-web/parser": "^0.1.5"
+    "@leaf-web/parser": "^0.1.10"
   }
 }

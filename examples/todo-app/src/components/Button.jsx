@@ -1,12 +1,18 @@
 import { LeafComponent, HTMLElements, registerComponent } from '@leaf-web/core';
 
 class Button extends LeafComponent {
+  // static watchedProps = ['onClick'];
+
   constructor() {
     super();
   }
 
   render() {
-    return <button onClick={() => this.fireEvent('click')}>{this.props.children}</button>;
+    return (
+      <button onClick={(e) => this.fireEvent(e)}>
+        <slot></slot>
+      </button>
+    );
   }
 
   css() {

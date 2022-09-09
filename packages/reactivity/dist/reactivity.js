@@ -56,7 +56,7 @@ var Reactive = /*#__PURE__*/function () {
 
   _proto.getTrackableObject = function getTrackableObject(obj, callbacks) {
     for (var key in obj) {
-      if (typeof obj[key] === 'object') {
+      if (obj[key] && typeof obj[key] === 'object') {
         obj[key] = this.getTrackableObject(obj[key], callbacks);
       }
     }

@@ -31,7 +31,7 @@ export class Reactive {
    */
   getTrackableObject(obj: ReactiveObject, callbacks: TrackableCallback) {
     for (const key in obj) {
-      if (typeof obj[key] === 'object') {
+      if (obj[key] && typeof obj[key] === 'object') {
         obj[key] = this.getTrackableObject(obj[key], callbacks);
       }
     }

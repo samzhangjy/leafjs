@@ -3,10 +3,10 @@ import Input from './Input.jsx';
 import Button from './Button.jsx';
 
 class AddTodo extends LeafComponent {
-  constructor(props) {
-    super();
+  static watchedProps = ['placeholder', 'value'];
 
-    this.props = props;
+  constructor() {
+    super();
 
     this.state = {
       currentlyEditing: '',
@@ -19,9 +19,9 @@ class AddTodo extends LeafComponent {
         <Input
           placeholder={this.props.placeholder ?? 'Add todo...'}
           value={this.props.value}
-          onChange={this.props.onChange}
+          onChange={(e) => this.fireEvent('change', { value: e.detail.value })}
         />
-        <Button onClick={this.props.onAdd}>Add todo</Button>
+        <Button onClick={() => this.fireEvent('add')}>Add todo</Button>
       </div>
     );
   }

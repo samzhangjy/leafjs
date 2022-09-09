@@ -1,15 +1,19 @@
 import { LeafComponent, registerComponent } from '@leaf-web/core';
 
 class Input extends LeafComponent {
-  constructor(props) {
+  static watchedProps = ['placeholder', 'value'];
+  constructor() {
     super();
-
-    this.props = props;
-    console.log(this.props);
   }
 
   render() {
-    return <input onChange={this.props.onChange} value={this.props.value} type="text" autoComplete='off' />;
+    return (
+      <input
+        onChange={(e) => this.fireEvent('change', { value: e.target.value })}
+        value={this.props.value}
+        type="text"
+      />
+    );
   }
 
   css() {

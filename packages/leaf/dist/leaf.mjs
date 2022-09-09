@@ -209,7 +209,7 @@ var a = function () {
   var n = a.prototype;
   return n.getTrackableObject = function (t, e) {
     for (var r in t) {
-      "object" == typeof t[r] && (t[r] = this.getTrackableObject(t[r], e));
+      t[r] && "object" == typeof t[r] && (t[r] = this.getTrackableObject(t[r], e));
     }
 
     var a = this,

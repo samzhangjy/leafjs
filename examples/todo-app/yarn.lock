@@ -1348,23 +1348,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@leaf-web/core@npm:0.1.6, @leaf-web/core@npm:^0.1.5":
-  version: 0.1.6
-  resolution: "@leaf-web/core@npm:0.1.6"
-  checksum: 985b8654fe2566e3e4b7f7561f6bed8cf5a1d7d52442218c881155f204cb2ad7395909058ed7b324e522c3053a361aaf334bc86a758a2a7861b52dfdbb5188b9
+"@leaf-web/core@npm:0.1.11, @leaf-web/core@npm:^0.1.10":
+  version: 0.1.11
+  resolution: "@leaf-web/core@npm:0.1.11"
+  checksum: 8edafcb9f8ec003c54840c9e99752d5b403d1a1eee72469760dd64a9087cbdf9d672c3ed67954d839cc9caa1e0b1f308a7a672f6c48a5414cbe90913d0ed89e2
   languageName: node
   linkType: hard
 
-"@leaf-web/parser@npm:^0.1.5":
-  version: 0.1.6
-  resolution: "@leaf-web/parser@npm:0.1.6"
+"@leaf-web/parser@npm:^0.1.10":
+  version: 0.1.11
+  resolution: "@leaf-web/parser@npm:0.1.11"
   dependencies:
     "@babel/core": ^7.18.13
     "@babel/plugin-syntax-jsx": ^7.18.6
     "@babel/plugin-transform-react-jsx": ^7.18.10
     "@babel/plugin-transform-template-literals": ^7.18.9
     "@babel/preset-env": ^7.18.10
-    "@leaf-web/core": 0.1.6
+    "@leaf-web/core": 0.1.11
     "@rollup/plugin-babel": ^5.3.1
     "@rollup/plugin-commonjs": ^22.0.2
     "@rollup/plugin-inject": ^4.0.4
@@ -1384,7 +1384,7 @@ __metadata:
     rollup-plugin-terser: ^7.0.2
   bin:
     leaf: dist/parser.min.js
-  checksum: a110492fe26abdb2faa7163dae7dfebd7919292cb4876bb44c56d7a76e844ace9c2395e800b71b6b45ca2a813893d26aec5e462862e27d67573988a887faf006
+  checksum: c3f40f8c419ccfaddda561961c1d592c78d6d9d3188c4b5306042510bcb6f70897c006654a1569a8e65052c21c85f1c95128bc5232329da848bcd6ff1f6dcb68
   languageName: node
   linkType: hard
 
@@ -3447,8 +3447,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@leaf-web/core": ^0.1.5
-    "@leaf-web/parser": ^0.1.5
+    "@leaf-web/core": ^0.1.10
+    "@leaf-web/parser": ^0.1.10
   languageName: unknown
   linkType: soft
 
