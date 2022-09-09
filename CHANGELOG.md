@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/samzhangjy/leafjs/compare/v0.1.9...v0.1.10) (2022-09-09)
+
+### Bug Fixes
+
+* fixed incorrect update order ([20aafac](https://github.com/samzhangjy/leafjs/commit/20aafacbe86a682665555ed43a9116ea2fd5817b))
+
+### Features
+
+* basic keying for saving state upon rerender ([cf4c088](https://github.com/samzhangjy/leafjs/commit/cf4c0880ebfcd70255a86e8fe9811b2e516435e3))
+* dynamic property ([305faba](https://github.com/samzhangjy/leafjs/commit/305faba489e5f24b12b546d2cf773a6856880b82))
+
 ## [0.1.9](https://github.com/samzhangjy/leafjs/compare/v0.1.8...v0.1.9) (2022-09-04)
 
 ### Features

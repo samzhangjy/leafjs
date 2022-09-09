@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/samzhangjy/leafjs/compare/v0.1.9...v0.1.10) (2022-09-09)
+
+### Features
+
+* basic keying for saving state upon rerender ([cf4c088](https://github.com/samzhangjy/leafjs/commit/cf4c0880ebfcd70255a86e8fe9811b2e516435e3))
+
 ## [0.1.6](https://github.com/samzhangjy/leafjs/compare/v0.1.5...v0.1.6) (2022-09-04)
 
 **Note:** Version bump only for package @leaf-web/reactivity
