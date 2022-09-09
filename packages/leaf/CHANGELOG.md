@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/samzhangjy/leafjs/compare/v0.1.10...v0.1.11) (2022-09-09)
+
+### Features
+
+* added children prop for custom components ([e2551f6](https://github.com/samzhangjy/leafjs/commit/e2551f69eeec8838110ca110af97b3ba12d1f3f0))
+
 ## [0.1.10](https://github.com/samzhangjy/leafjs/compare/v0.1.9...v0.1.10) (2022-09-09)
 
 ### Bug Fixes
