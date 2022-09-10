@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/samzhangjy/leafjs/compare/v0.1.12...v0.2.0) (2022-09-10)
+
+### Features
+
+* added onMounted hook ([7034ce9](https://github.com/samzhangjy/leafjs/commit/7034ce99bc649a934fe0448de9efcbb4f4d35ac4))
+
 ## [0.1.12](https://github.com/samzhangjy/leafjs/compare/v0.1.11...v0.1.12) (2022-09-09)
 
 ### Bug Fixes
