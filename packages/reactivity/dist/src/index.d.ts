@@ -12,12 +12,12 @@ interface TrackableCallback {
 }
 /** Reactive object. */
 export declare class Reactive {
-    #private;
     /** Currently active running effects. */
     activeEffects: EffectType[];
     /** {@inheritDoc TargetMap} */
     targetMap: TargetMap;
     onChange: EffectType | null;
+    isSetting: boolean;
     actualState: ReactiveObject;
     /**
      * Get a trackable proxy object and fire certain callbacks on certain events.

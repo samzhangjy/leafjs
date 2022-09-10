@@ -20,7 +20,7 @@ export class Reactive {
   targetMap: TargetMap = new WeakMap<TargetMap>();
 
   onChange: EffectType | null = null;
-  #isSetting: boolean = false;
+  isSetting: boolean = false;
   actualState: ReactiveObject = undefined;
 
   /**
@@ -121,7 +121,7 @@ export class Reactive {
     // check if it is currently setting a reactive property, watch until it finished setting
     // and then invoke the `onStateChange` handler
     const fireWhenUpdated = () => {
-      if (!this.#isSetting) {
+      if (!this.isSetting) {
         if (this.onChange) this.onChange();
       } else {
         setTimeout(fireWhenUpdated, 2);
@@ -133,12 +133,12 @@ export class Reactive {
         outerThis.track(target, key);
       },
       onSet(target, key) {
-        if (!outerThis.#isSetting) {
-          outerThis.#isSetting = true;
+        if (!outerThis.isSetting) {
+          outerThis.isSetting = true;
           fireWhenUpdated();
         }
         outerThis.trigger(target, key);
-        outerThis.#isSetting = false;
+        outerThis.isSetting = false;
       },
       onDeleteProperty() {},
     });

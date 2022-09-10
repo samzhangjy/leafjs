@@ -1,4 +1,4 @@
-import { LeafComponent, HTMLElements, registerComponent } from '@leaf-web/core';
+import { LeafComponent, registerComponent } from '@leaf-web/core';
 import Input from './Input.jsx';
 import Button from './Button.jsx';
 
@@ -10,8 +10,12 @@ class TodoItem extends LeafComponent {
 
     this.state = {
       isEditing: false,
-      currentlyEditing: '',
+      currentlyEditing: this.props.name || '',
     };
+  }
+
+  onMounted() {
+    this.state.currentlyEditing = this.props.name;
   }
 
   render() {

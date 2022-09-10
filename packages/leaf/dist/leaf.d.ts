@@ -105,6 +105,7 @@ declare class LeafComponent extends HTMLElement {
     #private;
     props: LeafComponentProps;
     isLeafComponent: boolean;
+    isUpdating: boolean;
     /**
      * @see https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
      */
@@ -130,12 +131,16 @@ declare class LeafComponent extends HTMLElement {
      */
     rerender(): void;
     /**
+     * Callback when the component is mounted / re-mounted.
+     */
+    onMounted(): void;
+    /**
      * Start component lifecycle.
      *
      * This function is invoked when the first initialization of the component.
      */
     connectedCallback(): void;
-    attributeChangedCallback(name: string, _oldVal: string, newVal: string): void;
+    attributeChangedCallback(name: string, oldVal: string, newVal: string): void;
     /**
      * Core rendering logic of a component.
      * @returns HTML element to be rendered and attached.

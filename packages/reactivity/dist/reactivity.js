@@ -2,35 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-function __classPrivateFieldGet(receiver, state, kind, f) {
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-}
-function __classPrivateFieldSet(receiver, state, value, kind, f) {
-  if (kind === "m") throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-}
-
-var _Reactive_isSetting;
 /** Reactive object. */
-
 var Reactive = /*#__PURE__*/function () {
   function Reactive() {
     /** Currently active running effects. */
@@ -39,9 +11,7 @@ var Reactive = /*#__PURE__*/function () {
 
     this.targetMap = new WeakMap();
     this.onChange = null;
-
-    _Reactive_isSetting.set(this, false);
-
+    this.isSetting = false;
     this.actualState = undefined;
   }
   /**
@@ -160,7 +130,7 @@ var Reactive = /*#__PURE__*/function () {
     // and then invoke the `onStateChange` handler
 
     var fireWhenUpdated = function fireWhenUpdated() {
-      if (!__classPrivateFieldGet(_this, _Reactive_isSetting, "f")) {
+      if (!_this.isSetting) {
         if (_this.onChange) _this.onChange();
       } else {
         setTimeout(fireWhenUpdated, 2);
@@ -172,15 +142,13 @@ var Reactive = /*#__PURE__*/function () {
         outerThis.track(target, key);
       },
       onSet: function onSet(target, key) {
-        if (!__classPrivateFieldGet(outerThis, _Reactive_isSetting, "f")) {
-          __classPrivateFieldSet(outerThis, _Reactive_isSetting, true, "f");
-
+        if (!outerThis.isSetting) {
+          outerThis.isSetting = true;
           fireWhenUpdated();
         }
 
         outerThis.trigger(target, key);
-
-        __classPrivateFieldSet(outerThis, _Reactive_isSetting, false, "f");
+        outerThis.isSetting = false;
       },
       onDeleteProperty: function onDeleteProperty() {}
     });
@@ -238,7 +206,6 @@ var Reactive = /*#__PURE__*/function () {
 
   return Reactive;
 }();
-_Reactive_isSetting = new WeakMap();
 
 exports.Reactive = Reactive;
 //# sourceMappingURL=reactivity.js.map

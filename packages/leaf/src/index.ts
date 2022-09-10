@@ -48,6 +48,10 @@ const isLeafComponent = (element: any): element is LeafComponent => {
   return element.isLeafComponent === true;
 };
 
+const isTextNode = (node: Node): node is Text => {
+  return node.nodeType === Node.TEXT_NODE;
+};
+
 /**
  * Check is a value a valid Leaf attribute.
  * @param attr Attribute value to check.
@@ -231,6 +235,10 @@ export const patchElements = (
       oldLen--;
     }
 
+    // special optimizing for Leaf components
+    if (isLeafComponent(oldChild)) oldChild.isUpdating = true;
+    if (isLeafComponent(newChild)) newChild.isUpdating = true;
+
     // process attributes here so `connectedCallback` will receive the correct attribute
     if (isElement(oldChild) && isElement(newChild)) {
       // replace attributes
@@ -273,6 +281,8 @@ export const patchElements = (
       }
 
       if (!isElement(oldChild)) continue;
+
+      if (isLeafComponent(oldChild)) oldChild.isUpdating = true;
     }
 
     // update properties for Leaf components
@@ -292,13 +302,29 @@ export const patchElements = (
       }
     }
 
-    if (oldChild.nodeType === Node.TEXT_NODE && newChild.nodeType === Node.TEXT_NODE) {
+    if (isTextNode(oldChild) && isTextNode(newChild)) {
       if (oldChild.textContent === newChild.textContent) continue;
       oldParent.replaceChild(newChild, oldChild);
       continue;
     }
 
+    if (isTextNode(oldChild) && isElement(newChild)) {
+      oldParent.replaceChild(newChild, oldChild);
+      oldChild = newChild;
+      if (isLeafComponent(oldChild)) oldChild.isUpdating = true;
+    }
+
+    if (isElement(oldChild) && isTextNode(newChild)) {
+      oldParent.replaceChild(newChild, oldChild);
+      continue;
+    }
+
     patchElements(Array.from(oldChild.childNodes), Array.from(newChild.childNodes), oldChild, newChild);
+
+    if (isLeafComponent(oldChild)) {
+      oldChild.isUpdating = false;
+      oldChild.rerender();
+    }
   }
 
   // insert new elements
@@ -335,6 +361,7 @@ export class LeafComponent extends HTMLElement {
   #isMounted: boolean = false;
   props: LeafComponentProps;
   isLeafComponent = true;
+  isUpdating = false;
 
   /**
    * @see https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
@@ -432,10 +459,14 @@ export class LeafComponent extends HTMLElement {
    * Rerender the component based on current state.
    */
   rerender() {
-    if (!this.#shadow) return;
+    if (!this.#shadow || this.isUpdating || !this.#isMounted || this.#reactiveInstance?.isSetting) return;
+    if (this.#reactiveInstance) this.#reactiveInstance.isSetting = true;
+
+    this.onMounted();
 
     let renderResult = this.render();
     if (!Array.isArray(renderResult)) renderResult = [renderResult];
+    if (this.#reactiveInstance) this.#reactiveInstance.isSetting = false;
 
     if (!this.#previousRenderResult) {
       mountElements(renderResult, this.#shadow);
@@ -445,6 +476,13 @@ export class LeafComponent extends HTMLElement {
 
     patchElements(Array.from(this.#shadow.childNodes), Array.from(renderResult), this.#shadow, renderResult[0]);
     this.#previousRenderResult = renderResult;
+  }
+
+  /**
+   * Callback when the component is mounted / re-mounted.
+   */
+  onMounted() {
+    return;
   }
 
   /**
@@ -487,7 +525,9 @@ export class LeafComponent extends HTMLElement {
     this.#reactiveInstance?.onStateChange(() => this.rerender());
   }
 
-  attributeChangedCallback(name: string, _oldVal: string, newVal: string) {
+  attributeChangedCallback(name: string, oldVal: string, newVal: string) {
+    if (oldVal === newVal) return;
+
     // handle keying
     if (name === 'key') {
       this.#key = newVal;
