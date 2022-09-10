@@ -3,13 +3,9 @@ import { palette } from './colors.js';
 import Counter from './components/Counter.jsx';
 import Resources from './components/Resources.jsx';
 
-class MyComponent extends LeafComponent {
+class MyApp extends LeafComponent {
   constructor() {
     super();
-
-    this.state = {
-      counter: 0,
-    };
 
     this.links = [
       { title: 'Documentation', description: 'Leafjs official documentation.', link: 'https://leafjs.samzhangjy.com' },
@@ -81,4 +77,4 @@ class MyComponent extends LeafComponent {
   }
 }
 
-registerComponent('my-counter', MyComponent);
+registerComponent('my-app', MyApp);

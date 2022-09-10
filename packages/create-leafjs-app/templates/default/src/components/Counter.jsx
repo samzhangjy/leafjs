@@ -2,12 +2,20 @@ import { LeafComponent, registerComponent } from '@leaf-web/core';
 import Button from './Button.jsx';
 
 class Counter extends LeafComponent {
-  constructor(props) {
+  static watchedProps = ['count'];
+
+  constructor() {
     super();
 
     this.state = {
-      counter: props.count || 0,
+      counter: null,
     };
+  }
+
+  onMounted() {
+    if (this.state.counter === null) {
+      this.state.counter = this.props.count;
+    }
   }
 
   render() {

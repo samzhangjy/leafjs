@@ -2,10 +2,10 @@ import { LeafComponent, registerComponent } from '@leaf-web/core';
 import { palette } from '../colors';
 
 class Resources extends LeafComponent {
-  constructor(props) {
-    super();
+  static watchedProps = ['links'];
 
-    this.props = props;
+  constructor() {
+    super();
   }
 
   render() {

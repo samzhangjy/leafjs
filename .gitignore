@@ -4,6 +4,7 @@
 .editorconfig
 /packages/**/index.html
 /packages/**/example
+!/packages/create-leafjs-app/templates/**/index.html
 
 # Yarn
 **/.pnp.*

@@ -2,14 +2,16 @@ import { LeafComponent, registerComponent } from '@leaf-web/core';
 import { palette } from '../colors';
 
 class Button extends LeafComponent {
-  constructor(props) {
+  constructor() {
     super();
-
-    this.props = props;
   }
 
   render() {
-    return <button onClick={this.props.onClick}>{this.props.children}</button>;
+    return (
+      <button onClick={(e) => this.fireEvent(e)}>
+        <slot></slot>
+      </button>
+    );
   }
 
   css() {
