@@ -462,10 +462,15 @@ export class LeafComponent extends HTMLElement {
     if (!this.#shadow || this.isUpdating || !this.#isMounted || this.#reactiveInstance?.isSetting) return;
     if (this.#reactiveInstance) this.#reactiveInstance.isSetting = true;
 
-    this.onMounted();
+    if (!this.#previousRenderResult) {
+      this.onMounted();
+    } else {
+      this.onRerender();
+    }
 
     let renderResult = this.render();
     if (!Array.isArray(renderResult)) renderResult = [renderResult];
+
     if (this.#reactiveInstance) this.#reactiveInstance.isSetting = false;
 
     if (!this.#previousRenderResult) {
@@ -479,9 +484,16 @@ export class LeafComponent extends HTMLElement {
   }
 
   /**
-   * Callback when the component is mounted / re-mounted.
+   * Callback when the component is mounted.
    */
   onMounted() {
+    return;
+  }
+
+  /**
+   * Callback when the component is about to perform a rerender.
+   */
+  onRerender() {
     return;
   }
 
@@ -506,21 +518,16 @@ export class LeafComponent extends HTMLElement {
     // adopt the previous reactive data, if any
     if (currentInstance) this.#reactiveInstance = currentInstance;
     // or create a new one
-    else if (this.#state) this.#reactiveInstance = new Reactive();
+    else this.#reactiveInstance = new Reactive();
 
     if (this.#reactiveInstance?.actualState) {
       this.#state = this.#reactiveInstance.actualState;
-    } else if (this.#state) {
-      this.#state = this.#reactiveInstance?.build(this.#state);
+    } else {
+      this.#state = this.#reactiveInstance?.build(this.#state ?? {});
     }
 
     // IMPORTANT: only set the current `Reactive` instance when the key is valid
     if (this.#reactiveInstance && this.#key) reactiveInstances.set(this.#key, this.#reactiveInstance);
-
-    if (!this.#reactiveInstance) {
-      this.rerender();
-      return;
-    }
 
     this.#reactiveInstance?.onStateChange(() => this.rerender());
   }

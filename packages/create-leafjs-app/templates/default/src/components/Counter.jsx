@@ -6,16 +6,10 @@ class Counter extends LeafComponent {
 
   constructor() {
     super();
-
-    this.state = {
-      counter: null,
-    };
   }
 
   onMounted() {
-    if (this.state.counter === null) {
-      this.state.counter = this.props.count;
-    }
+    this.state.counter = this.props.count ?? 0;
   }
 
   render() {

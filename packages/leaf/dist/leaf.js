@@ -894,7 +894,13 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
 
     if (!__classPrivateFieldGet(this, _LeafComponent_shadow, "f") || this.isUpdating || !__classPrivateFieldGet(this, _LeafComponent_isMounted, "f") || ((_a = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _a === void 0 ? void 0 : _a.isSetting)) return;
     if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").isSetting = true;
-    this.onMounted();
+
+    if (!__classPrivateFieldGet(this, _LeafComponent_previousRenderResult, "f")) {
+      this.onMounted();
+    } else {
+      this.onRerender();
+    }
+
     var renderResult = this.render();
     if (!Array.isArray(renderResult)) renderResult = [renderResult];
     if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").isSetting = false;
@@ -912,11 +918,19 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
     __classPrivateFieldSet(this, _LeafComponent_previousRenderResult, renderResult, "f");
   }
   /**
-   * Callback when the component is mounted / re-mounted.
+   * Callback when the component is mounted.
    */
   ;
 
   _proto.onMounted = function onMounted() {
+    return;
+  }
+  /**
+   * Callback when the component is about to perform a rerender.
+   */
+  ;
+
+  _proto.onRerender = function onRerender() {
     return;
   }
   /**
@@ -929,7 +943,7 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   _proto.connectedCallback = function connectedCallback() {
     var _this2 = this;
 
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
 
     __classPrivateFieldSet(this, _LeafComponent_isMounted, true, "f");
 
@@ -947,23 +961,18 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
     var currentInstance = reactiveInstances.get(__classPrivateFieldGet(this, _LeafComponent_key, "f") || ''); // adopt the previous reactive data, if any
 
     if (currentInstance) __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, currentInstance, "f"); // or create a new one
-    else if (__classPrivateFieldGet(this, _LeafComponent_state, "f")) __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
+    else __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
 
     if ((_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.actualState) {
       __classPrivateFieldSet(this, _LeafComponent_state, __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").actualState, "f");
-    } else if (__classPrivateFieldGet(this, _LeafComponent_state, "f")) {
-      __classPrivateFieldSet(this, _LeafComponent_state, (_c = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _c === void 0 ? void 0 : _c.build(__classPrivateFieldGet(this, _LeafComponent_state, "f")), "f");
+    } else {
+      __classPrivateFieldSet(this, _LeafComponent_state, (_c = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _c === void 0 ? void 0 : _c.build((_d = __classPrivateFieldGet(this, _LeafComponent_state, "f")) !== null && _d !== void 0 ? _d : {}), "f");
     } // IMPORTANT: only set the current `Reactive` instance when the key is valid
 
 
-    if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f") && __classPrivateFieldGet(this, _LeafComponent_key, "f")) reactiveInstances.set(__classPrivateFieldGet(this, _LeafComponent_key, "f"), __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f"));
+    if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f") && __classPrivateFieldGet(this, _LeafComponent_key, "f")) reactiveInstances.set(__classPrivateFieldGet(this, _LeafComponent_key, "f"), __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")); // this.rerender();
 
-    if (!__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) {
-      this.rerender();
-      return;
-    }
-
-    (_d = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _d === void 0 ? void 0 : _d.onStateChange(function () {
+    (_e = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _e === void 0 ? void 0 : _e.onStateChange(function () {
       return _this2.rerender();
     });
   };

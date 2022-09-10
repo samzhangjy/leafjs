@@ -131,9 +131,13 @@ declare class LeafComponent extends HTMLElement {
      */
     rerender(): void;
     /**
-     * Callback when the component is mounted / re-mounted.
+     * Callback when the component is mounted.
      */
     onMounted(): void;
+    /**
+     * Callback when the component is about to perform a rerender.
+     */
+    onRerender(): void;
     /**
      * Start component lifecycle.
      *
