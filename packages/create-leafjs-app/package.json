@@ -1,6 +1,6 @@
 {
   "name": "create-leafjs-app",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Reasonable web components framework.",
   "main": "./dist/create-leaf-app.min.js",
   "types": "./dist/create-leaf-app.d.ts",

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/samzhangjy/leafjs/compare/v0.2.2...v0.2.3) (2022-09-10)
+
+### Features
+
+* added onRerender hook ([b54eedc](https://github.com/samzhangjy/leafjs/commit/b54eedcb30500cdff9ce72c3f7039cf98c8f2c7b))
+
 # [0.2.0](https://github.com/samzhangjy/leafjs/compare/v0.1.12...v0.2.0) (2022-09-10)
 
 ### Features
