@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/samzhangjy/leafjs/compare/v0.2.1...v0.2.2) (2022-09-10)
+
+### Bug Fixes
+
+* **cla:** pin template dependency version ([2c641fa](https://github.com/samzhangjy/leafjs/commit/2c641fa5219d5556f36d1b25cb45fa792865db32))
+
 ## [0.2.1](https://github.com/samzhangjy/leafjs/compare/v0.2.0...v0.2.1) (2022-09-10)
 
 ### Bug Fixes
