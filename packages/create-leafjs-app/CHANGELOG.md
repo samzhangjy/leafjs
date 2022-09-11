@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/samzhangjy/leafjs/compare/v0.2.4...v0.2.5) (2022-09-11)
+
+### Bug Fixes
+
+* **cla:** updated default template ([33324ff](https://github.com/samzhangjy/leafjs/commit/33324ff8906d6d05e5bafefd460eecd2a332d7d7))
+
 ## [0.2.3](https://github.com/samzhangjy/leafjs/compare/v0.2.2...v0.2.3) (2022-09-10)
 
 ### Features
