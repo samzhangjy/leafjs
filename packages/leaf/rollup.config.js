@@ -6,37 +6,49 @@ import commonjs from '@rollup/plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
 
 /**
+ * @type {import('@rollup/plugin-babel').RollupBabelInputPluginOptions}
+ */
+const babelConfig = {
+  babelHelpers: 'bundled',
+  extensions: ['.js', '.ts'],
+};
+
+const commonPlugins = [nodeResolve({ browser: true }), commonjs(), babel(babelConfig)];
+
+/**
  * @type {import('rollup').RollupOptions}
  */
 export default [
   {
     input: './src/index.ts',
-    output: [
-      {
-        format: 'cjs',
-        sourcemap: true,
-        name: 'leaf',
-        file: './dist/leaf.min.js',
-        plugins: [terser()],
-      },
-      {
-        format: 'cjs',
-        sourcemap: true,
-        name: 'leaf',
-        file: './dist/leaf.js',
-      },
-      {
-        format: 'esm',
-        sourcemap: true,
-        file: './dist/leaf.mjs',
-      },
-    ],
-    plugins: [
-      typescript({ outputToFilesystem: false }),
-      nodeResolve({ browser: true, preferBuiltins: false }),
-      commonjs(),
-      babel({ babelHelpers: 'bundled', extensions: ['.js', '.ts'], presets: [['@babel/preset-env', { loose: true }]] }),
-    ],
+    output: {
+      format: 'esm',
+      sourcemap: true,
+      file: './dist/leaf.mjs',
+    },
+    plugins: [typescript(), ...commonPlugins],
+    treeshake: true,
+  },
+  {
+    input: './src/index.ts',
+    output: {
+      format: 'es',
+      sourcemap: true,
+      name: 'leaf',
+      file: './dist/leaf.min.js',
+    },
+    plugins: [typescript(), ...commonPlugins, terser({ ecma: 2015 })],
+    treeshake: true,
+  },
+  {
+    input: './src/index.ts',
+    output: {
+      format: 'es',
+      sourcemap: true,
+      dir: './dist/es',
+      preserveModules: true,
+    },
+    plugins: [typescript({ outputToFilesystem: false, outDir: './dist/es' }), ...commonPlugins],
   },
   {
     input: './dist/src/index.d.ts',

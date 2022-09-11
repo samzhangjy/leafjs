@@ -348,6 +348,20 @@ export const patchElements = (
 };
 
 /**
+ * Helper function for defining CSS stylesheets.
+ * @param styles Stylesheet string.
+ * @returns Stylesheet string.
+ */
+export const css = (styles: string[], ...keys: string[]) => {
+  let constructedStyle = '';
+  let curKeyIndex = 0;
+  styles.forEach((style) => {
+    constructedStyle += style + keys[curKeyIndex++];
+  });
+  return constructedStyle;
+};
+
+/**
  * Core Leaf component class.
  *
  * This class is a thin wrapper of `HTMLElement` class and integrates a shadow DOM within.
@@ -568,5 +582,4 @@ export class LeafComponent extends HTMLElement {
 }
 
 export { Reactive } from '@leaf-web/reactivity';
-export { HTMLClassElements, HTMLElements } from './baseElements';
 export { registerComponent } from './common';

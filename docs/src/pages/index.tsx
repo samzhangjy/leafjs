@@ -3,7 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React from 'react';
-import GetStarted from '../../docs/intro.mdx';
+import HomepageFeatures from '../components/HomepageFeatures';
 
 import styles from './index.module.css';
 
@@ -34,7 +34,7 @@ export default function Home(): JSX.Element {
       <HomepageHeader />
       <div className={styles.spacer} />
       <div className="container">
-        <GetStarted />
+        <HomepageFeatures />
       </div>
     </Layout>
   );

@@ -14,6 +14,9 @@ import progress from 'rollup-plugin-progress';
 import { staticServer } from './server';
 import chokidar from 'chokidar';
 import open from 'open';
+import { injectToHTML } from './common';
+import minifyHTML from 'rollup-plugin-minify-html-literals';
+import postcss from 'rollup-plugin-postcss';
 
 const babelConfig: RollupBabelInputPluginOptions = {
   presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
@@ -92,18 +95,26 @@ export const bundleFiles = async (entry: string, outputDir: string) => {
   const inputOptions: RollupOptions = {
     input: entry,
     plugins: [
+      minifyHTML(),
+      postcss(),
       nodeResolve(),
       commonjs(),
       rollupBabelPlugin(babelConfig),
       inject({ ___leaf_create_element_react: ['@leaf-web/core', 'createElementReactStyle'] }),
-      terser(),
+      terser({
+        compress: {
+          passes: 5,
+        },
+      }),
       // @ts-ignore
       progress(),
     ],
+    treeshake: true,
   };
+  const outputPath = 'js/bundle.min.js';
   const outputOptions: OutputOptions = {
     format: 'iife',
-    file: path.join(outputDir, 'bundle.min.js'),
+    file: path.join(outputDir, outputPath),
   };
   let bundle = null;
   let isError = false;
@@ -123,20 +134,56 @@ export const bundleFiles = async (entry: string, outputDir: string) => {
   if (isError) {
     process.exit(1);
   }
+  return outputPath;
+};
+
+export const getConfigWithDefault = (userConfig: Record<string, string | null>) => {
+  return {
+    entry: userConfig.entry ?? './src/index.jsx',
+    outputDir: userConfig.outputDir ?? './dist',
+    entryHTML: userConfig.entryHTML ?? 'index.html',
+  };
 };
 
 export const buildFromConfig = async (configPath: string) => {
-  const configContent = JSON.parse(fs.readFileSync(configPath).toString());
+  const config = getConfigWithDefault(JSON.parse(fs.readFileSync(configPath).toString()));
+  const entryHTMLContent = fs.readFileSync(config.entryHTML).toString();
+  const outputHTMLPath = 'index.html';
+  const outputPath = await bundleFiles(config.entry, config.outputDir);
 
-  await bundleFiles(configContent.entry, configContent.outputDir);
+  fs.writeFileSync(
+    path.join(config.outputDir, outputHTMLPath),
+    injectToHTML(entryHTMLContent, `<script src='${outputPath}'></script>`, [
+      new RegExp('</head>', 'i'),
+      new RegExp('</body>', 'i'),
+    ])
+  );
 };
 
+export const DEV_SERVER_ROOT = './.leaf';
+
 export const startDevServer = (userConfig: any, port: number) => {
-  const config = JSON.parse(fs.readFileSync(userConfig).toString());
+  if (!fs.existsSync(DEV_SERVER_ROOT)) {
+    fs.mkdirSync(DEV_SERVER_ROOT);
+  }
+
+  const config = getConfigWithDefault(JSON.parse(fs.readFileSync(userConfig).toString()));
+  const bundleOutputPath = 'js/bundle.js';
+  const outputHTMLPath = 'index.html';
+  const entryHTMLContent = fs.readFileSync(config.entryHTML).toString();
+
+  fs.writeFileSync(
+    path.join(DEV_SERVER_ROOT, outputHTMLPath),
+    injectToHTML(entryHTMLContent, `<script src='${bundleOutputPath}'></script>`, [
+      new RegExp('</head>', 'i'),
+      new RegExp('</body>', 'i'),
+    ])
+  );
 
   const inputOptions: RollupOptions = {
     input: config.entry,
     plugins: [
+      postcss(),
       nodeResolve(),
       commonjs(),
       rollupBabelPlugin(babelConfig),
@@ -148,7 +195,7 @@ export const startDevServer = (userConfig: any, port: number) => {
 
   const outputOptions: OutputOptions = {
     format: 'iife',
-    file: path.join(config.outputDir, 'bundle.min.js'),
+    file: path.join(DEV_SERVER_ROOT, bundleOutputPath),
   };
 
   const watcher = watch({
@@ -158,7 +205,7 @@ export const startDevServer = (userConfig: any, port: number) => {
 
   let currentError: RollupError | null = null;
 
-  const server = staticServer('.');
+  const server = staticServer(DEV_SERVER_ROOT);
 
   server.start(port, async () => {
     info(`started development server on http://localhost:${port}.`);
@@ -233,6 +280,23 @@ program
   .option('-p, --port <number>', 'Port to start the development server.', '8080')
   .action((options) => {
     startDevServer(options.config, parseInt(options.port));
+  });
+
+program
+  .command('start')
+  .description('Start a Nodejs file server for `build` folder.')
+  .option('-p, --port <number>', 'Port to start the server', '8080')
+  .option('-d, --dir <string>', 'Directory to serve.', './dist')
+  .action((options) => {
+    if (!fs.existsSync(options.dir)) {
+      error(`Unable to locate directory ${options.dir}.`);
+      process.exit(1);
+    }
+    const server = staticServer(options.dir);
+    server.start(parseInt(options.port), async () => {
+      info(`Started server on http://localhost:${options.port}`);
+      await open(`http://localhost:${options.port}`);
+    });
   });
 
 program.parse();

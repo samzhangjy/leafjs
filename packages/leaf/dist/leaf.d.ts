@@ -11,9 +11,6 @@ declare type ElementProps = Record<string, string>;
  */
 declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions) => (props: LeafComponentProps, ...args: unknown[]) => LeafComponent;
 
-declare const baseClassComponents: Record<string, typeof HTMLElement>;
-declare const baseComponents: Record<string, (...args: unknown[]) => HTMLElement>;
-
 declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 declare type LeafEventHandler = (e: Event) => unknown;
 declare type EventListener = {
@@ -97,6 +94,12 @@ declare const mountElements: (children: Node[], container: Node) => void;
  */
 declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChildren: Node[], oldParent: Node, newParent: Node) => void;
 /**
+ * Helper function for defining CSS stylesheets.
+ * @param styles Stylesheet string.
+ * @returns Stylesheet string.
+ */
+declare const css: (styles: string[], ...keys: string[]) => string;
+/**
  * Core Leaf component class.
  *
  * This class is a thin wrapper of `HTMLElement` class and integrates a shadow DOM within.
@@ -159,4 +162,4 @@ declare class LeafComponent extends HTMLElement {
     css(): string;
 }
 
-export { EventListenerMap, baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, LeafComponentAttribute, LeafComponentPropValue, LeafComponentProps, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };
+export { EventListenerMap, LeafComponent, LeafComponentAttribute, LeafComponentPropValue, LeafComponentProps, LeafComponentRenderResult, LeafEventHandler, createElement, createElementReactStyle, css, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };

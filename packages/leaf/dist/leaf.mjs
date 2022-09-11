@@ -1,158 +1,3 @@
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-
-  _setPrototypeOf(subClass, superClass);
-}
-
-function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-  return _setPrototypeOf(o, p);
-}
-
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _construct(Parent, args, Class) {
-  if (_isNativeReflectConstruct()) {
-    _construct = Reflect.construct.bind();
-  } else {
-    _construct = function _construct(Parent, args, Class) {
-      var a = [null];
-      a.push.apply(a, args);
-      var Constructor = Function.bind.apply(Parent, a);
-      var instance = new Constructor();
-      if (Class) _setPrototypeOf(instance, Class.prototype);
-      return instance;
-    };
-  }
-
-  return _construct.apply(null, arguments);
-}
-
-function _isNativeFunction(fn) {
-  return Function.toString.call(fn).indexOf("[native code]") !== -1;
-}
-
-function _wrapNativeSuper(Class) {
-  var _cache = typeof Map === "function" ? new Map() : undefined;
-
-  _wrapNativeSuper = function _wrapNativeSuper(Class) {
-    if (Class === null || !_isNativeFunction(Class)) return Class;
-
-    if (typeof Class !== "function") {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    if (typeof _cache !== "undefined") {
-      if (_cache.has(Class)) return _cache.get(Class);
-
-      _cache.set(Class, Wrapper);
-    }
-
-    function Wrapper() {
-      return _construct(Class, arguments, _getPrototypeOf(this).constructor);
-    }
-
-    Wrapper.prototype = Object.create(Class.prototype, {
-      constructor: {
-        value: Wrapper,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    return _setPrototypeOf(Wrapper, Class);
-  };
-
-  return _wrapNativeSuper(Class);
-}
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-  return arr2;
-}
-
-function _createForOfIteratorHelperLoose(o, allowArrayLike) {
-  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
-  if (it) return (it = it.call(o)).next.bind(it);
-
-  if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-    if (it) o = it;
-    var i = 0;
-    return function () {
-      if (i >= o.length) return {
-        done: true
-      };
-      return {
-        done: false,
-        value: o[i++]
-      };
-    };
-  }
-
-  throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -179,109 +24,120 @@ function __classPrivateFieldSet(receiver, state, value, kind, f) {
   return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 }
 
-var reactivity_min = {};
+/** Reactive object. */
+class Reactive {
+  constructor() {
+    /** Currently active running effects. */
+    this.activeEffects = [];
+    this.onChange = null;
+    this.isSetting = false;
+    this.actualState = undefined;
+  }
+  /**
+   * Get a trackable proxy object and fire certain callbacks on certain events.
+   * @param obj The object to track updates.
+   * @param callbacks Callbacks to run when certain event was fired.
+   * @returns A proxy to the original object.
+   */
 
-Object.defineProperty(reactivity_min, "__esModule", {
-  value: !0
-});
 
-var t = function () {
-  function t() {
-    this.activeEffects = [], this.targetMap = new WeakMap(), this.onChange = null, this.isSetting = !1, this.actualState = void 0;
+  getTrackableObject(obj, callbacks) {
+    for (const key in obj) {
+      if (obj[key] && typeof obj[key] === 'object') {
+        obj[key] = this.getTrackableObject(obj[key], callbacks);
+      }
+    }
+
+    const outerThis = this;
+    const proxy = new Proxy(obj, {
+      get(target, key, receiver) {
+        const result = Reflect.get(target, key, receiver);
+        callbacks.onGet(target, key, receiver);
+        return result;
+      },
+
+      set(target, key, value, receiver) {
+        if (typeof value === 'object') {
+          value = outerThis.getTrackableObject(value, callbacks);
+        }
+
+        const result = Reflect.set(target, key, value, receiver);
+        callbacks.onSet(target, key, value, receiver);
+        return result;
+      },
+
+      deleteProperty(target, key) {
+        const result = Reflect.deleteProperty(target, key);
+        callbacks.onDeleteProperty(target, key);
+        return result;
+      }
+
+    });
+
+    if (Array.isArray(obj)) {
+      Object.setPrototypeOf(proxy, Array.prototype);
+    }
+
+    return proxy;
+  }
+  /**
+   * Create a reactive object and enable two-way auto update.
+   * @param target The object to be made reactive.
+   * @returns The proxied reactive object.
+   */
+
+
+  build(target) {
+    const outerThis = this; // workaround for to many rerenders
+    // check if it is currently setting a reactive property, watch until it finished setting
+    // and then invoke the `onStateChange` handler
+
+    const fireWhenUpdated = () => {
+      if (!this.isSetting) {
+        if (this.onChange) this.onChange();
+      } else {
+        setTimeout(fireWhenUpdated, 2);
+      }
+    };
+
+    this.actualState = this.getTrackableObject(target, {
+      onGet() {},
+
+      onSet() {
+        if (!outerThis.isSetting) {
+          outerThis.isSetting = true;
+          fireWhenUpdated();
+        }
+
+        outerThis.isSetting = false;
+      },
+
+      onDeleteProperty() {}
+
+    });
+    return this.actualState;
+  }
+  /**
+   * Fire an effect when any state changes, regardless of dependencies. This function can only be called once.
+   * @param effect Effect to run when state changes.
+   */
+
+
+  onStateChange(effect) {
+    this.onChange = effect;
+    effect();
   }
 
-  var e = t.prototype;
-  return e.getTrackableObject = function (t, e) {
-    for (var n in t) {
-      t[n] && "object" == typeof t[n] && (t[n] = this.getTrackableObject(t[n], e));
-    }
+}
 
-    var r = this,
-        i = new Proxy(t, {
-      get: function get(t, n, r) {
-        var i = Reflect.get(t, n, r);
-        return e.onGet(t, n, r), i;
-      },
-      set: function set(t, n, i, a) {
-        "object" == typeof i && (i = r.getTrackableObject(i, e));
-        var c = Reflect.set(t, n, i, a);
-        return e.onSet(t, n, i, a), c;
-      },
-      deleteProperty: function deleteProperty(t, n) {
-        var r = Reflect.deleteProperty(t, n);
-        return e.onDeleteProperty(t, n), r;
-      }
-    });
-    return Array.isArray(t) && Object.setPrototypeOf(i, Array.prototype), i;
-  }, e.track = function (t, e) {
-    if (this.activeEffects.length) {
-      var n = this.targetMap.get(t);
-      n || (n = new Map(), this.targetMap.set(t, n));
-      var r = n.get(e);
-      r || (r = new Set(), n.set(e, r)), this.activeEffects.forEach(function (t) {
-        return null == r ? void 0 : r.add(t);
-      });
-    }
-  }, e.trigger = function (t, e) {
-    var n = this.targetMap.get(t);
-
-    if (n) {
-      var r = n.get(e);
-      r && r.forEach(function (t) {
-        t();
-      });
-    }
-  }, e.watchEffect = function (t) {
-    this.activeEffects.push(t), t(), this.activeEffects.pop();
-  }, e.build = function (t) {
-    var e = this,
-        n = this,
-        r = function t() {
-      e.isSetting ? setTimeout(t, 2) : e.onChange && e.onChange();
-    };
-
-    return this.actualState = this.getTrackableObject(t, {
-      onGet: function onGet(t, e) {
-        n.track(t, e);
-      },
-      onSet: function onSet(t, e) {
-        n.isSetting || (n.isSetting = !0, r()), n.trigger(t, e), n.isSetting = !1;
-      },
-      onDeleteProperty: function onDeleteProperty() {}
-    }), this.actualState;
-  }, e.ref = function (t) {
-    var e = this,
-        n = {
-      get value() {
-        return e.track(n, "value"), t;
-      },
-
-      set value(r) {
-        r !== t && (t = r, e.trigger(n, "value"));
-      }
-
-    };
-    return n;
-  }, e.computed = function (t) {
-    var e = this.ref(null);
-    return this.watchEffect(function () {
-      return e.value = t();
-    }), e;
-  }, e.onStateChange = function (t) {
-    this.onChange = t, t();
-  }, t;
-}();
-
-var Reactive = reactivity_min.Reactive = t;
-
-var componentMap = new WeakMap();
+const componentMap = new WeakMap();
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.
  * @returns Is `content` having structures like `NodeList`.
  */
 
-var isNodeListLike = function isNodeListLike(content) {
+const isNodeListLike = content => {
   return HTMLCollection.prototype.isPrototypeOf(content) || NodeList.prototype.isPrototypeOf(content) || Array.isArray(content);
 };
 /**
@@ -290,7 +146,7 @@ var isNodeListLike = function isNodeListLike(content) {
  * @returns Is `content` having structures like `Node`.
  */
 
-var isNodeLike = function isNodeLike(content) {
+const isNodeLike = content => {
   return typeof content.nodeType !== 'undefined' || typeof content === 'string' || typeof content === 'number';
 };
 /**
@@ -300,20 +156,16 @@ var isNodeLike = function isNodeLike(content) {
  * @returns A function used to create the custom component.
  */
 
-var registerComponent = function registerComponent(tagName, component, props) {
+const registerComponent = (tagName, component, props) => {
   customElements.define(tagName, component, props);
   componentMap.set(component, tagName);
-  return function (props) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    return _construct(component, [props].concat(args));
+  return (props, ...args) => {
+    return new component(props, ...args);
   };
 };
 /** Preserved element attributes mapping */
 
-var preservedProps = {
+const preservedProps = {
   className: 'class'
 };
 /**
@@ -322,7 +174,7 @@ var preservedProps = {
  * @returns Is `node` falsy or not.
  */
 
-var isFalsyNode = function isFalsyNode(node) {
+const isFalsyNode = node => {
   return node === false || node === undefined || node === null;
 };
 /**
@@ -331,10 +183,9 @@ var isFalsyNode = function isFalsyNode(node) {
  * @param content Custom content elements to insert.
  */
 
-var appendContentToNode = function appendContentToNode(node, content) {
+const appendContentToNode = (node, content) => {
   if (isNodeListLike(content)) {
-    for (var _iterator = _createForOfIteratorHelperLoose(content), _step; !(_step = _iterator()).done;) {
-      var ele = _step.value;
+    for (const ele of content) {
       // IMPORTANT: filter falsy nodes out to allow syntaxes like `condition && renderSomething()`
       if (isFalsyNode(ele)) continue;
 
@@ -350,132 +201,15 @@ var appendContentToNode = function appendContentToNode(node, content) {
   }
 };
 
-/** Base HTML elements mapping */
-
-var LeafBaseComponents = [{
-  name: 'button',
-  extends: HTMLButtonElement
-}, {
-  name: 'div',
-  extends: HTMLDivElement
-}, {
-  name: 'input',
-  extends: HTMLInputElement
-}, {
-  name: 'h1',
-  extends: HTMLHeadingElement
-}, {
-  name: 'h2',
-  extends: HTMLHeadingElement
-}, {
-  name: 'h3',
-  extends: HTMLHeadingElement
-}, {
-  name: 'h4',
-  extends: HTMLHeadingElement
-}, {
-  name: 'h5',
-  extends: HTMLHeadingElement
-}, {
-  name: 'h6',
-  extends: HTMLHeadingElement
-}, {
-  name: 'p',
-  extends: HTMLParagraphElement
-}, {
-  name: 'li',
-  extends: HTMLLIElement
-}, {
-  name: 'ul',
-  extends: HTMLUListElement
-}, {
-  name: 'ol',
-  extends: HTMLOListElement
-}, {
-  name: 'span',
-  extends: HTMLSpanElement
-}, {
-  name: 'form',
-  extends: HTMLFormElement
-}, {
-  name: 'label',
-  extends: HTMLLabelElement
-}, {
-  name: 'a',
-  extends: HTMLAnchorElement
-}, {
-  name: 'textarea',
-  extends: HTMLTextAreaElement
-}, {
-  name: 'iframe',
-  extends: HTMLIFrameElement
-}, {
-  name: 'img',
-  extends: HTMLImageElement
-}, {
-  name: 'video',
-  extends: HTMLVideoElement
-}];
-var baseClassComponents = {};
-var baseComponents = {};
-/**
- * Construct a custom `HTMLElement` with given parent to extend from.
- * @param parent `HTMLElement` class to inherit from.
- * @returns Consturcted element subclass.
- */
-
-var makeBaseClassComponent = function makeBaseClassComponent(parent) {
-  return /*#__PURE__*/function (_parent) {
-    _inheritsLoose(_class, _parent);
-
-    function _class(content, props) {
-      var _this;
-
-      _this = _parent.call(this) || this;
-      if (!content) return _assertThisInitialized(_this);
-
-      if (!isNodeLike(content) && !isNodeListLike(content)) {
-        for (var propName in content) {
-          _this.setAttribute(propName in preservedProps ? preservedProps[propName] : propName, content[propName]);
-        }
-
-        return _assertThisInitialized(_this);
-      }
-
-      appendContentToNode(_assertThisInitialized(_this), [].concat(content));
-      if (!props) return _assertThisInitialized(_this);
-
-      for (var _propName in props) {
-        _this.setAttribute(_propName in preservedProps ? preservedProps[_propName] : _propName, props[_propName]);
-      }
-
-      return _this;
-    }
-
-    return _class;
-  }(parent);
-};
-
-LeafBaseComponents.forEach(function (component) {
-  baseComponents[component.name] = function (content, props) {
-    return createElement(component.name, content, props);
-  };
-
-  baseClassComponents[component.name] = makeBaseClassComponent(component.extends);
-  customElements.define("leaf-__" + component.name, baseClassComponents[component.name], {
-    extends: component.name
-  });
-}); // TODO: find out a way to export components directly using named imports
-
 var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_key, _LeafComponent_isMounted, _LeafComponent_defaultStyler;
-var eventListeners = new WeakMap();
+const eventListeners = new WeakMap();
 /** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
 
-var directPropUpdate = [{
+const directPropUpdate = [{
   name: 'value',
   attr: 'value'
 }];
-var reactiveInstances = new Map();
+const reactiveInstances = new Map();
 /**
  * Check if an attribute is an event handler.
  * @param propName Attribute name to check.
@@ -483,7 +217,7 @@ var reactiveInstances = new Map();
  * @returns Is this attribute an event handler.
  */
 
-var isEventListener = function isEventListener(propName, _propContent) {
+const isEventListener = (propName, _propContent) => {
   return propName.startsWith('on');
 };
 /**
@@ -492,15 +226,15 @@ var isEventListener = function isEventListener(propName, _propContent) {
  * @returns Is `node` an element node.
  */
 
-var isElement = function isElement(node) {
+const isElement = node => {
   return node.nodeType === Node.ELEMENT_NODE;
 };
 
-var isLeafComponent = function isLeafComponent(element) {
+const isLeafComponent = element => {
   return element.isLeafComponent === true;
 };
 
-var isTextNode = function isTextNode(node) {
+const isTextNode = node => {
   return node.nodeType === Node.TEXT_NODE;
 };
 /**
@@ -510,24 +244,24 @@ var isTextNode = function isTextNode(node) {
  */
 
 
-var isValidAttribute = function isValidAttribute(attr) {
+const isValidAttribute = attr => {
   return typeof attr === 'string' || typeof attr === 'number' || typeof attr === 'boolean';
 };
 
-var _createElement = function _createElement(tag, props, content) {
+const _createElement = (tag, props, content) => {
   if (typeof tag !== 'string') {
-    var tagName = componentMap.get(tag);
+    const tagName = componentMap.get(tag);
     if (!tagName) throw new Error('Unable to fetch component from registery.');else tag = tagName;
   }
 
-  var element = document.createElement(tag);
-  var listeners = new Set();
+  const element = document.createElement(tag);
+  const listeners = new Set();
 
-  for (var prop in props) {
-    var propContent = props[prop];
+  for (const prop in props) {
+    const propContent = props[prop];
 
     if (isEventListener(prop)) {
-      var listenerName = prop.substring(2).toLowerCase();
+      const listenerName = prop.substring(2).toLowerCase();
       listeners.add({
         name: listenerName,
         handler: propContent
@@ -565,7 +299,7 @@ var _createElement = function _createElement(tag, props, content) {
  */
 
 
-var createElement = function createElement(tag, content, props) {
+const createElement = (tag, content, props) => {
   if (typeof content === 'undefined') return _createElement(tag);
 
   if (!isNodeLike(content) && !isNodeListLike(content)) {
@@ -582,11 +316,7 @@ var createElement = function createElement(tag, content, props) {
  * @returns Created HTML element.
  */
 
-var createElementReactStyle = function createElementReactStyle(tag, props) {
-  for (var _len = arguments.length, content = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    content[_key - 2] = arguments[_key];
-  }
-
+const createElementReactStyle = (tag, props, ...content) => {
   if (!content) return createElement(tag, props !== null && props !== void 0 ? props : {});
   return createElement(tag, content, props !== null && props !== void 0 ? props : {});
 };
@@ -596,14 +326,14 @@ var createElementReactStyle = function createElementReactStyle(tag, props) {
  * @returns A set of event listener objects.
  */
 
-var getEventListenerOf = function getEventListenerOf(element) {
+const getEventListenerOf = element => {
   if (!eventListeners.has(element)) return undefined;
   return eventListeners.get(element);
 };
-var setEventListenerOf = function setEventListenerOf(element, listeners) {
+const setEventListenerOf = (element, listeners) => {
   eventListeners.set(element, listeners || new Set());
 };
-var deleteEventListenerOf = function deleteEventListenerOf(element) {
+const deleteEventListenerOf = element => {
   return eventListeners.delete(element);
 };
 /**
@@ -612,11 +342,9 @@ var deleteEventListenerOf = function deleteEventListenerOf(element) {
  * @param callback Function to invoke.
  */
 
-var runCallbackOnElements = function runCallbackOnElements(elements, callback) {
+const runCallbackOnElements = (elements, callback) => {
   if (isNodeListLike(elements)) {
-    for (var _iterator = _createForOfIteratorHelperLoose(elements), _step; !(_step = _iterator()).done;) {
-      var ele = _step.value;
-
+    for (const ele of elements) {
       if (Array.isArray(ele)) {
         runCallbackOnElements(ele, callback);
         continue;
@@ -634,8 +362,8 @@ var runCallbackOnElements = function runCallbackOnElements(elements, callback) {
  * @param container The container DOM element to contain the children.
  */
 
-var mountElements = function mountElements(children, container) {
-  children.forEach(function (child) {
+const mountElements = (children, container) => {
+  children.forEach(child => {
     container.appendChild(child);
   });
 };
@@ -647,19 +375,19 @@ var mountElements = function mountElements(children, container) {
  * @param newParent The newly generated element, unattached to DOM.
  */
 
-var patchElements = function patchElements(oldChildren, newChildren, oldParent, newParent) {
+const patchElements = (oldChildren, newChildren, oldParent, newParent) => {
   if (!oldParent) return;
-  var oldLen = oldChildren.length,
+  let oldLen = oldChildren.length,
       newLen = newChildren.length;
 
   if (isElement(oldParent) && isElement(newParent)) {
     // replace event listeners
-    var oldEventListener = getEventListenerOf(oldParent);
-    var newEventListener = getEventListenerOf(newParent);
-    oldEventListener === null || oldEventListener === void 0 ? void 0 : oldEventListener.forEach(function (value) {
+    const oldEventListener = getEventListenerOf(oldParent);
+    const newEventListener = getEventListenerOf(newParent);
+    oldEventListener === null || oldEventListener === void 0 ? void 0 : oldEventListener.forEach(value => {
       oldParent.removeEventListener(value.name, value.handler);
     });
-    newEventListener === null || newEventListener === void 0 ? void 0 : newEventListener.forEach(function (value) {
+    newEventListener === null || newEventListener === void 0 ? void 0 : newEventListener.forEach(value => {
       oldParent.addEventListener(value.name, value.handler);
     }); // IMPORTANT: update the event listener registery for future use
 
@@ -667,9 +395,9 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
     deleteEventListenerOf(newParent);
   }
 
-  for (var i = 0, j = 0; Math.max(i, j) < Math.min(oldLen, newLen); i++, j++) {
-    var oldChild = oldChildren[i];
-    var newChild = newChildren[j]; // IMPORTANT: filter out preserved elements, in this case `<style />` tag
+  for (let i = 0, j = 0; Math.max(i, j) < Math.min(oldLen, newLen); i++, j++) {
+    let oldChild = oldChildren[i];
+    const newChild = newChildren[j]; // IMPORTANT: filter out preserved elements, in this case `<style />` tag
 
     if (isElement(oldChild) && oldChild.hasAttribute('leaf-preserve')) {
       oldChild = oldChildren[++i];
@@ -682,34 +410,31 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 
     if (isElement(oldChild) && isElement(newChild)) {
       // replace attributes
-      var oldAttributes = Array.prototype.slice.call(oldChild.attributes);
-      var newAttributes = Array.prototype.slice.call(newChild.attributes);
+      const oldAttributes = Array.prototype.slice.call(oldChild.attributes);
+      const newAttributes = Array.prototype.slice.call(newChild.attributes);
 
-      for (var _iterator2 = _createForOfIteratorHelperLoose(newAttributes), _step2; !(_step2 = _iterator2()).done;) {
-        var attr = _step2.value;
+      for (const attr of newAttributes) {
         // don't assign objects to attributes, assign to properties only
         if (!isValidAttribute(attr.value) || oldChild.getAttribute(attr.name) === attr.value) continue;
         oldChild.setAttribute(attr.name, attr.value);
 
-        for (var _iterator4 = _createForOfIteratorHelperLoose(directPropUpdate), _step4; !(_step4 = _iterator4()).done;) {
-          var specialProp = _step4.value;
+        for (const specialProp of directPropUpdate) {
           if (specialProp.name !== attr.name) continue; // @ts-ignore
 
           oldChild[specialProp.name] = attr.value;
         }
       }
 
-      for (var _iterator3 = _createForOfIteratorHelperLoose(oldAttributes), _step3; !(_step3 = _iterator3()).done;) {
-        var _attr = _step3.value;
+      for (const attr of oldAttributes) {
         // only remove the attribute if it's not in the new element
-        if (newChild.hasAttribute(_attr.name)) continue;
-        oldChild.removeAttribute(_attr.name);
+        if (newChild.hasAttribute(attr.name)) continue;
+        oldChild.removeAttribute(attr.name);
       }
     }
 
     if (isElement(oldChild) && isElement(newChild) && oldChild.tagName !== newChild.tagName) {
-      var referenceElement = oldChild.previousSibling;
-      oldChild.outerHTML = oldChild.outerHTML.replace(new RegExp("<" + oldChild.tagName.toLowerCase() + "(.*?)", 'g'), "<" + newChild.tagName.toLowerCase() + "$1").replace(new RegExp("</" + oldChild.tagName.toLowerCase() + "(.*?)", 'g'), "</" + newChild.tagName.toLowerCase() + "$1"); // IMPORTANT: setting outerHTML will not update the element reference itself,
+      let referenceElement = oldChild.previousSibling;
+      oldChild.outerHTML = oldChild.outerHTML.replace(new RegExp(`<${oldChild.tagName.toLowerCase()}(.*?)`, 'g'), `<${newChild.tagName.toLowerCase()}$1`).replace(new RegExp(`</${oldChild.tagName.toLowerCase()}(.*?)`, 'g'), `</${newChild.tagName.toLowerCase()}$1`); // IMPORTANT: setting outerHTML will not update the element reference itself,
       // so refreshing the element by a reference element is needed
 
       if (referenceElement) {
@@ -725,18 +450,17 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 
     if (isLeafComponent(oldChild) && isLeafComponent(newChild)) {
       // always keep attributes and props in-sync
-      for (var _iterator5 = _createForOfIteratorHelperLoose(newChild.attributes), _step5; !(_step5 = _iterator5()).done;) {
-        var _attr2 = _step5.value;
-        oldChild.props[_attr2.name] = _attr2.value;
+      for (const attr of newChild.attributes) {
+        oldChild.props[attr.name] = attr.value;
       }
 
-      for (var prop in newChild.props) {
+      for (const prop in newChild.props) {
         oldChild.props[prop] = newChild.props[prop];
       }
 
-      for (var _prop in oldChild.props) {
-        if (_prop in newChild.props || newChild.hasAttribute(_prop)) continue;
-        delete oldChild.props[_prop];
+      for (const prop in oldChild.props) {
+        if (prop in newChild.props || newChild.hasAttribute(prop)) continue;
+        delete oldChild.props[prop];
       }
     }
 
@@ -767,7 +491,7 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 
 
   if (newLen > oldLen) {
-    newChildren.slice(oldLen).forEach(function (child) {
+    newChildren.slice(oldLen).forEach(child => {
       if (child.nodeType === Node.TEXT_NODE) {
         oldParent.appendChild(child);
         return;
@@ -780,10 +504,24 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
 
 
   if (newLen < oldLen) {
-    oldChildren.slice(newLen).forEach(function (child) {
+    oldChildren.slice(newLen).forEach(child => {
       oldParent.removeChild(child);
     });
   }
+};
+/**
+ * Helper function for defining CSS stylesheets.
+ * @param styles Stylesheet string.
+ * @returns Stylesheet string.
+ */
+
+const css = (styles, ...keys) => {
+  let constructedStyle = '';
+  let curKeyIndex = 0;
+  styles.forEach(style => {
+    constructedStyle += style + keys[curKeyIndex++];
+  });
+  return constructedStyle;
 };
 /**
  * Core Leaf component class.
@@ -791,91 +529,113 @@ var patchElements = function patchElements(oldChildren, newChildren, oldParent, 
  * This class is a thin wrapper of `HTMLElement` class and integrates a shadow DOM within.
  */
 
-var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
-  _inheritsLoose(LeafComponent, _HTMLElement);
+class LeafComponent extends HTMLElement {
+  constructor(_props, ..._args) {
+    super();
 
-  function LeafComponent(_props) {
-    var _this;
+    _LeafComponent_instances.add(this);
 
-    _this = _HTMLElement.call(this) || this;
+    _LeafComponent_state.set(this, null);
 
-    _LeafComponent_instances.add(_assertThisInitialized(_this));
+    _LeafComponent_reactiveInstance.set(this, null);
 
-    _LeafComponent_state.set(_assertThisInitialized(_this), null);
+    _LeafComponent_previousRenderResult.set(this, null);
 
-    _LeafComponent_reactiveInstance.set(_assertThisInitialized(_this), null);
+    _LeafComponent_shadow.set(this, null);
 
-    _LeafComponent_previousRenderResult.set(_assertThisInitialized(_this), null);
+    _LeafComponent_key.set(this, undefined);
 
-    _LeafComponent_shadow.set(_assertThisInitialized(_this), null);
+    _LeafComponent_isMounted.set(this, false);
 
-    _LeafComponent_key.set(_assertThisInitialized(_this), undefined);
+    this.isLeafComponent = true;
+    this.isUpdating = false;
+    const props = {}; // initialize properties
 
-    _LeafComponent_isMounted.set(_assertThisInitialized(_this), false);
-
-    _this.isLeafComponent = true;
-    _this.isUpdating = false;
-    var props = {}; // initialize properties
-
-    for (var _iterator6 = _createForOfIteratorHelperLoose(_this.constructor.observedAttributes), _step6; !(_step6 = _iterator6()).done;) {
-      var attr = _step6.value;
+    for (const attr of this.constructor.observedAttributes) {
       props[attr] = null;
     }
 
-    var outerThis = _assertThisInitialized(_this);
+    const outerThis = this;
 
-    var checkIsPropNameValid = function checkIsPropNameValid(key) {
-      if (!_this.constructor.observedAttributes.includes(key)) {
+    const checkIsPropNameValid = key => {
+      if (!this.constructor.observedAttributes.includes(key)) {
         // throw an error if `key` isn't defined by the component
-        throw new Error("Unknown property " + key + ". Expected one of " + _this.constructor.observedAttributes.map(function (attr) {
-          return "'" + attr + "'";
-        }).join(', ') + ".");
+        throw new Error(`Unknown property ${key}. Expected one of ${this.constructor.observedAttributes.map(attr => `'${attr}'`).join(', ')}.`);
       }
     };
 
-    _this.props = new Proxy(props, {
-      get: function get(target, key, receiver) {
+    this.props = new Proxy(props, {
+      get(target, key, receiver) {
         checkIsPropNameValid(key);
         return Reflect.get(target, key, receiver);
       },
-      set: function set(target, key, value, receiver) {
+
+      set(target, key, value, receiver) {
         checkIsPropNameValid(key);
 
         if (isValidAttribute(value)) {
           outerThis.setAttribute(key, value.toString());
         }
 
-        var result = Reflect.set(target, key, value, receiver);
+        const result = Reflect.set(target, key, value, receiver);
         if (__classPrivateFieldGet(outerThis, _LeafComponent_isMounted, "f")) outerThis.rerender();
         return result;
       },
-      has: function has(_target, key) {
+
+      has(_target, key) {
         return outerThis.constructor.observedAttributes.includes(key);
       },
-      deleteProperty: function deleteProperty(target, key) {
+
+      deleteProperty(target, key) {
         checkIsPropNameValid(key);
         return Reflect.deleteProperty(target, key);
       }
+
     });
-    return _this;
   }
 
-  var _proto = LeafComponent.prototype;
+  static get watchedProps() {
+    return [];
+  }
 
+  static get observedAttributes() {
+    return [...this.watchedProps, 'key'];
+  }
+  /** Component inner state. */
+
+
+  get state() {
+    if (!__classPrivateFieldGet(this, _LeafComponent_isMounted, "f")) return;
+    return __classPrivateFieldGet(this, _LeafComponent_state, "f");
+  }
+  /** {@inheritDoc LeafComponent.fireEvent} */
+
+
+  set state(value) {
+    __classPrivateFieldSet(this, _LeafComponent_state, value, "f");
+  }
+  /** Event listeners attached to component. */
+
+
+  get listeners() {
+    return Array.from(getEventListenerOf(this) || []);
+  }
   /**
    * Dispatch a custom event to listeners.
    * @param event Event object or name to fire.
    * @param data Extra data to pass to `CustomEvent.detail`.
    * @returns Is the fired event's `preventDefault` hook called.
    */
-  _proto.fireEvent = function fireEvent(event, data) {
+
+
+  fireEvent(event, data) {
     if (event instanceof Event) {
       // stop bubbling to prevent multiple invokation of the event
       event.stopPropagation();
       return this.fireEvent(event.type, data);
     }
 
-    var toDispatch = new CustomEvent(event, {
+    const toDispatch = new CustomEvent(event, {
       detail: data
     });
     return this.dispatchEvent(toDispatch);
@@ -883,9 +643,9 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   /**
    * Rerender the component based on current state.
    */
-  ;
 
-  _proto.rerender = function rerender() {
+
+  rerender() {
     var _a;
 
     if (!__classPrivateFieldGet(this, _LeafComponent_shadow, "f") || this.isUpdating || !__classPrivateFieldGet(this, _LeafComponent_isMounted, "f") || ((_a = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _a === void 0 ? void 0 : _a.isSetting)) return;
@@ -897,7 +657,7 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
       this.onRerender();
     }
 
-    var renderResult = this.render();
+    let renderResult = this.render();
     if (!Array.isArray(renderResult)) renderResult = [renderResult];
     if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").isSetting = false;
 
@@ -916,17 +676,17 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
   /**
    * Callback when the component is mounted.
    */
-  ;
 
-  _proto.onMounted = function onMounted() {
+
+  onMounted() {
     return;
   }
   /**
    * Callback when the component is about to perform a rerender.
    */
-  ;
 
-  _proto.onRerender = function onRerender() {
+
+  onRerender() {
     return;
   }
   /**
@@ -934,11 +694,9 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
    *
    * This function is invoked when the first initialization of the component.
    */
-  ;
 
-  _proto.connectedCallback = function connectedCallback() {
-    var _this2 = this;
 
+  connectedCallback() {
     var _a, _b, _c, _d, _e;
 
     __classPrivateFieldSet(this, _LeafComponent_isMounted, true, "f");
@@ -947,14 +705,14 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
       mode: 'closed'
     }), "f");
 
-    var styleElement = createElement('style');
-    var styler = (_a = this.css) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _LeafComponent_instances, "m", _LeafComponent_defaultStyler);
+    const styleElement = createElement('style');
+    const styler = (_a = this.css) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _LeafComponent_instances, "m", _LeafComponent_defaultStyler);
     styleElement.textContent = styler();
     styleElement.setAttribute('leaf-preserve', 'true');
 
     __classPrivateFieldGet(this, _LeafComponent_shadow, "f").appendChild(styleElement);
 
-    var currentInstance = reactiveInstances.get(__classPrivateFieldGet(this, _LeafComponent_key, "f") || ''); // adopt the previous reactive data, if any
+    const currentInstance = reactiveInstances.get(__classPrivateFieldGet(this, _LeafComponent_key, "f") || ''); // adopt the previous reactive data, if any
 
     if (currentInstance) __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, currentInstance, "f"); // or create a new one
     else __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
@@ -966,14 +724,11 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
     } // IMPORTANT: only set the current `Reactive` instance when the key is valid
 
 
-    if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f") && __classPrivateFieldGet(this, _LeafComponent_key, "f")) reactiveInstances.set(__classPrivateFieldGet(this, _LeafComponent_key, "f"), __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")); // this.rerender();
+    if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f") && __classPrivateFieldGet(this, _LeafComponent_key, "f")) reactiveInstances.set(__classPrivateFieldGet(this, _LeafComponent_key, "f"), __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f"));
+    (_e = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _e === void 0 ? void 0 : _e.onStateChange(() => this.rerender());
+  }
 
-    (_e = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _e === void 0 ? void 0 : _e.onStateChange(function () {
-      return _this2.rerender();
-    });
-  };
-
-  _proto.attributeChangedCallback = function attributeChangedCallback(name, oldVal, newVal) {
+  attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal === newVal) return; // handle keying
 
     if (name === 'key') {
@@ -987,9 +742,9 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
    * Core rendering logic of a component.
    * @returns HTML element to be rendered and attached.
    */
-  ;
 
-  _proto.render = function render() {
+
+  render() {
     throw new Error('Render function of `LeafComponent` must be overrided.');
   }
   /**
@@ -998,49 +753,16 @@ var LeafComponent = /*#__PURE__*/function (_HTMLElement) {
    * Not to be confused with the builtin prop `style`.
    * @returns CSS stylesheet string.
    */
-  ;
 
-  _proto.css = function css() {
+
+  css() {
     return '';
-  };
+  }
 
-  _createClass(LeafComponent, [{
-    key: "state",
-    get:
-    /** Component inner state. */
-    function get() {
-      if (!__classPrivateFieldGet(this, _LeafComponent_isMounted, "f")) return;
-      return __classPrivateFieldGet(this, _LeafComponent_state, "f");
-    }
-    /** {@inheritDoc LeafComponent.fireEvent} */
-    ,
-    set: function set(value) {
-      __classPrivateFieldSet(this, _LeafComponent_state, value, "f");
-    }
-    /** Event listeners attached to component. */
-
-  }, {
-    key: "listeners",
-    get: function get() {
-      return Array.from(getEventListenerOf(this) || []);
-    }
-  }], [{
-    key: "watchedProps",
-    get: function get() {
-      return [];
-    }
-  }, {
-    key: "observedAttributes",
-    get: function get() {
-      return [].concat(this.watchedProps, ['key']);
-    }
-  }]);
-
-  return LeafComponent;
-}( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
+}
 _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_key = new WeakMap(), _LeafComponent_isMounted = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
   return '';
 };
 
-export { baseClassComponents as HTMLClassElements, baseComponents as HTMLElements, LeafComponent, Reactive, createElement, createElementReactStyle, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };
+export { LeafComponent, Reactive, createElement, createElementReactStyle, css, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };
 //# sourceMappingURL=leaf.mjs.map

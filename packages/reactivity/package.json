@@ -3,6 +3,8 @@
   "version": "0.2.0",
   "description": "Reasonable web components framework.",
   "main": "./dist/reactivity.min.js",
+  "module": "./dist/es/index.js",
+  "type": "module",
   "types": "./dist/reactivity.d.ts",
   "scripts": {
     "build": "run-s clean && run-p build:rollup",
