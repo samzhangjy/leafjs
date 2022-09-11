@@ -1,4 +1,4 @@
-import { LeafComponent, registerComponent } from '@leaf-web/core';
+import { css, LeafComponent, registerComponent } from '@leaf-web/core';
 import { palette } from '../colors';
 
 class Resources extends LeafComponent {
@@ -22,7 +22,7 @@ class Resources extends LeafComponent {
   }
 
   css() {
-    return `
+    return css`
       .link {
         padding: 10px 30px;
         border: 1px solid #eee;

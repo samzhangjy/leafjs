@@ -1,4 +1,4 @@
-import { LeafComponent, registerComponent } from '@leaf-web/core';
+import { css, LeafComponent, registerComponent } from '@leaf-web/core';
 import Button from './Button.jsx';
 
 class Counter extends LeafComponent {
@@ -23,7 +23,7 @@ class Counter extends LeafComponent {
   }
 
   css() {
-    return `
+    return css`
       .counter {
         margin: 0 10px;
       }

@@ -1,7 +1,8 @@
-import { LeafComponent, registerComponent } from '@leaf-web/core';
+import { css, LeafComponent, registerComponent } from '@leaf-web/core';
 import { palette } from './colors.js';
 import Counter from './components/Counter.jsx';
 import Resources from './components/Resources.jsx';
+import './styles/global.css';
 
 class MyApp extends LeafComponent {
   constructor() {
@@ -39,7 +40,7 @@ class MyApp extends LeafComponent {
   }
 
   css() {
-    return `
+    return css`
       .container {
         margin: 0 20vw;
         gap: 100px;

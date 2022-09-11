@@ -1,4 +1,4 @@
-import { LeafComponent, registerComponent } from '@leaf-web/core';
+import { css, LeafComponent, registerComponent } from '@leaf-web/core';
 import { palette } from '../colors';
 
 class Button extends LeafComponent {
@@ -15,7 +15,7 @@ class Button extends LeafComponent {
   }
 
   css() {
-    return `
+    return css`
       button {
         padding: 5px 10px;
         background-color: transparent;
