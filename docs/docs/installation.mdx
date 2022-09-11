@@ -1,0 +1,82 @@
+---
+sidebar_position: 2
+---
+
+import Playground from '@site/src/components/Playground.tsx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Installation
+
+## Creating a new project
+
+We recommend using `create-leafjs-app` (or `cla` for short) for newly created projects. CLA will automatically handle the development server and build process by interacting with Rollup JavaScript API.
+
+However, using other bundlers such as Webpack may be possible - but with no offical support.
+
+Simply run:
+
+<Tabs>
+  <TabItem value="yarn" label="Yarn" default>
+
+    yarn create leafjs-app my-app
+
+  </TabItem>
+  <TabItem value="npx" label="NPX">
+
+    npx create-leafjs-app my-app
+
+  </TabItem>
+</Tabs>
+
+To create a new app named `my-app`. Then `cd my-app` to go into the app directory and install the dependencies using either Yarn or NPM. Finally, run:
+
+
+<Tabs>
+  <TabItem value="yarn" label="Yarn" default>
+
+    yarn dev
+
+  </TabItem>
+  <TabItem value="npm" label="NPM">
+
+    npm run dev
+
+  </TabItem>
+</Tabs>
+
+To start a hot reloading development server.
+
+Other commands such as `build`, `start` are also available.
+
+## Adding Leaf to an existing project
+
+To manually add Leafjs to an existing project, install the required packages:
+
+
+<Tabs>
+  <TabItem value="yarn" label="Yarn" default>
+
+    yarn add @leaf-web/core @leaf-web/parser
+
+  </TabItem>
+  <TabItem value="npm" label="NPM">
+
+    npm i @leaf-web/core @leaf-web/parser
+
+  </TabItem>
+</Tabs>
+
+Then in your `package.json`, add the following scripts:
+
+```json title="package.json"
+{
+  "scripts": {
+    "build": "leaf build",
+    "dev": "leaf dev",
+    "start": "leaf start"
+  }
+}
+```
+
+Where `build` is used to build production-ready bundles and `dev` to start a hot-reloading development server. The `start` command is to serve the bundle produced by `build`. However, the `start` command should only be used for testing purposes - it contains **no** optimization!

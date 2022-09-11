@@ -14,8 +14,9 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/developer-activity.svg').default,
     description: (
       <>
-        Leafjs was built with ease of use in mind. By using solutions such as Vue-like reactivity, Leaf combines the
-        best parts of the best frameworks.
+        Leafjs was built with ease of use in mind. By using awesome solutions such as Vue-like reactivity and JSX, Leaf
+        combines the best parts of the best frameworks. Thanks to web-components, Leaf made components a lot simpler -
+        natively supported by <a href="https://caniuse.com/?search=web%20components">most modern browsers</a>.
       </>
     ),
   },
@@ -24,8 +25,9 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/speed.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can be extended while reusing the same
-        header and footer.
+        Leaf is extreamly lightweight - 3kb minified + compressed. While keeping it lightweight, the awesome Leaf
+        reactivity system uses a strategy similar to caching - Leaf locks the rerender process when another rerender is
+        going, which decreases the amount of rerenders at a visible level.
       </>
     ),
   },
@@ -35,22 +37,40 @@ const FeatureList: FeatureItem[] = [
     description: (
       <>
         Leaf is totally based on web-components, which is great for building components that can be used with any or
-        none framework.
+        none framework. However, Leaf is also compatible when it comes to building websites: Leaf provides the{' '}
+        <code>create-leafjs-app</code> tool which automatically handles everything for you!
       </>
     ),
   },
 ];
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function Feature({
+  title,
+  Svg,
+  description,
+  isLeft,
+}: {
+  title: string;
+  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  description: JSX.Element;
+  isLeft: boolean;
+}) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
+    <div className={`${styles.feature} container`}>
+      {isLeft && (
+        <div className={styles.featureIcon}>
+          <Svg className={styles.featureSvg} role="img" />
+        </div>
+      )}
+      <div className={styles.featureDescription}>
+        <h2>{title}</h2>
         <p>{description}</p>
       </div>
+      {!isLeft && (
+        <div className={styles.featureIcon}>
+          <Svg className={styles.featureSvg} role="img" />
+        </div>
+      )}
     </div>
   );
 }
@@ -58,12 +78,10 @@ function Feature({ title, Svg, description }: FeatureItem) {
 export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
-      <div className="container">
-        <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))}
-        </div>
+      <div>
+        {FeatureList.map((props, idx) => (
+          <Feature key={idx} isLeft={idx % 2 === 0} {...props} />
+        ))}
       </div>
     </section>
   );

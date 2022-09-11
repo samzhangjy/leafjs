@@ -10,10 +10,35 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroOuter {
+  position: relative;
+  height: calc(100vh - 50px);
+  background-color: var(--ifm-color-primary);
+  color: #fff;
+}
+
+.heroContainer {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  align-items: start;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.coverIcon {
+  width: 100%;
+  max-height: 400px;
+  grid-column: span 6 / span 6;
+  object-fit: cover;
+}
+
+.mainHeading {
+  grid-column: span 6 / span 6;
+  text-align: left !important;
+  margin-top: 50px;
+  width: 100%;
 }
 
 .buttons {
@@ -24,4 +49,29 @@
 
 .spacer {
   margin-top: 50px;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+
+  .coverIcon {
+    grid-column: span 12 / span 12;
+  }
+
+  .mainHeading {
+    grid-column: span 12 / span 12;
+    margin-top: 100px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .coverIcon {
+    max-height: 200px;
+  }
+
+  .mainHeading {
+    margin-top: 50px;
+  }
 }

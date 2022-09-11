@@ -3,23 +3,54 @@ sidebar_position: 1
 ---
 
 import Playground from '@site/src/components/Playground.tsx';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Introduction
 
 ## What is Leafjs
 
-Leafjs is a lightweight frontend framework built using web components and browser ES Modules.
+Leafjs is a lightweight frontend framework built based on web components.
 
-Using web components allows you to create components natively - supported by most modern browsers. Unlike React and Vue, Leafjs's component system is totally built on top of the web component system.
+Using web components allows you to create components natively - supported by [most modern browsers](https://caniuse.com/?search=web%20components). Unlike React and Vue, Leafjs's component system is totally built on top of the web component system, meaning that you can even use your components through native tags inside a plain HTML file as long as importing your bundled code.
 
-And just like React, Leafjs implements a simple reactivity system that allows two-way binding, just like most frameworks do.
+And for sure, Leafjs implements a simple reactivity system that allows two-way binding, just like most frameworks do.
 
 ## Getting Started
 
-Because Leafjs targets browser ES Moudles, so no transpilation is needed to use Leafjs: just plain JavaScript!
+Leafjs provides a out-of-the-box bundle tool for you to use. Run the following command in your shell to create a new Leafjs app:
 
-Here's a template:
+<Tabs>
+  <TabItem value="yarn" label="Yarn" default>
+
+    yarn create leafjs-app my-app
+
+  </TabItem>
+  <TabItem value="npx" label="NPX">
+
+    npx create-leafjs-app my-app
+
+  </TabItem>
+</Tabs>
+
+Then run `cd my-app` to go into the app directory. Then install the dependencies using either Yarn or NPM. After that, run:
+
+
+<Tabs>
+  <TabItem value="yarn" label="Yarn" default>
+
+    yarn dev
+
+  </TabItem>
+  <TabItem value="npm" label="NPM">
+
+    npm run dev
+
+  </TabItem>
+</Tabs>
+
+To start a hot reloading development server.
+
+Or if you just wanted to play around with Leafjs online, here's a simple CodeSandbox for you:
 
 <Playground src="https://codesandbox.io/embed/zen-kapitsa-3lrwr5?fontsize=14&hidenavigation=1&theme=dark" />
-
-Note that whenever you need to use Leafjs, add the `type="module"` attribute to the `<script />` tag.

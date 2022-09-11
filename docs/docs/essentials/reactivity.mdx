@@ -12,7 +12,7 @@ Assume the following script:
 
 ```js
 // name's initial value is John
-name = 'John'
+name = 'John';
 
 console.log('Name:', name);
 
@@ -39,44 +39,47 @@ Here our `makeReactive()` function will turn a variable into a reactive variable
 
 The above is the brief concept about reactivity. However, things are a little bit more complicated in actual development. But let us start from the easiest ones. Assume you have the following component:
 
-```js
+```jsx
 class Counter extends LeafComponent {
   constructor() {
     super();
   }
 
   render() {
-    const plusButton = new HTMLElements.button("+");
-    const minusButton = new HTMLElements.button("-");
-    const currentCount = new HTMLElements.p(
-      `Counter: 0`
+    return (
+      <div>
+        <button>+</button>
+        <p>Counter: 0</p>
+        <button>-</button>
+      </div>
     );
-    return [plusButton, minusButton, currentCount];
   }
 }
 ```
 
 Currently this component will not do anything when you click on `+` or `-`. Now we need to make it update based on user's clicks. In Leafjs, each component has its internal state accessible through `this.state`. Let's define our current count there:
 
-```js
+```jsx
 class Counter extends LeafComponent {
   constructor() {
     super();
 
     // highlight-start
     this.state = {
-      count: 0
+      count: 0,
     };
     // highlight-end
   }
 
   render() {
-    const plusButton = new HTMLElements.button("+");
-    const minusButton = new HTMLElements.button("-");
-    const currentCount = new HTMLElements.p(
-      `Counter: ${this.state.count}`  // state is accessible just like a normal variable
+    return (
+      <div>
+        <button>+</button>
+        {/* state is accessible like a normal variable */}
+        <p>Counter: {this.state.count}</p>
+        <button>-</button>
+      </div>
     );
-    return [plusButton, minusButton, currentCount];
   }
 }
 ```
@@ -88,7 +91,7 @@ Never define your state using class property assignment, such as:
 class Counter extends LeafComponent {
   // DON'T!!
   state = {
-    count: 0
+    count: 0,
   };
 
   constructor() {
@@ -102,40 +105,30 @@ This will override Leafjs's getter and setter for the `state` property and makin
 
 And now we should add some event listeners to the buttons:
 
-```js
+```jsx
 class Counter extends LeafComponent {
   constructor() {
     super();
 
     this.state = {
-      count: 0
+      count: 0,
     };
   }
 
   render() {
-    const plusButton = new HTMLElements.button("+");
-    // highlight-start
-    plusButton.addEventListener("click", () => {
-      this.state.count++;
-    });
-    // highlight-end
-    const minusButton = new HTMLElements.button("-");
-    // highlight-start
-    minusButton.addEventListener("click", () => {
-      this.state.count--;
-    });
-    // highlight-end
-    const currentCount = new HTMLElements.p(
-      `Counter: ${this.state.count}`
+    return (
+      <div>
+        <button onClick={() => this.state.count++}>+</button>
+        {/* state is accessible like a normal variable */}
+        <p>Counter: {this.state.count}</p>
+        <button onClick={() => this.state.count--}>-</button>
+      </div>
     );
-    return [plusButton, minusButton, currentCount];
   }
 }
 ```
 
-BOOM! Now everything will work as expected! Here's the codesandbox to play with:
-
-<Playground src="https://codesandbox.io/embed/leafjs-counter-4e6u7g?fontsize=14&hidenavigation=1&theme=dark" />
+Here we can add event listeners with the `onClick` attribute. Leaf will automatically scan through each attribute and if one starts with `on`, it will be registered as a even listener. This behavior is the same for custom components.
 
 Thanks to the new ES6 Proxies, Leafjs can implement this amazing native-like reactivity system. If you have used Vuejs before, you might notice that Leaf's reactivity system is very similar to Vue's: that's correct! Leaf's reactivity system was highly inspired by Vuejs's implementation.
 
@@ -147,4 +140,25 @@ Because of the way Leafjs handles states, you **must** set `state` to an object.
 
 Sometimes, only changing the component's state according to an event is not enough. For example, we may want to have an input element that changes its content based on both the actual state content change or by user input. This is called a **two-way data binding**. You can implement this simply by having both a `value` attribute that points to the state and an event listener that changes the state based on input.
 
-<Playground src="https://codesandbox.io/embed/jolly-heisenberg-9862lh?fontsize=14&hidenavigation=1&theme=dark" />
+```jsx
+class MyComponent extends LeafComponent {
+  constructor() {
+    super();
+
+    this.state = {
+      value: '',
+    };
+  }
+
+  render() {
+    return (
+      <div>
+        {/* highlight-next-line */}
+        <input value={this.state.value} onChange={(e) => (this.state.value = e.target.value)} />
+        <p>Input: {this.state.value}</p>
+        <button onClick={() => (this.state.value = Math.random().toString())}>Random</button>
+      </div>
+    );
+  }
+}
+```

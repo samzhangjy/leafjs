@@ -1,11 +1,36 @@
-.features {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
-  width: 100%;
+.featureSvg {
+  max-width: calc(100% - 100px);
+  max-height: 250px;
+  text-align: left !important;
+  margin-right: 100px;
 }
 
-.featureSvg {
-  height: 200px;
-  width: 200px;
+.feature {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  text-align: left !important;
+  margin-top: 100px;
+  max-width: 100vw;
+  overflow-y: hidden;
+}
+
+.featureIcon {
+  grid-column: span 2 / span 2;
+}
+
+.featureDescription {
+  grid-column: span 4 / span 4;
+  margin-top: 50px;
+}
+
+@media screen and (max-width: 996px) {
+  .featureIcon {
+    grid-column: span 6 / span 6;
+    width: 100%;
+  }
+
+  .featureDescription {
+    grid-column: span 6 / span 6;
+    width: 100%;
+  }
 }

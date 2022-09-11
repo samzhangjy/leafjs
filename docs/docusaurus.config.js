@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Leafjs',
-  tagline: 'A lightweight, fast web-components based frontend framework for the future.',
+  tagline: 'Instantly build future-ready websites with ease.',
   url: 'https://leafjs.samzhangjy.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
@@ -75,7 +75,7 @@ const config = {
             position: 'right',
           },
         ],
-        hideOnScroll: true,
+        hideOnScroll: false,
       },
       footer: {
         style: 'light',
