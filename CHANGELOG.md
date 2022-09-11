@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/samzhangjy/leafjs/compare/v0.2.3...v0.2.4) (2022-09-11)
+
+### Features
+
+* **parser:** auto script injection ([0ab601a](https://github.com/samzhangjy/leafjs/commit/0ab601a249110697cf261d84ce9d6011ce417b70))
+
 ## [0.2.3](https://github.com/samzhangjy/leafjs/compare/v0.2.2...v0.2.3) (2022-09-10)
 
 ### Features
