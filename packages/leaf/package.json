@@ -1,6 +1,6 @@
 {
   "name": "@leaf-web/core",
-  "version": "0.2.4",
+  "version": "0.2.6",
   "description": "Reasonable web components framework.",
   "main": "./dist/leaf.min.js",
   "module": "./dist/es/packages/leaf/src/index.js",
