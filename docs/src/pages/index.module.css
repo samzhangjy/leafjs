@@ -25,6 +25,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  padding: 0px 100px;
+  gap: 50px;
 }
 
 .coverIcon {
@@ -41,19 +43,13 @@
   width: 100%;
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .spacer {
   margin-top: 50px;
 }
 
 @media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
+  .heroContainer {
+    padding: 0px 50px;
   }
 
   .coverIcon {

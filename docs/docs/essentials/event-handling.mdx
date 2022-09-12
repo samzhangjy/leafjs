@@ -1,0 +1,112 @@
+---
+sidebar_position: 4
+---
+
+# Event Handling
+
+Without events, you can't even listen for a button click. Events play a big part in modern frontend development. This article will show you how to handle events in Leafjs.
+
+## Event listeners
+
+A watcher, or listener for an event that will be fired when it recieved a new event is called an **event listener**. An event listener can be either listening a plain DOM element or a custom element.
+
+In Leaf, you can add an event listener to an element using attributes starting with on-. For example:
+
+```jsx
+class MyButton extends LeafComponent {
+  render() {
+    return <button onClick={() => console.log('button clicked!')}>Hello World</button>;
+  }
+}
+```
+
+This will register a `click` event listener for the button element. When the user clicks the button, it will log `button clicked!` in the console.
+
+:::tip
+The above code may seem like a HTML inline listener, but it isn't.
+
+Leaf parses the listener and extracts the event name `click` and then calls `element.addEventListener` to add the event listener to an element.
+:::
+
+## Dispatching an event
+
+Sometimes you want to have a custom event for your component, e.g. a custom button element may have a custom click event handler. Here's an example of that:
+
+```jsx
+class MyButton extends LeafComponent {
+  render() {
+    return <button onClick={(e) => this.fireEvent(e)}>My button</button>;
+  }
+}
+```
+
+Here we added a click listener for the inner button. When the inner button gets clicked, it will fire the click event to the listeners of `<MyButton />` component.
+
+In `LeafComponent.fireEvent`, Leaf automatically handles the passed in `Event` object to prevent the event reaching anywhere outside the component. Then, Leaf dispatches a new event with the same event type.
+
+If you want to pass some data to the listeners, for example that you are building an input component. In this case, pass your data as the second argument of `fireEvent`:
+
+```jsx
+class MyInput extends LeafComponent {
+  render() {
+    return <input onChange={(e) => this.fireEvent(e, { value: e.target.value })} />;
+  }
+}
+```
+
+This event will attach the data section (the second argument) to `event.detail`, which the `value` field can be accessed through `event.detail.value`:
+
+```jsx
+class OtherComponent extends LeafComponent {
+  render() {
+    return <MyInput onChange={(e) => console.log(e.detail.value)} />;
+  }
+}
+```
+
+### Custom events
+
+Sometimes you want more than events received from existing DOM elements. A todo app may have a `<AddTodo />` component which needs logic for adding todos. We can achieve this by passing in a string instead of an `Event` object:
+
+```jsx
+class AddTodo extends LeafComponent {
+  render() {
+    return (
+      <div>
+        {/* ... */}
+        <button onClick={() => this.fireEvent('add', { name: '...' })}>Add Todo</button>
+        {/* ... */}
+      </div>
+    );
+  }
+}
+```
+
+This will fire an `add` event to listeners. You can setup an event listener for it like so:
+
+```jsx
+class TodoApp extends LeafComponent {
+  render() {
+    return (
+      <div>
+        {/* ... */}
+        <AddTodo onAdd={(e) => console.log('add todo', e.detail.name)} />
+        {/* ... */}
+      </div>
+    )
+  }
+}
+```
+
+Which is just like a normal listener.
+
+## Listener for non-Leaf projects
+
+While we recommended using Leaf components with Leafjs, some component libraries may target vanilla JavaScript. To add an event listener for a Leaf component in vanilla JS, simply do:
+
+```js
+const myComponent = document.getElementById('my-component-id');
+myComponent.addEventListener('click', () => { /* ... */ });
+```
+
+Or you can also do it inline-style, but this is not recommended. [Read more.](https://stackoverflow.com/a/6348597)

@@ -13,7 +13,7 @@ function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <div className={styles.heroOuter}>
-      <header className={`container ${styles.heroContainer}`}>
+      <header className={`${styles.heroContainer}`}>
         <Cover className={`${styles.coverIcon}`} />
         <div className={`${styles.mainHeading}`}>
           <div>

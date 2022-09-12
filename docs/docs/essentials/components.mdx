@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Components
 
 Components are a core concept in Leafjs. This article will walk through those core concepts about Leafjs components.
@@ -158,9 +162,7 @@ For better consistency and code maintainability, you probably want to have jump-
 ```jsx title="MyButton.jsx"
 class MyButton extends LeafComponent {
   render() {
-    return (
-      <button>My button</button>
-    )
+    return <button>My button</button>;
   }
 }
 
@@ -181,7 +183,7 @@ class MyOtherComponent extends LeafComponent {
     return (
       // highlight-next-line
       <MyButton />
-    )
+    );
   }
 }
 
@@ -198,3 +200,34 @@ In the resulting HTML template, `MyOtherComponent` will be converted to:
 
 <!-- ... -->
 ```
+
+### Children slots
+
+If you want to render your component's children, for example a button with custom content, use the Web Components [`<slot />`](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots#adding_flexibility_with_slots) element.
+
+```jsx title="MyButton.jsx"
+class MyButton extends LeafComponent {
+  render() {
+    return (
+      <button>
+        {/* highlight-next-line */}
+        <slot />
+      </button>
+    );
+  }
+}
+```
+
+```jsx title="App.jsx"
+class MyApp extends LeafComponent {
+  render() {
+    return <MyButton>Hello MyButton</MyButton>;
+  }
+}
+```
+
+The above example will show a button with text `Hello MyButton` inside.
+
+:::caution
+Although the usage of JSX makes Leaf very similar to React, but Leaf doesn't provide a `this.props.children` wrapper!
+:::

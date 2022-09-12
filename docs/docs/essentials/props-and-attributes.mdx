@@ -1,0 +1,126 @@
+---
+sidebar_position: 3
+---
+
+# Props and Attributes
+
+Properties and attributes are the basic building blocks of a Leaf component. This article will explain how these things are different from a regular element.
+
+## Properties vs. Attributes
+
+In frameworks like React and Vue, you may have seen a concept called "properties", or "props" for short. But in Leaf, there's another concept similar to it: attributes.
+
+Attributes are the key-value pairs you pass into an element, for example:
+
+```html
+<my-awesome-component title="My Awesome Title" description="Lorem ipsum dor sit."></my-awesome-component>
+```
+
+In this example, we have two attributes on element `my-awesome-component`: `title` and `description`. These attributes are defined in HTML templates or Leaf component JSX markup, and contains only string values.
+
+Properties, on the other hand, are set programmatically using JavaScript. In the following example, `myAwesomeComponent` points to a DOM element `<my-awesome-component />`.
+
+```js
+myAwesomeComponent.props.title = 'My Awesome Title';
+myAwesomeComponent.props.description = 'Lorem ipsum dor sit.';
+```
+
+We set the `title` and `description` fields again, but this time for properties. In properties, everything is valid as long as it is JavaScript - including object references!
+
+So, which one should I use? Actually, they both have pros and cons.
+
+Pros of using attributes:
+
+- Easily set values declartively through markups
+- Easier value handling through `getAttribute` on the component side
+
+Cons of using attributes:
+
+- Everything have to be string, which leads to having formatting objects and arrays to string and reparse it again in components
+- No object references, everything is a deep copy of the original object
+- Very likely to cause a misusage of boolean values when using the component
+
+Pros of using properties:
+
+- As long as the JS syntax is valid, the value is valid
+- Handle boolean values using JavaScript `true` / `false`
+- Object references
+- No need of reparsing strings to objects, which improves performance in complex usage conditions.
+
+Cons of using properties:
+
+- Users have to programmatically set the prop value using JavaScript
+- Ugly getter/setter handling when the code base is large
+
+Of course, this list is incomplete: it only shows the basic parts of using one of the solutions.
+
+## Enhanced property handling
+
+To solve these issues, Leaf removes the concept of attributes - sort of.
+
+In Leaf JSX markup, each attribute will have its corresponding property accessible through `this.props`. Upon usage, users only need to pass in attributes or JSX expressions and Leaf will automatically set the corresponding property value.
+
+This solution keeps attributes and properties always in-sync, and developers will only have to worry about properties. When any of the attributes change, Leaf will rerender the component and update the DOM.
+
+To use properties in your component, simply declare the used properties in `watchedProps` of your component:
+
+```jsx
+class MyLinks extends LeafComponent {
+  // highlight-next-line
+  static watchedProps = ['links'];
+
+  constructor() {
+    super();
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.links?.map((link) => (
+          <a href={link.url}>{link.text}</a>
+        ))}
+      </div>
+    );
+  }
+}
+```
+
+:::tip
+**Always** remember that `watchedProps` is declared as a **static** property of your class!
+
+Static properties, unlike normal class properties, are accessible before instantiating the class object. This is required to extend the `observedAttributes` prop in the Web Components standard.
+:::
+
+When using `MyLink` component, do the following:
+
+```jsx
+class OtherComponent extends LeafComponent {
+  constructor() {
+    super();
+
+    this.state = {
+      links: [
+        { url: 'https://leafjs.samzhangjy.com/', text: 'Leaf Docs' },
+        { url: 'https://github.com/samzhangjy/leafjs', text: 'Leaf GitHub' },
+      ],
+    };
+  }
+  render() {
+    return (
+      <div>
+        {/* ... */}
+        <MyLink links={this.state.links} />
+        {/* ... */}
+      </div>
+    );
+  }
+}
+```
+
+This will render the links and change when `this.state.links` change.
+
+### Syncing properties to attributes
+
+If you open up the developer tools in your browser and inspect the elements, you may find that the `links` attribute doesn't exist on `<MyLink />` element! This is because `this.state.links` is an object and Leaf only syncs strings, numbers and booleans to the attributes. Other properties will only be accessible through `this.props` in your component.
+
+But if a prop is a string, it will also appear in the attributes. When the attribute change, it will react the same as if the property changes, causing a component to rerender.
