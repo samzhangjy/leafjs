@@ -1,5 +1,11 @@
 # Leafjs
 
+![total downloads](https://badgen.net/npm/dt/@leaf-web/core)
+![minzipped size](https://badgen.net/bundlephobia/minzip/@leaf-web/core)
+![latest version](https://badgen.net/npm/v/@leaf-web/core)
+![GitHub stars](https://badgen.net/github/stars/samzhangjy/leafjs)
+![license](https://badgen.net/github/license/samzhangjy/leafjs)
+
 A lightweight, fast web-components based frontend framework for the future.
 
 ## Introduction
