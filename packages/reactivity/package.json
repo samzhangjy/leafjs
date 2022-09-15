@@ -1,6 +1,6 @@
 {
   "name": "@leaf-web/reactivity",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Reasonable web components framework.",
   "main": "./dist/reactivity.min.js",
   "module": "./dist/es/index.js",
