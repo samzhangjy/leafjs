@@ -6,7 +6,11 @@ import './styles/global.css';
 
 class MyApp extends LeafComponent {
   links = [
-    { title: 'Documentation', description: 'Leafjs official documentation.', link: 'https://leafjs.samzhangjy.com' },
+    {
+      title: 'Documentation',
+      description: 'Leafjs official documentation.',
+      link: 'https://leafjs.samzhangjy.com',
+    },
     {
       title: 'GitHub',
       description: 'Found a bug? Report an issue to us!',

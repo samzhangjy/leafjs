@@ -254,6 +254,8 @@ const patchElements = (oldChildren, newChildren, oldParent, newParent) => {
     if (isLeafComponent(oldChild) && isLeafComponent(newChild)) {
       // always keep attributes and props in-sync
       for (const attr of newChild.attributes) {
+        // property is higher than attributes
+        if (attr.name in newChild.props) continue;
         oldChild.props[attr.name] = attr.value;
       }
 
@@ -361,27 +363,39 @@ class LeafComponent extends HTMLElement {
 
     const outerThis = this;
 
-    const checkIsPropNameValid = key => {
+    const checkIsPropValid = (key, value) => {
       if (!this.constructor.observedAttributes.includes(key)) {
         // throw an error if `key` isn't defined by the component
         throw new Error(`Unknown property ${key}. Expected one of ${this.constructor.observedAttributes.map(attr => `'${attr}'`).join(', ')}.`);
       }
+
+      if (Array.isArray(this.constructor.watchedProps) || !(key in this.constructor.watchedProps) || value === undefined || value === null || this.isUpdating) return;
+
+      if (this.constructor.watchedProps[key] !== value.constructor) {
+        throw new TypeError(`Types of property '${key}' unmatch: expected ${this.constructor.watchedProps[key].name}, got ${value.constructor.name}`);
+      }
     };
 
+    const previousPropChange = {
+      name: '',
+      value: null
+    };
     this.props = new Proxy(props, {
       get(target, key, receiver) {
-        checkIsPropNameValid(key);
+        checkIsPropValid(key);
         return Reflect.get(target, key, receiver);
       },
 
       set(target, key, value, receiver) {
-        checkIsPropNameValid(key);
+        checkIsPropValid(key, value);
+        const result = Reflect.set(target, key, value, receiver);
 
-        if (isValidAttribute(value)) {
-          outerThis.setAttribute(key, value.toString());
+        if (__classPrivateFieldGet(outerThis, _LeafComponent_isMounted, "f") && key !== 'key' && (previousPropChange.name !== key || previousPropChange.value !== value)) {
+          outerThis.onPropChange(key, value);
+          previousPropChange.name = key;
+          previousPropChange.value = value;
         }
 
-        const result = Reflect.set(target, key, value, receiver);
         if (__classPrivateFieldGet(outerThis, _LeafComponent_isMounted, "f")) outerThis.rerender();
         return result;
       },
@@ -391,7 +405,7 @@ class LeafComponent extends HTMLElement {
       },
 
       deleteProperty(target, key) {
-        checkIsPropNameValid(key);
+        checkIsPropValid(key);
         return Reflect.deleteProperty(target, key);
       }
 
@@ -399,20 +413,38 @@ class LeafComponent extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return [...this.watchedProps, 'key'];
+    const userProps = [];
+
+    if (!Array.isArray(this.watchedProps)) {
+      for (const key in this.watchedProps) {
+        userProps.push(key);
+      }
+    } else {
+      userProps.push(...this.watchedProps);
+    }
+
+    return [...userProps, 'key'];
+  }
+
+  setState(newState) {
+    __classPrivateFieldSet(this, _LeafComponent_state, newState, "f");
+  }
+
+  getState() {
+    if (!__classPrivateFieldGet(this, _LeafComponent_isMounted, "f")) return {};
+    return __classPrivateFieldGet(this, _LeafComponent_state, "f");
   }
   /** Component inner state. */
 
 
   get state() {
-    if (!__classPrivateFieldGet(this, _LeafComponent_isMounted, "f")) return;
-    return __classPrivateFieldGet(this, _LeafComponent_state, "f");
+    return this.getState();
   }
-  /** {@inheritDoc LeafComponent.fireEvent} */
+  /** {@inheritDoc LeafComponent.state} */
 
 
   set state(value) {
-    __classPrivateFieldSet(this, _LeafComponent_state, value, "f");
+    this.setState(value);
   }
   /** Event listeners attached to component. */
 
@@ -490,6 +522,16 @@ class LeafComponent extends HTMLElement {
     return;
   }
   /**
+   * Callback when a property of the component has changed.
+   * @param name Name of changed property.
+   * @param newValue The updated value of property.
+   */
+
+
+  onPropChange(name, newValue) {
+    return;
+  }
+  /**
    * Start component lifecycle.
    *
    * This function is invoked when the first initialization of the component.
@@ -536,7 +578,11 @@ class LeafComponent extends HTMLElement {
     } // rerender when attributes changed
 
 
-    this.rerender();
+    if (!Array.isArray(this.constructor.watchedProps)) {
+      if (this.constructor.watchedProps[name] === Number) this.props[name] = parseFloat(newVal);else this.props[name] = newVal;
+    } else {
+      this.props[name] = newVal;
+    }
   }
   /**
    * Core rendering logic of a component.

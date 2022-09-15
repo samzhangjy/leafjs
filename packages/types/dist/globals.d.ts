@@ -1,7 +1,7 @@
 import type * as CSS from 'csstype';
 import type { GlobalAttributes } from './globalAttributes';
 
-type EventHandler<T extends Event> = (e: T<HTMLElement>) => any;
+type EventHandler<T extends Event> = (e: T) => void;
 
 type EventListeners = {
   // Animation events

@@ -5,7 +5,8 @@
     "sourceMap": true,
     "allowJs": false,
     "jsx": "preserve",
-    "target": "es6"
+    "target": "es6",
+    "moduleResolution": "Node"
   },
   "include": ["src/**/*", "./globals.d.ts"],
   "exclude": ["node_modules"]

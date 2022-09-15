@@ -103,11 +103,13 @@ export declare class LeafComponent extends HTMLElement {
      */
     ['constructor']: typeof LeafComponent;
     constructor();
-    static watchedProps: string[];
+    static watchedProps: string[] | Record<string, any>;
     static get observedAttributes(): string[];
+    setState<T extends ReactiveObject>(newState: T): void;
+    getState(): ReactiveObject;
     /** Component inner state. */
     get state(): ReactiveObject;
-    /** {@inheritDoc LeafComponent.fireEvent} */
+    /** {@inheritDoc LeafComponent.state} */
     set state(value: ReactiveObject);
     /** Event listeners attached to component. */
     get listeners(): EventListener[];
@@ -130,6 +132,12 @@ export declare class LeafComponent extends HTMLElement {
      * Callback when the component is about to perform a rerender.
      */
     onRerender(): void;
+    /**
+     * Callback when a property of the component has changed.
+     * @param name Name of changed property.
+     * @param newValue The updated value of property.
+     */
+    onPropChange<T extends any>(name: string, newValue: T): void;
     /**
      * Start component lifecycle.
      *
