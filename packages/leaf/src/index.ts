@@ -352,7 +352,7 @@ export const patchElements = (
  * @param styles Stylesheet string.
  * @returns Stylesheet string.
  */
-export const css = (styles: string[], ...keys: string[]) => {
+export const css = (styles: TemplateStringsArray, ...keys: any[]) => {
   let constructedStyle = '';
   let curKeyIndex = 0;
   styles.forEach((style) => {
@@ -373,7 +373,7 @@ export class LeafComponent extends HTMLElement {
   #shadow: ShadowRoot | null = null;
   #key: string | null | undefined = undefined;
   #isMounted: boolean = false;
-  props: LeafComponentProps;
+  props: LeafComponentProps = {};
   isLeafComponent = true;
   isUpdating = false;
 
@@ -382,7 +382,7 @@ export class LeafComponent extends HTMLElement {
    */
   ['constructor']: typeof LeafComponent;
 
-  constructor(_props: LeafComponentProps, ..._args: unknown[]) {
+  constructor() {
     super();
 
     const props: LeafComponentProps = {};
@@ -429,9 +429,7 @@ export class LeafComponent extends HTMLElement {
     });
   }
 
-  static get watchedProps(): string[] {
-    return [];
-  }
+  static watchedProps: string[] = [];
 
   static get observedAttributes(): string[] {
     return [...this.watchedProps, 'key'];

@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "build": "leaf build",
+    "dev": "leaf dev",
+    "start": "leaf start"
+  },
+  "dependencies": {
+    "@leaf-web/core": "^0.2.6"
+  },
+  "devDependencies": {
+    "@leaf-web/parser": "^0.2.6",
+    "@leaf-web/types": "^0.2.6",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
+  }
+}

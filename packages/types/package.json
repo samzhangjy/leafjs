@@ -1,0 +1,52 @@
+{
+  "name": "@leaf-web/types",
+  "version": "0.2.6",
+  "description": "Reasonable web components framework.",
+  "main": "./dist/leaf.min.js",
+  "module": "./dist/es/packages/leaf/src/index.js",
+  "type": "module",
+  "types": "./dist/leaf.d.ts",
+  "scripts": {
+    "build": "run-s clean && run-p build:copy",
+    "build:copy": "ts-node --esm --project tsconfig.json ./src/generator/build.ts",
+    "dev": "ts-node --esm --project tsconfig.json \"./src/generator/index.ts\"",
+    "clean": "rimraf ./dist",
+    "lint": "eslint ./src/**/*.d.ts --fix"
+  },
+  "author": "Sam Zhang",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samzhangjy/leafjs/tree/main/packages/types"
+  },
+  "homepage": "https://leafjs.samzhangjy.com/",
+  "browserslist": "> 0.25% and not dead",
+  "dependencies": {
+    "@mdn/browser-compat-data": "^5.2.2",
+    "csstype": "^3.1.1",
+    "html-attribute-to-react": "^0.0.5"
+  },
+  "devDependencies": {
+    "@types/htmltojsx": "^0.0.30",
+    "@types/node": "^18.7.13",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.4",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "fs-extra": "^10.1.0",
+    "htmltojsx": "^0.3.0",
+    "lerna": "^5.3.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "2.7.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
+  },
+  "gitHead": "d5b08876a08b660bc082dcc941cb5780e8e36923"
+}

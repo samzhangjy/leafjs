@@ -21,15 +21,13 @@ const isNodeLike = content => {
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
- * @returns A function used to create the custom component.
+ * @returns The `component` class.
  */
 
 const registerComponent = (tagName, component, props) => {
   customElements.define(tagName, component, props);
   componentMap.set(component, tagName);
-  return (props, ...args) => {
-    return new component(props, ...args);
-  };
+  return component;
 };
 /** Preserved element attributes mapping */
 

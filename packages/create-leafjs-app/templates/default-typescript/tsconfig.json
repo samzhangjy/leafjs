@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "sourceMap": true,
+    "allowJs": false,
+    "jsx": "preserve",
+    "target": "es6"
+  },
+  "include": ["src/**/*", "./globals.d.ts"],
+  "exclude": ["node_modules"]
+}

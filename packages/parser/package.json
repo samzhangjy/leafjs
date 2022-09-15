@@ -33,6 +33,7 @@
     "@rollup/plugin-inject": "^4.0.4",
     "@rollup/plugin-multi-entry": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-typescript": "^8.4.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "commander": "^9.4.0",
@@ -52,7 +53,6 @@
   "devDependencies": {
     "@rollup/plugin-dynamic-import-vars": "^1.4.4",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-typescript": "^8.4.0",
     "@types/babel__core": "^7.1.19",
     "@types/express": "^4.17.13",
     "@types/express-ws": "^3.0.1",

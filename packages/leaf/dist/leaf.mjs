@@ -153,15 +153,13 @@ const isNodeLike = content => {
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
- * @returns A function used to create the custom component.
+ * @returns The `component` class.
  */
 
 const registerComponent = (tagName, component, props) => {
   customElements.define(tagName, component, props);
   componentMap.set(component, tagName);
-  return (props, ...args) => {
-    return new component(props, ...args);
-  };
+  return component;
 };
 /** Preserved element attributes mapping */
 
@@ -530,7 +528,7 @@ const css = (styles, ...keys) => {
  */
 
 class LeafComponent extends HTMLElement {
-  constructor(_props, ..._args) {
+  constructor() {
     super();
 
     _LeafComponent_instances.add(this);
@@ -547,6 +545,7 @@ class LeafComponent extends HTMLElement {
 
     _LeafComponent_isMounted.set(this, false);
 
+    this.props = {};
     this.isLeafComponent = true;
     this.isUpdating = false;
     const props = {}; // initialize properties
@@ -592,10 +591,6 @@ class LeafComponent extends HTMLElement {
       }
 
     });
-  }
-
-  static get watchedProps() {
-    return [];
   }
 
   static get observedAttributes() {
@@ -763,6 +758,7 @@ class LeafComponent extends HTMLElement {
 _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_key = new WeakMap(), _LeafComponent_isMounted = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
   return '';
 };
+LeafComponent.watchedProps = [];
 
 export { LeafComponent, Reactive, createElement, createElementReactStyle, css, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, registerComponent, runCallbackOnElements, setEventListenerOf };
 //# sourceMappingURL=leaf.mjs.map

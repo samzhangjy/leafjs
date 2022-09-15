@@ -87,7 +87,7 @@ export declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChi
  * @param styles Stylesheet string.
  * @returns Stylesheet string.
  */
-export declare const css: (styles: string[], ...keys: string[]) => string;
+export declare const css: (styles: TemplateStringsArray, ...keys: any[]) => string;
 /**
  * Core Leaf component class.
  *
@@ -102,8 +102,8 @@ export declare class LeafComponent extends HTMLElement {
      * @see https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
      */
     ['constructor']: typeof LeafComponent;
-    constructor(_props: LeafComponentProps, ..._args: unknown[]);
-    static get watchedProps(): string[];
+    constructor();
+    static watchedProps: string[];
     static get observedAttributes(): string[];
     /** Component inner state. */
     get state(): ReactiveObject;

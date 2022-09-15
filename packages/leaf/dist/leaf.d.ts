@@ -7,9 +7,9 @@ declare type ElementProps = Record<string, string>;
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
- * @returns A function used to create the custom component.
+ * @returns The `component` class.
  */
-declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions) => (props: LeafComponentProps, ...args: unknown[]) => LeafComponent;
+declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions) => typeof LeafComponent;
 
 declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 declare type LeafEventHandler = (e: Event) => unknown;
@@ -98,7 +98,7 @@ declare const patchElements: (oldChildren: (HTMLElement | Node)[], newChildren: 
  * @param styles Stylesheet string.
  * @returns Stylesheet string.
  */
-declare const css: (styles: string[], ...keys: string[]) => string;
+declare const css: (styles: TemplateStringsArray, ...keys: any[]) => string;
 /**
  * Core Leaf component class.
  *
@@ -113,8 +113,8 @@ declare class LeafComponent extends HTMLElement {
      * @see https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
      */
     ['constructor']: typeof LeafComponent;
-    constructor(_props: LeafComponentProps, ..._args: unknown[]);
-    static get watchedProps(): string[];
+    constructor();
+    static watchedProps: string[];
     static get observedAttributes(): string[];
     /** Component inner state. */
     get state(): ReactiveObject;

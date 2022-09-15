@@ -11,6 +11,7 @@ program.name('create-leaf-app').description('Bootstrap a new Leafjs web applicat
 program
   .argument('[name]', 'Project name', null)
   .option('-t, --template <string>', 'Project template to create from.', 'default')
+  .option('--typescript', 'Use TypeScript in your project or not.')
   .action(async (name, options) => {
     if (!name) {
       name = (
@@ -20,6 +21,11 @@ program
           message: 'Project name',
         })
       ).name;
+    }
+
+    if (options.typescript) {
+      console.log('Using TypeScript.');
+      options.template += '-typescript';
     }
 
     const spinner = ora(`Generating template '${options.template}'...`);

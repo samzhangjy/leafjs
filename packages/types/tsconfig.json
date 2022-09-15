@@ -1,0 +1,23 @@
+{
+  "extends": "ts-node/node16/tsconfig.json",
+  "ts-node": {
+    "transpileOnly": true,
+  },
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "allowJs": false,
+    "declaration": true,
+    "declarationMap": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2021"]
+  },
+  "include": ["src/**/*", "src/type.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

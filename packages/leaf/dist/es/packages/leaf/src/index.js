@@ -333,7 +333,7 @@ const css = (styles, ...keys) => {
  */
 
 class LeafComponent extends HTMLElement {
-  constructor(_props, ..._args) {
+  constructor() {
     super();
 
     _LeafComponent_instances.add(this);
@@ -350,6 +350,7 @@ class LeafComponent extends HTMLElement {
 
     _LeafComponent_isMounted.set(this, false);
 
+    this.props = {};
     this.isLeafComponent = true;
     this.isUpdating = false;
     const props = {}; // initialize properties
@@ -395,10 +396,6 @@ class LeafComponent extends HTMLElement {
       }
 
     });
-  }
-
-  static get watchedProps() {
-    return [];
   }
 
   static get observedAttributes() {
@@ -566,6 +563,7 @@ class LeafComponent extends HTMLElement {
 _LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_key = new WeakMap(), _LeafComponent_isMounted = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
   return '';
 };
+LeafComponent.watchedProps = [];
 
 export { LeafComponent, createElement, createElementReactStyle, css, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, runCallbackOnElements, setEventListenerOf };
 //# sourceMappingURL=index.js.map

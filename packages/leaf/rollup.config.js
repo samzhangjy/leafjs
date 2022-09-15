@@ -4,6 +4,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import commonjs from '@rollup/plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
+import copy from 'rollup-plugin-copy';
 
 /**
  * @type {import('@rollup/plugin-babel').RollupBabelInputPluginOptions}
@@ -37,7 +38,14 @@ export default [
       name: 'leaf',
       file: './dist/leaf.min.js',
     },
-    plugins: [typescript(), ...commonPlugins, terser({ ecma: 2015 })],
+    plugins: [
+      typescript(),
+      ...commonPlugins,
+      terser({ ecma: 2015 }),
+      copy({
+        targets: [{ src: 'src/jsx.d.ts', dest: 'dist/' }],
+      }),
+    ],
     treeshake: true,
   },
   {

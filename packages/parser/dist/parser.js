@@ -3,43 +3,41 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var babel = require('@babel/core');
-var fs = require('fs');
-var path = require('path');
-var glob = require('glob');
-var rollup = require('rollup');
-var nodeResolve = require('@rollup/plugin-node-resolve');
-var commonjs = require('@rollup/plugin-commonjs');
-var rollupPluginTerser = require('rollup-plugin-terser');
-var commander = require('commander');
 var pluginBabel = require('@rollup/plugin-babel');
+var commonjs = require('@rollup/plugin-commonjs');
 var inject = require('@rollup/plugin-inject');
+var nodeResolve = require('@rollup/plugin-node-resolve');
+var typescript = require('@rollup/plugin-typescript');
 var chalk = require('chalk');
-var progress = require('rollup-plugin-progress');
-var express = require('express');
-var expressWs = require('express-ws');
 var chokidar = require('chokidar');
+var commander = require('commander');
+var fs = require('fs');
 var open = require('open');
+var path = require('path');
+var rollup = require('rollup');
 var minifyHTML = require('rollup-plugin-minify-html-literals');
 var postcss = require('rollup-plugin-postcss');
+var progress = require('rollup-plugin-progress');
+var rollupPluginTerser = require('rollup-plugin-terser');
+var express = require('express');
+var expressWs = require('express-ws');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var babel__default = /*#__PURE__*/_interopDefaultLegacy(babel);
-var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
-var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
-var glob__default = /*#__PURE__*/_interopDefaultLegacy(glob);
-var nodeResolve__default = /*#__PURE__*/_interopDefaultLegacy(nodeResolve);
 var commonjs__default = /*#__PURE__*/_interopDefaultLegacy(commonjs);
 var inject__default = /*#__PURE__*/_interopDefaultLegacy(inject);
+var nodeResolve__default = /*#__PURE__*/_interopDefaultLegacy(nodeResolve);
+var typescript__default = /*#__PURE__*/_interopDefaultLegacy(typescript);
 var chalk__default = /*#__PURE__*/_interopDefaultLegacy(chalk);
+var chokidar__default = /*#__PURE__*/_interopDefaultLegacy(chokidar);
+var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
+var open__default = /*#__PURE__*/_interopDefaultLegacy(open);
+var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
+var minifyHTML__default = /*#__PURE__*/_interopDefaultLegacy(minifyHTML);
+var postcss__default = /*#__PURE__*/_interopDefaultLegacy(postcss);
 var progress__default = /*#__PURE__*/_interopDefaultLegacy(progress);
 var express__default = /*#__PURE__*/_interopDefaultLegacy(express);
 var expressWs__default = /*#__PURE__*/_interopDefaultLegacy(expressWs);
-var chokidar__default = /*#__PURE__*/_interopDefaultLegacy(chokidar);
-var open__default = /*#__PURE__*/_interopDefaultLegacy(open);
-var minifyHTML__default = /*#__PURE__*/_interopDefaultLegacy(minifyHTML);
-var postcss__default = /*#__PURE__*/_interopDefaultLegacy(postcss);
 
 const injectToHTML = (HTMLContent, injectContent, canidates = [new RegExp('</body>', 'i'), new RegExp('</svg>'), new RegExp('</head>', 'i')]) => {
     let tagToInject = null;
@@ -100,11 +98,6 @@ const staticServer = (publicPath) => {
     };
 };
 
-const babelConfig = {
-    presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
-    plugins: [['@babel/plugin-transform-react-jsx', { pragma: '___leaf_create_element_react' }]],
-    babelHelpers: 'bundled',
-};
 const program = new commander.Command();
 const info = (str) => {
     console.log(`${chalk__default["default"].cyan('[leafjs]')} - ${chalk__default["default"].blue('info')} - ${str}`);
@@ -112,63 +105,25 @@ const info = (str) => {
 const error = (str) => {
     console.log(`${chalk__default["default"].cyan('[leafjs]')} - ${chalk__default["default"].red('error')} - ${str}`);
 };
-const generateCodeTemplate = (code) => {
-    return `
-    /** @jsx ___createElement_leaf */
-    import { createElementReactStyle as ___createElement_leaf } from '@leaf-web/core';
-    
-    // user code start
-    ${code};
-    // user code end
-  `;
-};
-const compileCode = (code) => {
-    var _a;
-    return ((_a = babel__default["default"].transformSync(generateCodeTemplate(code), babelConfig)) === null || _a === void 0 ? void 0 : _a.code) || '';
-};
-const transformFilename = (filename) => {
-    const JSXExtensions = ['.jsx', '.tsx'];
-    // transform file extension
-    if (JSXExtensions.includes(path__default["default"].extname(filename))) {
-        return filename.substring(0, filename.length - 1);
-    }
-    return filename;
-};
-const compileFile = (filePath, outputPath) => {
-    const code = fs__default["default"].readFileSync(path__default["default"].resolve(filePath)).toString();
-    const result = compileCode(code);
-    let absOutputPath = transformFilename(path__default["default"].resolve(outputPath));
-    fs__default["default"].writeFileSync(absOutputPath, '// NOTE: This file is generated by Leafjs parser. DO NOT EDIT!\n\n' + result);
-    return result;
-};
-const compileFilesWithGlob = (pattern, outputDir) => {
-    glob__default["default"](pattern, (err, matches) => {
-        if (err) {
-            error(`failed to match glob files.\n${chalk__default["default"].gray(err)}`);
-            return;
-        }
-        matches.forEach((match) => {
-            const currentPath = path__default["default"].join(outputDir, match);
-            const currentOutputDir = path__default["default"].dirname(currentPath);
-            fs__default["default"].mkdir(currentOutputDir, { recursive: true }, (err) => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-                compileFile(match, currentPath);
-            });
-        });
-    });
-};
-const bundleFiles = async (entry, outputDir) => {
+const bundleFiles = async (entry, outputDir, typescriptDetails) => {
+    let bundleExtensions = ['js', 'jsx'];
+    if (typescriptDetails)
+        bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];
+    const babelConfig = {
+        presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
+        plugins: [['@babel/plugin-transform-react-jsx', { pragma: '___leaf_create_element_react' }]],
+        babelHelpers: 'bundled',
+        extensions: bundleExtensions,
+    };
     const inputOptions = {
         input: entry,
         plugins: [
             minifyHTML__default["default"](),
             postcss__default["default"](),
+            typescriptDetails ? typescript__default["default"]({ tsconfig: typescriptDetails }) : null,
+            pluginBabel.babel(babelConfig),
             nodeResolve__default["default"](),
             commonjs__default["default"](),
-            pluginBabel.babel(babelConfig),
             inject__default["default"]({ ___leaf_create_element_react: ['@leaf-web/core', 'createElementReactStyle'] }),
             rollupPluginTerser.terser({
                 compress: {
@@ -178,7 +133,6 @@ const bundleFiles = async (entry, outputDir) => {
             // @ts-ignore
             progress__default["default"](),
         ],
-        treeshake: true,
     };
     const outputPath = 'js/bundle.min.js';
     const outputOptions = {
@@ -209,13 +163,14 @@ const getConfigWithDefault = (userConfig) => {
         entry: (_a = userConfig.entry) !== null && _a !== void 0 ? _a : './src/index.jsx',
         outputDir: (_b = userConfig.outputDir) !== null && _b !== void 0 ? _b : './dist',
         entryHTML: (_c = userConfig.entryHTML) !== null && _c !== void 0 ? _c : 'index.html',
+        typescript: userConfig.typescript || undefined,
     };
 };
 const buildFromConfig = async (configPath) => {
     const config = getConfigWithDefault(JSON.parse(fs__default["default"].readFileSync(configPath).toString()));
     const entryHTMLContent = fs__default["default"].readFileSync(config.entryHTML).toString();
     const outputHTMLPath = 'index.html';
-    const outputPath = await bundleFiles(config.entry, config.outputDir);
+    const outputPath = await bundleFiles(config.entry, config.outputDir, config.typescript);
     fs__default["default"].writeFileSync(path__default["default"].join(config.outputDir, outputHTMLPath), injectToHTML(entryHTMLContent, `<script src='${outputPath}'></script>`, [
         new RegExp('</head>', 'i'),
         new RegExp('</body>', 'i'),
@@ -234,9 +189,19 @@ const startDevServer = (userConfig, port) => {
         new RegExp('</head>', 'i'),
         new RegExp('</body>', 'i'),
     ]));
+    let bundleExtensions = ['js', 'jsx'];
+    if (config.typescript)
+        bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];
+    const babelConfig = {
+        presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
+        plugins: [['@babel/plugin-transform-react-jsx', { pragma: '___leaf_create_element_react' }]],
+        babelHelpers: 'bundled',
+        extensions: bundleExtensions,
+    };
     const inputOptions = {
         input: config.entry,
         plugins: [
+            config.typescript ? typescript__default["default"]({ tsconfig: config.typescript }) : null,
             postcss__default["default"](),
             nodeResolve__default["default"](),
             commonjs__default["default"](),
@@ -347,12 +312,8 @@ program.parse();
 exports.DEV_SERVER_ROOT = DEV_SERVER_ROOT;
 exports.buildFromConfig = buildFromConfig;
 exports.bundleFiles = bundleFiles;
-exports.compileCode = compileCode;
-exports.compileFile = compileFile;
-exports.compileFilesWithGlob = compileFilesWithGlob;
 exports.error = error;
 exports.getConfigWithDefault = getConfigWithDefault;
 exports.info = info;
 exports.startDevServer = startDevServer;
-exports.transformFilename = transformFilename;
 //# sourceMappingURL=parser.js.map

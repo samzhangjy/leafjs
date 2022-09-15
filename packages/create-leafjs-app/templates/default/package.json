@@ -1,7 +1,8 @@
 {
   "scripts": {
     "build": "leaf build",
-    "dev": "leaf dev"
+    "dev": "leaf dev",
+    "start": "leaf start"
   },
   "dependencies": {
     "@leaf-web/core": "^0.2.4"

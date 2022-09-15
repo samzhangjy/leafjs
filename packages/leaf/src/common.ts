@@ -1,4 +1,4 @@
-import { LeafComponent, LeafComponentProps } from './index';
+import { LeafComponent } from './index';
 
 export type NodeLike = Node | string | HTMLCollection | NodeList | Node[] | string[];
 export type ElementContent = Node | string;
@@ -33,7 +33,7 @@ export const isNodeLike = (content: any) => {
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
- * @returns A function used to create the custom component.
+ * @returns The `component` class.
  */
 export const registerComponent = (
   tagName: string,
@@ -43,9 +43,7 @@ export const registerComponent = (
   customElements.define(tagName, component, props);
   componentMap.set(component, tagName);
 
-  return (props: LeafComponentProps, ...args: unknown[]) => {
-    return new component(props, ...args);
-  };
+  return component;
 };
 
 /** Preserved element attributes mapping */
