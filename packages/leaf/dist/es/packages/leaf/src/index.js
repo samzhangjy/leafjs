@@ -4,7 +4,7 @@ export { Reactive } from '../../reactivity/dist/es/index.js';
 import { isNodeLike, isNodeListLike, componentMap, preservedProps, appendContentToNode } from './common.js';
 export { registerComponent } from './common.js';
 
-var _LeafComponent_instances, _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_key, _LeafComponent_isMounted, _LeafComponent_defaultStyler;
+var _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_key, _LeafComponent_isMounted, _LeafComponent_styleElement;
 const eventListeners = new WeakMap();
 /** Attributes to be updated specially, such as `input.value` vs `input.attributes.value` */
 
@@ -78,10 +78,12 @@ const _createElement = (tag, props, content) => {
       if (!isValidAttribute(propContent)) continue;
     }
 
+    if (propContent === false || propContent === null || propContent === undefined) continue;
+
     if (prop in preservedProps) {
-      element.setAttribute(preservedProps[prop], propContent);
+      element.setAttribute(preservedProps[prop], propContent.toString());
     } else {
-      element.setAttribute(prop, propContent);
+      element.setAttribute(prop, propContent.toString());
     }
   }
 
@@ -219,6 +221,7 @@ const patchElements = (oldChildren, newChildren, oldParent, newParent) => {
       for (const attr of newAttributes) {
         // don't assign objects to attributes, assign to properties only
         if (!isValidAttribute(attr.value) || oldChild.getAttribute(attr.name) === attr.value) continue;
+        if (attr.value === false || attr.value === null || attr.value === undefined) continue;
         oldChild.setAttribute(attr.name, attr.value);
 
         for (const specialProp of directPropUpdate) {
@@ -338,8 +341,6 @@ class LeafComponent extends HTMLElement {
   constructor() {
     super();
 
-    _LeafComponent_instances.add(this);
-
     _LeafComponent_state.set(this, null);
 
     _LeafComponent_reactiveInstance.set(this, null);
@@ -351,6 +352,8 @@ class LeafComponent extends HTMLElement {
     _LeafComponent_key.set(this, undefined);
 
     _LeafComponent_isMounted.set(this, false);
+
+    _LeafComponent_styleElement.set(this, null);
 
     this.props = {};
     this.isLeafComponent = true;
@@ -489,6 +492,7 @@ class LeafComponent extends HTMLElement {
       this.onRerender();
     }
 
+    if (__classPrivateFieldGet(this, _LeafComponent_styleElement, "f")) __classPrivateFieldGet(this, _LeafComponent_styleElement, "f").textContent = this.css();
     let renderResult = this.render();
     if (!Array.isArray(renderResult)) renderResult = [renderResult];
     if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").isSetting = false;
@@ -539,7 +543,7 @@ class LeafComponent extends HTMLElement {
 
 
   connectedCallback() {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d;
 
     __classPrivateFieldSet(this, _LeafComponent_isMounted, true, "f");
 
@@ -547,27 +551,28 @@ class LeafComponent extends HTMLElement {
       mode: 'closed'
     }), "f");
 
-    const styleElement = createElement('style');
-    const styler = (_a = this.css) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _LeafComponent_instances, "m", _LeafComponent_defaultStyler);
-    styleElement.textContent = styler();
-    styleElement.setAttribute('leaf-preserve', 'true');
+    __classPrivateFieldSet(this, _LeafComponent_styleElement, createElement('style'), "f");
 
-    __classPrivateFieldGet(this, _LeafComponent_shadow, "f").appendChild(styleElement);
+    __classPrivateFieldGet(this, _LeafComponent_styleElement, "f").textContent = this.css();
+
+    __classPrivateFieldGet(this, _LeafComponent_styleElement, "f").setAttribute('leaf-preserve', 'true');
+
+    __classPrivateFieldGet(this, _LeafComponent_shadow, "f").appendChild(__classPrivateFieldGet(this, _LeafComponent_styleElement, "f"));
 
     const currentInstance = reactiveInstances.get(__classPrivateFieldGet(this, _LeafComponent_key, "f") || ''); // adopt the previous reactive data, if any
 
     if (currentInstance) __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, currentInstance, "f"); // or create a new one
     else __classPrivateFieldSet(this, _LeafComponent_reactiveInstance, new Reactive(), "f");
 
-    if ((_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.actualState) {
+    if ((_a = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _a === void 0 ? void 0 : _a.actualState) {
       __classPrivateFieldSet(this, _LeafComponent_state, __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f").actualState, "f");
     } else {
-      __classPrivateFieldSet(this, _LeafComponent_state, (_c = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _c === void 0 ? void 0 : _c.build((_d = __classPrivateFieldGet(this, _LeafComponent_state, "f")) !== null && _d !== void 0 ? _d : {}), "f");
+      __classPrivateFieldSet(this, _LeafComponent_state, (_b = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _b === void 0 ? void 0 : _b.build((_c = __classPrivateFieldGet(this, _LeafComponent_state, "f")) !== null && _c !== void 0 ? _c : {}), "f");
     } // IMPORTANT: only set the current `Reactive` instance when the key is valid
 
 
     if (__classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f") && __classPrivateFieldGet(this, _LeafComponent_key, "f")) reactiveInstances.set(__classPrivateFieldGet(this, _LeafComponent_key, "f"), __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f"));
-    (_e = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _e === void 0 ? void 0 : _e.onStateChange(() => this.rerender());
+    (_d = __classPrivateFieldGet(this, _LeafComponent_reactiveInstance, "f")) === null || _d === void 0 ? void 0 : _d.onStateChange(() => this.rerender());
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -606,9 +611,7 @@ class LeafComponent extends HTMLElement {
   }
 
 }
-_LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_key = new WeakMap(), _LeafComponent_isMounted = new WeakMap(), _LeafComponent_instances = new WeakSet(), _LeafComponent_defaultStyler = function _LeafComponent_defaultStyler() {
-  return '';
-};
+_LeafComponent_state = new WeakMap(), _LeafComponent_reactiveInstance = new WeakMap(), _LeafComponent_previousRenderResult = new WeakMap(), _LeafComponent_shadow = new WeakMap(), _LeafComponent_key = new WeakMap(), _LeafComponent_isMounted = new WeakMap(), _LeafComponent_styleElement = new WeakMap();
 LeafComponent.watchedProps = [];
 
 export { LeafComponent, createElement, createElementReactStyle, css, deleteEventListenerOf, directPropUpdate, eventListeners, getEventListenerOf, isElement, isEventListener, isValidAttribute, mountElements, patchElements, reactiveInstances, runCallbackOnElements, setEventListenerOf };

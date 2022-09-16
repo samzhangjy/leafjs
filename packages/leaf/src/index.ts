@@ -63,7 +63,7 @@ export const isValidAttribute = (attr: any): attr is LeafComponentAttribute => {
 
 const _createElement = (
   tag: string | typeof LeafComponent,
-  props?: Record<string, string | LeafEventHandler>,
+  props?: Record<string, string | boolean | LeafEventHandler>,
   content?: ElementContent | ElementContent[]
 ): HTMLElement => {
   if (typeof tag !== 'string') {
@@ -90,10 +90,12 @@ const _createElement = (
       if (!isValidAttribute(propContent)) continue;
     }
 
+    if (propContent === false || propContent === null || propContent === undefined) continue;
+
     if (prop in preservedProps) {
-      element.setAttribute(preservedProps[prop], propContent);
+      element.setAttribute(preservedProps[prop], propContent.toString());
     } else {
-      element.setAttribute(prop, propContent);
+      element.setAttribute(prop, propContent.toString());
     }
   }
   eventListeners.set(element, listeners);
@@ -248,6 +250,7 @@ export const patchElements = (
       for (const attr of newAttributes) {
         // don't assign objects to attributes, assign to properties only
         if (!isValidAttribute(attr.value) || oldChild.getAttribute(attr.name) === attr.value) continue;
+        if (attr.value === false || attr.value === null || attr.value === undefined) continue;
 
         oldChild.setAttribute(attr.name, attr.value);
 
@@ -375,6 +378,7 @@ export class LeafComponent extends HTMLElement {
   #shadow: ShadowRoot | null = null;
   #key: string | null | undefined = undefined;
   #isMounted: boolean = false;
+  #styleElement: HTMLElement | null = null;
   props: LeafComponentProps = {};
   isLeafComponent = true;
   isUpdating = false;
@@ -528,6 +532,8 @@ export class LeafComponent extends HTMLElement {
       this.onRerender();
     }
 
+    if (this.#styleElement) this.#styleElement.textContent = this.css();
+
     let renderResult = this.render();
     if (!Array.isArray(renderResult)) renderResult = [renderResult];
 
@@ -575,12 +581,11 @@ export class LeafComponent extends HTMLElement {
     this.#isMounted = true;
 
     this.#shadow = this.attachShadow({ mode: 'closed' });
-    const styleElement = createElement('style');
-    const styler = this.css ?? this.#defaultStyler;
+    this.#styleElement = createElement('style');
 
-    styleElement.textContent = styler();
-    styleElement.setAttribute('leaf-preserve', 'true');
-    this.#shadow.appendChild(styleElement);
+    this.#styleElement.textContent = this.css();
+    this.#styleElement.setAttribute('leaf-preserve', 'true');
+    this.#shadow.appendChild(this.#styleElement);
 
     const currentInstance = reactiveInstances.get(this.#key || '');
 
@@ -616,10 +621,6 @@ export class LeafComponent extends HTMLElement {
     } else {
       this.props[name] = newVal;
     }
-  }
-
-  #defaultStyler() {
-    return '';
   }
 
   /**
