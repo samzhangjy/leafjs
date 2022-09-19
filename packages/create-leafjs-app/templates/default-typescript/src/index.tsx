@@ -29,7 +29,7 @@ class MyApp extends LeafComponent {
           <h1>Leaf App</h1>
           <h4>Good job!</h4>
           <p>
-            You successfully created a Leafjs app. Edit <code>index.jsx</code> to get started!
+            You successfully created a Leafjs app. Edit <code>index.tsx</code> to get started!
           </p>
           <h2>Counter</h2>
           {/* Try changing `count` to 1 */}
