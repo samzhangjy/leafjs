@@ -201,7 +201,11 @@ const startDevServer = (userConfig, port) => {
     const inputOptions = {
         input: config.entry,
         plugins: [
-            config.typescript ? typescript__default["default"]({ tsconfig: config.typescript }) : null,
+            config.typescript
+                ? typescript__default["default"]({
+                    tsconfig: config.typescript,
+                })
+                : null,
             postcss__default["default"](),
             nodeResolve__default["default"](),
             commonjs__default["default"](),
@@ -215,10 +219,13 @@ const startDevServer = (userConfig, port) => {
         format: 'iife',
         file: path__default["default"].join(DEV_SERVER_ROOT, bundleOutputPath),
     };
-    const watcher = rollup.watch({
-        ...inputOptions,
-        output: outputOptions,
-    });
+    const rollupConfig = [
+        {
+            ...inputOptions,
+            output: outputOptions,
+        },
+    ];
+    const watcher = rollup.watch(rollupConfig);
     let currentError = null;
     const server = staticServer(DEV_SERVER_ROOT);
     server.start(port, async () => {

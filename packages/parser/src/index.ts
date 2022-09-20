@@ -9,7 +9,7 @@ import { Command } from 'commander';
 import fs from 'fs';
 import open from 'open';
 import path from 'path';
-import { OutputOptions, rollup, RollupError, RollupOptions, watch } from 'rollup';
+import { OutputOptions, rollup, RollupError, RollupOptions, RollupWatchOptions, watch } from 'rollup';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import postcss from 'rollup-plugin-postcss';
 import progress from 'rollup-plugin-progress';
@@ -141,7 +141,11 @@ export const startDevServer = (userConfig: any, port: number) => {
   const inputOptions: RollupOptions = {
     input: config.entry,
     plugins: [
-      config.typescript ? typescript({ tsconfig: config.typescript }) : null,
+      config.typescript
+        ? typescript({
+            tsconfig: config.typescript,
+          })
+        : null,
       postcss(),
       nodeResolve(),
       commonjs(),
@@ -157,10 +161,14 @@ export const startDevServer = (userConfig: any, port: number) => {
     file: path.join(DEV_SERVER_ROOT, bundleOutputPath),
   };
 
-  const watcher = watch({
-    ...inputOptions,
-    output: outputOptions,
-  });
+  const rollupConfig: RollupWatchOptions[] = [
+    {
+      ...inputOptions,
+      output: outputOptions,
+    },
+  ];
+
+  const watcher = watch(rollupConfig);
 
   let currentError: RollupError | null = null;
 
