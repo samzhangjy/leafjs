@@ -105,9 +105,12 @@ const info = (str) => {
 const error = (str) => {
     console.log(`${chalk__default["default"].cyan('[leafjs]')} - ${chalk__default["default"].red('error')} - ${str}`);
 };
-const bundleFiles = async (entry, outputDir, typescriptDetails) => {
+const warn = (str) => {
+    console.log(`${chalk__default["default"].cyan('[leafjs]')} - ${chalk__default["default"].yellow('warn')} - ${str}`);
+};
+const bundleFiles = async (config) => {
     let bundleExtensions = ['js', 'jsx'];
-    if (typescriptDetails)
+    if (config.typescript)
         bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];
     const babelConfig = {
         presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
@@ -115,62 +118,83 @@ const bundleFiles = async (entry, outputDir, typescriptDetails) => {
         babelHelpers: 'bundled',
         extensions: bundleExtensions,
     };
-    const inputOptions = {
-        input: entry,
-        plugins: [
-            minifyHTML__default["default"](),
-            postcss__default["default"](),
-            typescriptDetails ? typescript__default["default"]({ tsconfig: typescriptDetails }) : null,
-            pluginBabel.babel(babelConfig),
-            nodeResolve__default["default"](),
-            commonjs__default["default"](),
-            inject__default["default"]({ ___leaf_create_element_react: ['@leaf-web/core', 'createElementReactStyle'] }),
-            rollupPluginTerser.terser({
-                compress: {
-                    passes: 5,
-                },
-            }),
-            // @ts-ignore
-            progress__default["default"](),
-        ],
-    };
-    const outputPath = 'js/bundle.min.js';
-    const outputOptions = {
-        format: 'iife',
-        file: path__default["default"].join(outputDir, outputPath),
-    };
     let bundle = null;
     let isError = false;
-    try {
-        bundle = await rollup.rollup(inputOptions);
-        await bundle.write(outputOptions);
+    for (const format of config.formats) {
+        info(`transpiling to format ${format.format}...`);
+        const inputOptions = {
+            input: config.entry,
+            plugins: [
+                minifyHTML__default["default"](),
+                postcss__default["default"](),
+                config.typescript ? typescript__default["default"]({ tsconfig: config.typescript }) : null,
+                pluginBabel.babel(babelConfig),
+                nodeResolve__default["default"](),
+                commonjs__default["default"](),
+                inject__default["default"]({ ___leaf_create_element_react: ['@leaf-web/core', 'createElementReactStyle'] }),
+                rollupPluginTerser.terser({
+                    compress: {
+                        passes: 5,
+                    },
+                }),
+                // @ts-ignore
+                progress__default["default"](),
+            ],
+            external: format.external,
+        };
+        const outputPath = 'bundle.min.js';
+        const outputOptions = {
+            format: format.format,
+            file: path__default["default"].join(config.outputDir, format.path, outputPath),
+        };
+        try {
+            bundle = await rollup.rollup(inputOptions);
+            await bundle.write(outputOptions);
+        }
+        catch (err) {
+            isError = true;
+            error(`failed to compile.\n${chalk__default["default"].gray(err)}`);
+        }
+        if (bundle) {
+            await bundle.close();
+        }
+        if (isError) {
+            process.exit(1);
+        }
     }
-    catch (err) {
-        isError = true;
-        error(`failed to compile.\n${chalk__default["default"].gray(err)}`);
-    }
-    if (bundle) {
-        await bundle.close();
-    }
-    if (isError) {
-        process.exit(1);
-    }
-    return outputPath;
 };
 const getConfigWithDefault = (userConfig) => {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e, _f;
+    const userFormats = userConfig.formats || ['iife'];
+    const formats = [];
+    for (const format of userFormats) {
+        if (typeof format === 'string') {
+            formats.push({
+                format: format,
+                external: [],
+                path: format,
+            });
+            continue;
+        }
+        formats.push({
+            format: (_a = format.format) !== null && _a !== void 0 ? _a : 'iife',
+            external: (_b = format.external) !== null && _b !== void 0 ? _b : [],
+            path: (_c = format.path) !== null && _c !== void 0 ? _c : format.format,
+        });
+    }
     return {
-        entry: (_a = userConfig.entry) !== null && _a !== void 0 ? _a : './src/index.jsx',
-        outputDir: (_b = userConfig.outputDir) !== null && _b !== void 0 ? _b : './dist',
-        entryHTML: (_c = userConfig.entryHTML) !== null && _c !== void 0 ? _c : 'index.html',
+        entry: (_d = userConfig.entry) !== null && _d !== void 0 ? _d : './src/index.jsx',
+        outputDir: (_e = userConfig.outputDir) !== null && _e !== void 0 ? _e : './dist',
+        entryHTML: (_f = userConfig.entryHTML) !== null && _f !== void 0 ? _f : 'index.html',
         typescript: userConfig.typescript || undefined,
+        formats,
     };
 };
 const buildFromConfig = async (configPath) => {
     const config = getConfigWithDefault(JSON.parse(fs__default["default"].readFileSync(configPath).toString()));
     const entryHTMLContent = fs__default["default"].readFileSync(config.entryHTML).toString();
     const outputHTMLPath = 'index.html';
-    const outputPath = await bundleFiles(config.entry, config.outputDir, config.typescript);
+    const outputPath = await bundleFiles(config);
     fs__default["default"].writeFileSync(path__default["default"].join(config.outputDir, outputHTMLPath), injectToHTML(entryHTMLContent, `<script src='${outputPath}'></script>`, [
         new RegExp('</head>', 'i'),
         new RegExp('</body>', 'i'),
@@ -185,6 +209,9 @@ const startDevServer = (userConfig, port) => {
     const bundleOutputPath = 'js/bundle.js';
     const outputHTMLPath = 'index.html';
     const entryHTMLContent = fs__default["default"].readFileSync(config.entryHTML).toString();
+    if (config.formats.length > 2 || config.formats[0].format !== 'iife') {
+        warn('You are bundling in development mode. ALL format options will be ignored and only IIFE bundle will be generated. Use `leaf build` to generate bundles you specified.');
+    }
     fs__default["default"].writeFileSync(path__default["default"].join(DEV_SERVER_ROOT, outputHTMLPath), injectToHTML(entryHTMLContent, `<script src='${bundleOutputPath}'></script>`, [
         new RegExp('</head>', 'i'),
         new RegExp('</body>', 'i'),
@@ -323,4 +350,5 @@ exports.error = error;
 exports.getConfigWithDefault = getConfigWithDefault;
 exports.info = info;
 exports.startDevServer = startDevServer;
+exports.warn = warn;
 //# sourceMappingURL=parser.js.map

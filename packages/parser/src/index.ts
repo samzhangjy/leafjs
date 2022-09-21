@@ -9,7 +9,7 @@ import { Command } from 'commander';
 import fs from 'fs';
 import open from 'open';
 import path from 'path';
-import { OutputOptions, rollup, RollupError, RollupOptions, RollupWatchOptions, watch } from 'rollup';
+import { ModuleFormat, OutputOptions, rollup, RollupError, RollupOptions, RollupWatchOptions, watch } from 'rollup';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import postcss from 'rollup-plugin-postcss';
 import progress from 'rollup-plugin-progress';
@@ -27,9 +27,25 @@ export const error = (str: string) => {
   console.log(`${chalk.cyan('[leafjs]')} - ${chalk.red('error')} - ${str}`);
 };
 
-export const bundleFiles = async (entry: string, outputDir: string, typescriptDetails?: string) => {
+export const warn = (str: string) => {
+  console.log(`${chalk.cyan('[leafjs]')} - ${chalk.yellow('warn')} - ${str}`);
+};
+
+export type LeafConfig = {
+  entry: string;
+  outputDir: string;
+  entryHTML: string;
+  typescript?: string;
+  formats: {
+    format: ModuleFormat;
+    external: string[];
+    path: string;
+  }[];
+};
+
+export const bundleFiles = async (config: LeafConfig) => {
   let bundleExtensions = ['js', 'jsx'];
-  if (typescriptDetails) bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];
+  if (config.typescript) bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];
 
   const babelConfig: RollupBabelInputPluginOptions = {
     presets: [['@babel/preset-env', { modules: false, targets: '> 0.25%, not dead' }]],
@@ -38,58 +54,83 @@ export const bundleFiles = async (entry: string, outputDir: string, typescriptDe
     extensions: bundleExtensions,
   };
 
-  const inputOptions: RollupOptions = {
-    input: entry,
-    plugins: [
-      minifyHTML(),
-      postcss(),
-      typescriptDetails ? typescript({ tsconfig: typescriptDetails }) : null,
-      rollupBabelPlugin(babelConfig),
-      nodeResolve(),
-      commonjs(),
-      inject({ ___leaf_create_element_react: ['@leaf-web/core', 'createElementReactStyle'] }),
-      terser({
-        compress: {
-          passes: 5,
-        },
-      }),
-      // @ts-ignore
-      progress(),
-    ],
-  };
-
-  const outputPath = 'js/bundle.min.js';
-  const outputOptions: OutputOptions = {
-    format: 'iife',
-    file: path.join(outputDir, outputPath),
-  };
   let bundle = null;
   let isError = false;
 
-  try {
-    bundle = await rollup(inputOptions);
-    await bundle.write(outputOptions);
-  } catch (err) {
-    isError = true;
-    error(`failed to compile.\n${chalk.gray(err)}`);
-  }
+  for (const format of config.formats) {
+    info(`transpiling to format ${format.format}...`);
 
-  if (bundle) {
-    await bundle.close();
-  }
+    const inputOptions: RollupOptions = {
+      input: config.entry,
+      plugins: [
+        minifyHTML(),
+        postcss(),
+        config.typescript ? typescript({ tsconfig: config.typescript }) : null,
+        rollupBabelPlugin(babelConfig),
+        nodeResolve(),
+        commonjs(),
+        inject({ ___leaf_create_element_react: ['@leaf-web/core', 'createElementReactStyle'] }),
+        terser({
+          compress: {
+            passes: 5,
+          },
+        }),
+        // @ts-ignore
+        progress(),
+      ],
+      external: format.external,
+    };
 
-  if (isError) {
-    process.exit(1);
+    const outputPath = 'bundle.min.js';
+    const outputOptions: OutputOptions = {
+      format: format.format,
+      file: path.join(config.outputDir, format.path, outputPath),
+    };
+
+    try {
+      bundle = await rollup(inputOptions);
+      await bundle.write(outputOptions);
+    } catch (err) {
+      isError = true;
+      error(`failed to compile.\n${chalk.gray(err)}`);
+    }
+
+    if (bundle) {
+      await bundle.close();
+    }
+
+    if (isError) {
+      process.exit(1);
+    }
   }
-  return outputPath;
 };
 
-export const getConfigWithDefault = (userConfig: Record<string, string | null>) => {
+export const getConfigWithDefault = (userConfig: Record<string, any>): LeafConfig => {
+  const userFormats: Record<string, any>[] = userConfig.formats || ['iife'];
+  const formats = [];
+
+  for (const format of userFormats) {
+    if (typeof format === 'string') {
+      formats.push({
+        format: format,
+        external: [],
+        path: format,
+      });
+      continue;
+    }
+    formats.push({
+      format: format.format ?? 'iife',
+      external: format.external ?? [],
+      path: format.path ?? format.format,
+    });
+  }
+
   return {
     entry: userConfig.entry ?? './src/index.jsx',
     outputDir: userConfig.outputDir ?? './dist',
     entryHTML: userConfig.entryHTML ?? 'index.html',
     typescript: userConfig.typescript || undefined,
+    formats,
   };
 };
 
@@ -97,7 +138,7 @@ export const buildFromConfig = async (configPath: string) => {
   const config = getConfigWithDefault(JSON.parse(fs.readFileSync(configPath).toString()));
   const entryHTMLContent = fs.readFileSync(config.entryHTML).toString();
   const outputHTMLPath = 'index.html';
-  const outputPath = await bundleFiles(config.entry, config.outputDir, config.typescript);
+  const outputPath = await bundleFiles(config);
 
   fs.writeFileSync(
     path.join(config.outputDir, outputHTMLPath),
@@ -119,6 +160,12 @@ export const startDevServer = (userConfig: any, port: number) => {
   const bundleOutputPath = 'js/bundle.js';
   const outputHTMLPath = 'index.html';
   const entryHTMLContent = fs.readFileSync(config.entryHTML).toString();
+
+  if (config.formats.length > 2 || config.formats[0].format !== 'iife') {
+    warn(
+      'You are bundling in development mode. ALL format options will be ignored and only IIFE bundle will be generated. Use `leaf build` to generate bundles you specified.'
+    );
+  }
 
   fs.writeFileSync(
     path.join(DEV_SERVER_ROOT, outputHTMLPath),
