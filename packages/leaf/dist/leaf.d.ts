@@ -7,9 +7,11 @@ declare type ElementProps = Record<string, string>;
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
+ * @param props extra params to pass to `customElements.define`.
+ * @param allowMultiple allow multiple registers with the same component for different names.
  * @returns The `component` class.
  */
-declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions) => typeof LeafComponent;
+declare const registerComponent: (tagName: string, component: typeof LeafComponent, props?: ElementDefinitionOptions, allowMultiple?: boolean) => typeof LeafComponent;
 
 declare type LeafComponentRenderResult = HTMLElement | HTMLElement[];
 declare type LeafEventHandler = (e: Event) => unknown;

@@ -33,13 +33,21 @@ export const isNodeLike = (content: any) => {
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
  * @param component a defined `LeafComponent` class.
+ * @param props extra params to pass to `customElements.define`.
+ * @param allowMultiple allow multiple registers with the same component for different names.
  * @returns The `component` class.
  */
 export const registerComponent = (
   tagName: string,
   component: typeof LeafComponent,
-  props?: ElementDefinitionOptions
+  props?: ElementDefinitionOptions,
+  allowMultiple?: boolean
 ) => {
+  // don't register if component is already registered in the registery
+  // IMPORTANT: don't check `customElements` but instead check `componentMap`
+  // to ensure one component instance can only register once
+  if (!allowMultiple && componentMap.get(component)) return component;
+
   customElements.define(tagName, component, props);
   componentMap.set(component, tagName);
 
