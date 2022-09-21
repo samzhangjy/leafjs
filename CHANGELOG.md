@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.12](https://github.com/samzhangjy/leafjs/compare/v0.2.11...v0.2.12) (2022-09-21)
+
+### Features
+
+* **core:** support disallowing multiple registers with one component ([f4ceae5](https://github.com/samzhangjy/leafjs/commit/f4ceae59dee09bec4d0b0fb1cbc4d7182a4a32d0))
+
 ## [0.2.11](https://github.com/samzhangjy/leafjs/compare/v0.2.10...v0.2.11) (2022-09-21)
 
 ### Features
