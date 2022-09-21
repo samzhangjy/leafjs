@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.11](https://github.com/samzhangjy/leafjs/compare/v0.2.10...v0.2.11) (2022-09-21)
+
+### Features
+
+* **parser:** added output format options to Leaf parser ([1c9d98a](https://github.com/samzhangjy/leafjs/commit/1c9d98ae9c4a41a800080a7cf3bb85079df6319d))
+
 ## [0.2.10](https://github.com/samzhangjy/leafjs/compare/v0.2.9...v0.2.10) (2022-09-20)
 
 **Note:** Version bump only for package @leaf-web/parser
