@@ -5,7 +5,11 @@ export type ElementContent = Node | string;
 export type ElementProps = Record<string, string>;
 export type CustomComponentMap = WeakMap<typeof LeafComponent, string>;
 
-export const componentMap: CustomComponentMap = new WeakMap();
+declare global {
+  interface Window {
+    componentMap: CustomComponentMap;
+  }
+}
 
 /**
  * Check if element is NodeList-like.
@@ -43,13 +47,18 @@ export const registerComponent = (
   props?: ElementDefinitionOptions,
   allowMultiple?: boolean
 ) => {
+  // initialize component map
+  if (!window.componentMap) {
+    window.componentMap = new WeakMap();
+  }
+
   // don't register if component is already registered in the registery
   // IMPORTANT: don't check `customElements` but instead check `componentMap`
   // to ensure one component instance can only register once
-  if (!allowMultiple && componentMap.get(component)) return component;
+  if (!allowMultiple && window.componentMap.get(component)) return component;
 
   customElements.define(tagName, component, props);
-  componentMap.set(component, tagName);
+  window.componentMap.set(component, tagName);
 
   return component;
 };

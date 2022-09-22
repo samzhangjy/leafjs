@@ -3,7 +3,11 @@ export declare type NodeLike = Node | string | HTMLCollection | NodeList | Node[
 export declare type ElementContent = Node | string;
 export declare type ElementProps = Record<string, string>;
 export declare type CustomComponentMap = WeakMap<typeof LeafComponent, string>;
-export declare const componentMap: CustomComponentMap;
+declare global {
+    interface Window {
+        componentMap: CustomComponentMap;
+    }
+}
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.

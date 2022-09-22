@@ -1,10 +1,8 @@
-const componentMap = new WeakMap();
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.
  * @returns Is `content` having structures like `NodeList`.
  */
-
 const isNodeListLike = content => {
   return HTMLCollection.prototype.isPrototypeOf(content) || NodeList.prototype.isPrototypeOf(content) || Array.isArray(content);
 };
@@ -27,12 +25,17 @@ const isNodeLike = content => {
  */
 
 const registerComponent = (tagName, component, props, allowMultiple) => {
-  // don't register if component is already registered in the registery
+  // initialize component map
+  if (!window.componentMap) {
+    window.componentMap = new WeakMap();
+  } // don't register if component is already registered in the registery
   // IMPORTANT: don't check `customElements` but instead check `componentMap`
   // to ensure one component instance can only register once
-  if (!allowMultiple && componentMap.get(component)) return component;
+
+
+  if (!allowMultiple && window.componentMap.get(component)) return component;
   customElements.define(tagName, component, props);
-  componentMap.set(component, tagName);
+  window.componentMap.set(component, tagName);
   return component;
 };
 /** Preserved element attributes mapping */
@@ -73,5 +76,5 @@ const appendContentToNode = (node, content) => {
   }
 };
 
-export { appendContentToNode, componentMap, isFalsyNode, isNodeLike, isNodeListLike, preservedProps, registerComponent };
+export { appendContentToNode, isFalsyNode, isNodeLike, isNodeListLike, preservedProps, registerComponent };
 //# sourceMappingURL=common.js.map

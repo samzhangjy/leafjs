@@ -1,7 +1,7 @@
 import { __classPrivateFieldGet, __classPrivateFieldSet } from '../../../node_modules/tslib/tslib.es6.js';
 import { Reactive } from '../../reactivity/dist/es/index.js';
 export { Reactive } from '../../reactivity/dist/es/index.js';
-import { isNodeLike, isNodeListLike, componentMap, preservedProps, appendContentToNode } from './common.js';
+import { isNodeLike, isNodeListLike, preservedProps, appendContentToNode } from './common.js';
 export { registerComponent } from './common.js';
 
 var _LeafComponent_state, _LeafComponent_reactiveInstance, _LeafComponent_previousRenderResult, _LeafComponent_shadow, _LeafComponent_key, _LeafComponent_isMounted, _LeafComponent_styleElement;
@@ -52,8 +52,10 @@ const isValidAttribute = attr => {
 };
 
 const _createElement = (tag, props, content) => {
+  var _a;
+
   if (typeof tag !== 'string') {
-    const tagName = componentMap.get(tag);
+    const tagName = (_a = window.componentMap) === null || _a === void 0 ? void 0 : _a.get(tag);
     if (!tagName) throw new Error('Unable to fetch component from registery.');else tag = tagName;
   }
 

@@ -130,13 +130,11 @@ class Reactive {
 
 }
 
-const componentMap = new WeakMap();
 /**
  * Check if element is NodeList-like.
  * @param content Element to check.
  * @returns Is `content` having structures like `NodeList`.
  */
-
 const isNodeListLike = content => {
   return HTMLCollection.prototype.isPrototypeOf(content) || NodeList.prototype.isPrototypeOf(content) || Array.isArray(content);
 };
@@ -159,12 +157,17 @@ const isNodeLike = content => {
  */
 
 const registerComponent = (tagName, component, props, allowMultiple) => {
-  // don't register if component is already registered in the registery
+  // initialize component map
+  if (!window.componentMap) {
+    window.componentMap = new WeakMap();
+  } // don't register if component is already registered in the registery
   // IMPORTANT: don't check `customElements` but instead check `componentMap`
   // to ensure one component instance can only register once
-  if (!allowMultiple && componentMap.get(component)) return component;
+
+
+  if (!allowMultiple && window.componentMap.get(component)) return component;
   customElements.define(tagName, component, props);
-  componentMap.set(component, tagName);
+  window.componentMap.set(component, tagName);
   return component;
 };
 /** Preserved element attributes mapping */
@@ -253,8 +256,10 @@ const isValidAttribute = attr => {
 };
 
 const _createElement = (tag, props, content) => {
+  var _a;
+
   if (typeof tag !== 'string') {
-    const tagName = componentMap.get(tag);
+    const tagName = (_a = window.componentMap) === null || _a === void 0 ? void 0 : _a.get(tag);
     if (!tagName) throw new Error('Unable to fetch component from registery.');else tag = tagName;
   }
 

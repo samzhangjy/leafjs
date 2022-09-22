@@ -1,7 +1,6 @@
 import { Reactive, ReactiveObject } from '@leaf-web/reactivity';
 import {
   appendContentToNode,
-  componentMap,
   ElementContent,
   ElementProps,
   isNodeLike,
@@ -67,7 +66,7 @@ const _createElement = (
   content?: ElementContent | ElementContent[]
 ): HTMLElement => {
   if (typeof tag !== 'string') {
-    const tagName = componentMap.get(tag);
+    const tagName = window.componentMap?.get(tag);
     if (!tagName) throw new Error('Unable to fetch component from registery.');
     else tag = tagName;
   }

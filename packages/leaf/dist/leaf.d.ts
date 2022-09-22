@@ -3,6 +3,12 @@ export { Reactive } from '@leaf-web/reactivity';
 
 declare type ElementContent = Node | string;
 declare type ElementProps = Record<string, string>;
+declare type CustomComponentMap = WeakMap<typeof LeafComponent, string>;
+declare global {
+    interface Window {
+        componentMap: CustomComponentMap;
+    }
+}
 /**
  * Register a leaf component to `CustomElementsRegistery`.
  * @param tagName Tag name to use in templates.
