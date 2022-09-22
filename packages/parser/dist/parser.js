@@ -197,9 +197,12 @@ const getConfigWithDefault = (userConfig) => {
 };
 const buildFromConfig = async (configPath) => {
     const config = getConfigWithDefault(JSON.parse(fs__default["default"].readFileSync(configPath).toString()));
-    const entryHTMLContent = fs__default["default"].readFileSync(config.entryHTML).toString();
+    const entryHTMLExists = fs__default["default"].existsSync(config.entryHTML);
+    const entryHTMLContent = entryHTMLExists ? fs__default["default"].readFileSync(config.entryHTML).toString() : '';
     const outputHTMLPath = 'index.html';
     const outputPath = await bundleFiles(config);
+    if (!entryHTMLExists)
+        return;
     fs__default["default"].writeFileSync(path__default["default"].join(config.outputDir, outputHTMLPath), injectToHTML(entryHTMLContent, `<script src='${outputPath}'></script>`, [
         new RegExp('</head>', 'i'),
         new RegExp('</body>', 'i'),
@@ -213,14 +216,17 @@ const startDevServer = (userConfig, port) => {
     const config = getConfigWithDefault(JSON.parse(fs__default["default"].readFileSync(userConfig).toString()));
     const bundleOutputPath = 'js/bundle.js';
     const outputHTMLPath = 'index.html';
-    const entryHTMLContent = fs__default["default"].readFileSync(config.entryHTML).toString();
+    const entryHTMLExists = fs__default["default"].existsSync(config.entryHTML);
+    const entryHTMLContent = entryHTMLExists ? fs__default["default"].readFileSync(config.entryHTML).toString() : '';
     if (config.formats.length > 2 || config.formats[0].format !== 'iife') {
         warn('You are bundling in development mode. ALL format options will be ignored and only IIFE bundle will be generated. Use `leaf build` to generate bundles you specified.');
     }
-    fs__default["default"].writeFileSync(path__default["default"].join(DEV_SERVER_ROOT, outputHTMLPath), injectToHTML(entryHTMLContent, `<script src='${bundleOutputPath}'></script>`, [
-        new RegExp('</head>', 'i'),
-        new RegExp('</body>', 'i'),
-    ]));
+    if (entryHTMLExists) {
+        fs__default["default"].writeFileSync(path__default["default"].join(DEV_SERVER_ROOT, outputHTMLPath), injectToHTML(entryHTMLContent, `<script src='${bundleOutputPath}'></script>`, [
+            new RegExp('</head>', 'i'),
+            new RegExp('</body>', 'i'),
+        ]));
+    }
     let bundleExtensions = ['js', 'jsx'];
     if (config.typescript)
         bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];

@@ -142,9 +142,12 @@ export const getConfigWithDefault = (userConfig: Record<string, any>): LeafConfi
 
 export const buildFromConfig = async (configPath: string) => {
   const config = getConfigWithDefault(JSON.parse(fs.readFileSync(configPath).toString()));
-  const entryHTMLContent = fs.readFileSync(config.entryHTML).toString();
+  const entryHTMLExists = fs.existsSync(config.entryHTML);
+  const entryHTMLContent = entryHTMLExists ? fs.readFileSync(config.entryHTML).toString() : '';
   const outputHTMLPath = 'index.html';
   const outputPath = await bundleFiles(config);
+
+  if (!entryHTMLExists) return;
 
   fs.writeFileSync(
     path.join(config.outputDir, outputHTMLPath),
@@ -165,7 +168,8 @@ export const startDevServer = (userConfig: any, port: number) => {
   const config = getConfigWithDefault(JSON.parse(fs.readFileSync(userConfig).toString()));
   const bundleOutputPath = 'js/bundle.js';
   const outputHTMLPath = 'index.html';
-  const entryHTMLContent = fs.readFileSync(config.entryHTML).toString();
+  const entryHTMLExists = fs.existsSync(config.entryHTML);
+  const entryHTMLContent = entryHTMLExists ? fs.readFileSync(config.entryHTML).toString() : '';
 
   if (config.formats.length > 2 || config.formats[0].format !== 'iife') {
     warn(
@@ -173,13 +177,15 @@ export const startDevServer = (userConfig: any, port: number) => {
     );
   }
 
-  fs.writeFileSync(
-    path.join(DEV_SERVER_ROOT, outputHTMLPath),
-    injectToHTML(entryHTMLContent, `<script src='${bundleOutputPath}'></script>`, [
-      new RegExp('</head>', 'i'),
-      new RegExp('</body>', 'i'),
-    ])
-  );
+  if (entryHTMLExists) {
+    fs.writeFileSync(
+      path.join(DEV_SERVER_ROOT, outputHTMLPath),
+      injectToHTML(entryHTMLContent, `<script src='${bundleOutputPath}'></script>`, [
+        new RegExp('</head>', 'i'),
+        new RegExp('</body>', 'i'),
+      ])
+    );
+  }
 
   let bundleExtensions = ['js', 'jsx'];
   if (config.typescript) bundleExtensions = [...bundleExtensions, 'ts', 'tsx'];
