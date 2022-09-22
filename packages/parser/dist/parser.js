@@ -120,6 +120,7 @@ const bundleFiles = async (config) => {
     };
     let bundle = null;
     let isError = false;
+    let iifePath = null;
     for (const format of config.formats) {
         info(`transpiling to format ${format.format}...`);
         const inputOptions = {
@@ -161,7 +162,11 @@ const bundleFiles = async (config) => {
         if (isError) {
             process.exit(1);
         }
+        if (format.format === 'iife') {
+            iifePath = `${format.path}/bundle.min.js`;
+        }
     }
+    return iifePath;
 };
 const getConfigWithDefault = (userConfig) => {
     var _a, _b, _c, _d, _e, _f;

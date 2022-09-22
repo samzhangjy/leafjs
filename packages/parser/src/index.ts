@@ -56,6 +56,7 @@ export const bundleFiles = async (config: LeafConfig) => {
 
   let bundle = null;
   let isError = false;
+  let iifePath = null;
 
   for (const format of config.formats) {
     info(`transpiling to format ${format.format}...`);
@@ -102,7 +103,12 @@ export const bundleFiles = async (config: LeafConfig) => {
     if (isError) {
       process.exit(1);
     }
+
+    if (format.format === 'iife') {
+      iifePath = `${format.path}/bundle.min.js`;
+    }
   }
+  return iifePath;
 };
 
 export const getConfigWithDefault = (userConfig: Record<string, any>): LeafConfig => {

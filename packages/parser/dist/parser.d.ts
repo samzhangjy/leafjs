@@ -14,7 +14,7 @@ declare type LeafConfig = {
         path: string;
     }[];
 };
-declare const bundleFiles: (config: LeafConfig) => Promise<void>;
+declare const bundleFiles: (config: LeafConfig) => Promise<string | null>;
 declare const getConfigWithDefault: (userConfig: Record<string, any>) => LeafConfig;
 declare const buildFromConfig: (configPath: string) => Promise<void>;
 declare const DEV_SERVER_ROOT = "./.leaf";
