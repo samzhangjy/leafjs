@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.14](https://github.com/samzhangjy/leafjs/compare/v0.2.13...v0.2.14) (2022-09-22)
+
+### Features
+
+* **parser:** support ignoring entryHTML when none exists ([6c488c3](https://github.com/samzhangjy/leafjs/commit/6c488c384ef00b191438e2d280202c185af0816b))
+
 ## [0.2.13](https://github.com/samzhangjy/leafjs/compare/v0.2.12...v0.2.13) (2022-09-22)
 
 ### Bug Fixes
