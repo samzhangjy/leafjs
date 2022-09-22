@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.13](https://github.com/samzhangjy/leafjs/compare/v0.2.12...v0.2.13) (2022-09-22)
+
+### Bug Fixes
+
+* **parser:** support custom format bundle location in start command ([bcc2aec](https://github.com/samzhangjy/leafjs/commit/bcc2aeccdf55a9f205da1933d1b4ed2b2113aeb2))
+
+### Features
+
+* **core:** global componentMap ([dfe59ec](https://github.com/samzhangjy/leafjs/commit/dfe59ec778fd3ca3b625edece9d76c2117744738))
+
 ## [0.2.12](https://github.com/samzhangjy/leafjs/compare/v0.2.11...v0.2.12) (2022-09-21)
 
 ### Features
