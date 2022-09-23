@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.15](https://github.com/samzhangjy/leafjs/compare/v0.2.14...v0.2.15) (2022-09-23)
+
+### Bug Fixes
+
+* **core:** removed component proeprty check ([290360e](https://github.com/samzhangjy/leafjs/commit/290360ef904ad9943f627685994270306d22e86c))
+
 ## [0.2.13](https://github.com/samzhangjy/leafjs/compare/v0.2.12...v0.2.13) (2022-09-22)
 
 ### Features
