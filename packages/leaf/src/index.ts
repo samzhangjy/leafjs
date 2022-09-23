@@ -400,15 +400,6 @@ export class LeafComponent extends HTMLElement {
     const outerThis = this;
 
     const checkIsPropValid = (key: string, value?: any) => {
-      if (!this.constructor.observedAttributes.includes(key)) {
-        // throw an error if `key` isn't defined by the component
-        throw new Error(
-          `Unknown property ${key}. Expected one of ${this.constructor.observedAttributes
-            .map((attr) => `'${attr}'`)
-            .join(', ')}.`
-        );
-      }
-
       if (
         Array.isArray(this.constructor.watchedProps) ||
         !(key in this.constructor.watchedProps) ||
@@ -418,7 +409,10 @@ export class LeafComponent extends HTMLElement {
       )
         return;
 
-      if (this.constructor.watchedProps[key] !== value.constructor) {
+      if (
+        this.constructor.observedAttributes.includes(key) &&
+        this.constructor.watchedProps[key] !== value.constructor
+      ) {
         throw new TypeError(
           `Types of property '${key}' unmatch: expected ${this.constructor.watchedProps[key].name}, got ${value.constructor.name}`
         );
